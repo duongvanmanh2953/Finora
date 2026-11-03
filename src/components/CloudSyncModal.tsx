@@ -86,7 +86,22 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            m: { xs: 1.5, sm: 2 },
+            width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+            borderRadius: 3,
+            maxHeight: 'calc(100% - 32px)'
+          }
+        }
+      }}
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <HardDrive size={20} color="#0f766e" />
@@ -109,7 +124,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
 
       <DialogContent sx={{ pt: 1.5 }}>
         <Alert severity="info" variant="outlined" sx={{ mb: 2.5, borderRadius: 2 }}>
-          Tích Lộc hoạt động theo nguyên lý <strong>Local-First (Ưu tiên ngoại tuyến)</strong>: Toàn bộ sổ thu chi được lưu trực tiếp trên thiết bị của bạn. Chỉ khi bạn bấm &ldquo;Đồng bộ lên Cloud&rdquo;, dữ liệu mới được đẩy lên máy chủ đám mây an toàn.
+          Finora hoạt động theo nguyên lý <strong>Local-First (Ưu tiên ngoại tuyến)</strong>: Toàn bộ sổ thu chi được lưu trực tiếp trên thiết bị của bạn. Chỉ khi bạn bấm &ldquo;Đồng bộ lên Cloud&rdquo;, dữ liệu mới được đẩy lên máy chủ đám mây an toàn.
         </Alert>
 
         {syncing && <LinearProgress sx={{ mb: 2, borderRadius: 1 }} />}

@@ -11,7 +11,14 @@ import {
   Trash2,
   ReceiptText,
   UploadCloud,
-  X
+  X,
+  TrendingUp,
+  TrendingDown,
+  Scale,
+  Calendar,
+  List,
+  LayoutGrid,
+  RotateCcw
 } from 'lucide-react';
 import {
   Box,
@@ -31,7 +38,10 @@ import {
   DialogContent,
   DialogActions,
   Typography,
-  Alert
+  Alert,
+  ToggleButtonGroup,
+  ToggleButton,
+  Tooltip
 } from '@mui/material';
 
 import { useFinance } from '../../store';
@@ -90,6 +100,9 @@ export default function Transactions() {
   const [receiptUrl, setReceiptUrl] = useState<string>('');
   const [open, setOpen] = useState(params.get('add') === '1');
 
+  // View mode: 'timeline' (revolutionary feed) vs 'table' (classic grid)
+  const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
+
   // Filters
   const [search, setSearch] = useState(params.get('search') || '');
   const [type, setType] = useState('all');
@@ -98,8 +111,8 @@ export default function Transactions() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [sort, setSort] = useState('new');
-  const [page, setPage] = useState(0); // MUI TablePagination is 0-indexed
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [formError, setFormError] = useState('');
 
   const defaults: FormValues = {
@@ -185,7 +198,73 @@ export default function Transactions() {
     [data.transactions, search, type, category, account, from, to, sort]
   );
 
-  const paginatedList = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  // Executive KPI summary based on filtered transactions
+  const summary = useMemo(() => {
+    let income = 0;
+    let expense = 0;
+    let incomeCount = 0;
+    let expenseCount = 0;
+
+    for (const t of filtered) {
+      if (t.type === 'income') {
+        income += t.amount;
+        incomeCount++;
+      } else if (t.type === 'expense') {
+        expense += t.amount;
+        expenseCount++;
+      }
+    }
+
+    return {
+      income,
+      expense,
+      net: income - expense,
+      incomeCount,
+      expenseCount,
+      totalCount: filtered.length
+    };
+  }, [filtered]);
+
+  // Count transactions per type matching current query and context
+  const typeCounts = useMemo(() => {
+    let all = 0;
+    let expense = 0;
+    let income = 0;
+    let transfer = 0;
+
+    for (const t of data.transactions) {
+      const matchSearch = !search || (t.name + ' ' + t.note).toLowerCase().includes(search.toLowerCase());
+      const matchCat = category === 'all' || t.categoryId === category;
+      const matchAcc = account === 'all' || t.accountId === account || t.toAccountId === account;
+      const matchFrom = !from || t.date >= from;
+      const matchTo = !to || t.date <= to;
+
+      if (matchSearch && matchCat && matchAcc && matchFrom && matchTo) {
+        all++;
+        if (t.type === 'expense') expense++;
+        else if (t.type === 'income') income++;
+        else if (t.type === 'transfer') transfer++;
+      }
+    }
+
+    return { all, expense, income, transfer };
+  }, [data.transactions, search, category, account, from, to]);
+
+  const paginatedList = useMemo(
+    () => filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [filtered, page, rowsPerPage]
+  );
+
+  // Group paginated transactions by Date for Timeline view
+  const groupedByDate = useMemo(() => {
+    const map = new Map<string, Transaction[]>();
+    for (const t of paginatedList) {
+      const list = map.get(t.date) || [];
+      list.push(t);
+      map.set(t.date, list);
+    }
+    return Array.from(map.entries());
+  }, [paginatedList]);
 
   const save = handleSubmit(async values => {
     const parsed = schema.safeParse(values);
@@ -255,78 +334,545 @@ export default function Transactions() {
   return (
     <>
       <PageHead
-        eyebrow="DÒNG TIỀN"
-        title="Giao dịch"
-        subtitle={`${data.transactions.length} giao dịch trong sổ tài chính của bạn`}
+        eyebrow="DÒNG TIỀN & SỔ GIAO DỊCH"
+        title="Quản lý giao dịch"
+        subtitle={`Theo dõi và đối soát ${data.transactions.length} giao dịch trong sổ tài chính cá nhân`}
         actions={
-          <>
+          <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center', flexWrap: 'wrap' }}>
             <Button
               variant="outlined"
               color="inherit"
               startIcon={<Download size={14} />}
               onClick={() => downloadCsv('finora-giao-dich.csv', exportRows)}
+              sx={{ fontWeight: 600, fontSize: 13 }}
             >
               Xuất CSV
             </Button>
             <Button
               variant="contained"
               color="primary"
-              startIcon={<Plus size={14} />}
+              startIcon={<Plus size={15} />}
               onClick={() => {
                 reset(defaults);
                 setEditing(null);
                 setOpen(true);
               }}
+              sx={{ fontWeight: 700, fontSize: 13 }}
             >
               Thêm giao dịch
             </Button>
-          </>
+          </Box>
         }
       />
 
-      {/* MUI Filter Bar */}
-      <Paper variant="outlined" sx={{ p: 2, mb: 3, borderRadius: 3 }}>
+      {/* 3D Debossed Executive Flow Summary Bento */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+          gap: 2,
+          mb: 3
+        }}
+      >
+        {/* Total Inflow */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 3,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 104,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
+              Tổng thu vào
+            </Typography>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: 'rgba(21, 150, 107, 0.12)',
+                color: 'var(--accent-income)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <TrendingUp size={15} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 16, sm: 19 },
+                color: 'var(--accent-income)',
+                letterSpacing: '-0.02em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums'
+              }}
+            >
+              +{money(summary.income)}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+              {summary.incomeCount} khoản thu đã ghi
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Total Outflow */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 3,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 104,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
+              Tổng chi tiêu
+            </Typography>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: 'rgba(214, 91, 88, 0.12)',
+                color: 'var(--accent-expense)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <TrendingDown size={15} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 16, sm: 19 },
+                color: 'var(--accent-expense)',
+                letterSpacing: '-0.02em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums'
+              }}
+            >
+              -{money(summary.expense)}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+              {summary.expenseCount} khoản chi tiêu
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Net Cashflow */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 3,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 104,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
+              Dòng tiền ròng
+            </Typography>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: summary.net >= 0 ? 'rgba(21, 150, 107, 0.12)' : 'rgba(214, 91, 88, 0.12)',
+                color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Scale size={15} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 16, sm: 19 },
+                color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
+                letterSpacing: '-0.02em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums'
+              }}
+            >
+              {summary.net >= 0 ? '+' : ''}
+              {money(summary.net)}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+              {summary.net >= 0 ? 'Thặng dư tài chính' : 'Thâm hụt dòng tiền'}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Activity & Filter Count */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 3,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 104,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
+              Khối lượng giao dịch
+            </Typography>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: 'rgba(78, 123, 197, 0.12)',
+                color: 'var(--accent-info)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <ReceiptText size={15} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 16, sm: 19 },
+                letterSpacing: '-0.02em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums'
+              }}
+            >
+              {summary.totalCount} <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>mục</span>
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+              {filtered.length === data.transactions.length ? 'Toàn bộ sổ giao dịch' : 'Khớp bộ lọc hiện tại'}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Filter and View Mode Control Center */}
+      <Paper
+        variant="outlined"
+        sx={{
+          p: { xs: 2, sm: 2.25 },
+          mb: 3,
+          borderRadius: 3,
+          bgcolor: 'background.paper',
+          borderColor: 'var(--border-subtle)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+        }}
+      >
+        {/* Row 1: Search Bar + Segmented Type Switcher + View Mode Toggle */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', lg: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', lg: 'center' },
+            gap: 2,
+            mb: 2
+          }}
+        >
+          {/* Search Box */}
+          <Box sx={{ flex: 1, minWidth: { xs: '100%', lg: 320 }, maxWidth: { lg: 420 } }}>
+            <MuiTextField
+              placeholder="Tìm theo tên, ghi chú, đối tác..."
+              value={search}
+              onChange={e => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: <Search size={16} style={{ marginRight: 8, color: 'var(--text-muted)' }} />,
+                  endAdornment: search ? (
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setSearch('');
+                        setPage(0);
+                      }}
+                      sx={{ p: 0.5, color: 'text.secondary' }}
+                    >
+                      <X size={14} />
+                    </IconButton>
+                  ) : null
+                }
+              }}
+            />
+          </Box>
+
+          {/* Right Toolbar: Segmented Type Filter + View Mode Switcher */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: { xs: 'space-between', sm: 'flex-start', lg: 'flex-end' },
+              gap: 1.5
+            }}
+          >
+            {/* Unified Segmented Type Control (Linear / iOS Style) */}
+            <ToggleButtonGroup
+              value={type}
+              exclusive
+              onChange={(_, next) => {
+                if (next) {
+                  setType(next);
+                  setPage(0);
+                }
+              }}
+              size="small"
+              sx={{
+                bgcolor: 'action.hover',
+                p: 0.5,
+                borderRadius: 2.5,
+                border: '1px solid var(--border-subtle)',
+                overflowX: 'auto',
+                maxWidth: '100%',
+                '& .MuiToggleButtonGroup-grouped': {
+                  border: 'none',
+                  borderRadius: '6px !important',
+                  mx: 0.25,
+                  px: { xs: 1.25, sm: 1.75 },
+                  py: 0.6,
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  color: 'text.secondary',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: 'action.selected',
+                    color: 'text.primary'
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    fontWeight: 750,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 1px rgba(0,0,0,0.06)'
+                  }
+                }
+              }}
+            >
+              <ToggleButton value="all">
+                Tất cả
+                <Box
+                  component="span"
+                  sx={{
+                    ml: 0.75,
+                    px: 0.75,
+                    py: 0.1,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    bgcolor: type === 'all' ? 'action.hover' : 'transparent',
+                    color: type === 'all' ? 'text.primary' : 'text.secondary',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {typeCounts.all}
+                </Box>
+              </ToggleButton>
+              <ToggleButton value="expense">
+                <Box
+                  component="span"
+                  sx={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    bgcolor: 'var(--accent-expense)',
+                    mr: 0.75,
+                    display: 'inline-block'
+                  }}
+                />
+                Chi tiêu
+                <Box
+                  component="span"
+                  sx={{
+                    ml: 0.75,
+                    px: 0.75,
+                    py: 0.1,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    bgcolor: type === 'expense' ? 'rgba(214, 91, 88, 0.12)' : 'transparent',
+                    color: type === 'expense' ? 'var(--accent-expense)' : 'text.secondary',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {typeCounts.expense}
+                </Box>
+              </ToggleButton>
+              <ToggleButton value="income">
+                <Box
+                  component="span"
+                  sx={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    bgcolor: 'var(--accent-income)',
+                    mr: 0.75,
+                    display: 'inline-block'
+                  }}
+                />
+                Thu nhập
+                <Box
+                  component="span"
+                  sx={{
+                    ml: 0.75,
+                    px: 0.75,
+                    py: 0.1,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    bgcolor: type === 'income' ? 'rgba(21, 150, 107, 0.12)' : 'transparent',
+                    color: type === 'income' ? 'var(--accent-income)' : 'text.secondary',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {typeCounts.income}
+                </Box>
+              </ToggleButton>
+              <ToggleButton value="transfer">
+                <Box
+                  component="span"
+                  sx={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    bgcolor: 'var(--accent-transfer)',
+                    mr: 0.75,
+                    display: 'inline-block'
+                  }}
+                />
+                Chuyển khoản
+                <Box
+                  component="span"
+                  sx={{
+                    ml: 0.75,
+                    px: 0.75,
+                    py: 0.1,
+                    borderRadius: 1,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    bgcolor: type === 'transfer' ? 'rgba(78, 123, 197, 0.12)' : 'transparent',
+                    color: type === 'transfer' ? 'var(--accent-transfer)' : 'text.secondary',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {typeCounts.transfer}
+                </Box>
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {/* View Mode Toggle: Timeline vs Table */}
+            <ToggleButtonGroup
+              value={viewMode}
+              exclusive
+              onChange={(_, next) => {
+                if (next) setViewMode(next);
+              }}
+              size="small"
+              sx={{
+                bgcolor: 'action.hover',
+                borderRadius: 2,
+                p: 0.35,
+                border: '1px solid var(--border-subtle)',
+                '& .MuiToggleButtonGroup-grouped': {
+                  border: 'none',
+                  borderRadius: '5px !important',
+                  px: 1.25,
+                  py: 0.5,
+                  fontSize: 12,
+                  fontWeight: 650,
+                  textTransform: 'none',
+                  gap: 0.75,
+                  color: 'text.secondary',
+                  '&.Mui-selected': {
+                    bgcolor: 'background.paper',
+                    color: 'var(--brand-primary)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                  }
+                }
+              }}
+            >
+              <Tooltip title="Chế độ dòng thời gian">
+                <ToggleButton value="timeline">
+                  <List size={15} />
+                  <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Dòng thời gian</Box>
+                </ToggleButton>
+              </Tooltip>
+              <Tooltip title="Chế độ bảng dữ liệu">
+                <ToggleButton value="table">
+                  <LayoutGrid size={15} />
+                  <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Bảng</Box>
+                </ToggleButton>
+              </Tooltip>
+            </ToggleButtonGroup>
+          </Box>
+        </Box>
+
+        {/* Row 2: Secondary Dropdown Filters (Category, Account, Sort, Date Pickers) */}
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: {
               xs: '1fr',
               sm: 'repeat(2, 1fr)',
-              md: '2fr 1fr 1fr 1fr 1fr'
+              md: 'repeat(5, 1fr)'
             },
             gap: 1.5,
-            mb: 1.5
+            pt: 1.75,
+            borderTop: '1px solid var(--border-subtle)',
+            alignItems: 'center'
           }}
         >
-          <MuiTextField
-            placeholder="Tìm theo tên hoặc ghi chú..."
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setPage(0);
-            }}
-            slotProps={{
-              input: {
-                startAdornment: <Search size={16} style={{ marginRight: 8, color: '#94a3b8' }} />
-              }
-            }}
-          />
-
-          <MuiSelect
-            label="Loại"
-            value={type}
-            onChange={val => {
-              setType(val);
-              setPage(0);
-            }}
-            options={[
-              { value: 'all', label: 'Tất cả loại' },
-              { value: 'expense', label: 'Chi tiêu' },
-              { value: 'income', label: 'Thu nhập' },
-              { value: 'transfer', label: 'Chuyển khoản' }
-            ]}
-          />
-
           <MuiSelect
             label="Danh mục"
             value={category}
@@ -362,40 +908,99 @@ export default function Transactions() {
             value={sort}
             onChange={val => setSort(val)}
             options={[
-              { value: 'new', label: 'Mới nhất' },
-              { value: 'old', label: 'Cũ nhất' },
+              { value: 'new', label: 'Mới nhất trước' },
+              { value: 'old', label: 'Cũ nhất trước' },
               { value: 'high', label: 'Số tiền giảm dần' },
               { value: 'low', label: 'Số tiền tăng dần' }
             ]}
           />
+
+          <MuiDatePicker
+            label="Từ ngày"
+            value={from}
+            onChange={val => {
+              setFrom(val);
+              setPage(0);
+            }}
+          />
+
+          <MuiDatePicker
+            label="Đến ngày"
+            value={to}
+            onChange={val => {
+              setTo(val);
+              setPage(0);
+            }}
+          />
         </Box>
 
-        {/* Date Filters */}
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <Box sx={{ minWidth: 160 }}>
-            <MuiDatePicker
-              label="Từ ngày"
-              value={from}
-              onChange={val => {
-                setFrom(val);
-                setPage(0);
-              }}
-            />
-          </Box>
-          <Box sx={{ minWidth: 160 }}>
-            <MuiDatePicker
-              label="Đến ngày"
-              value={to}
-              onChange={val => {
-                setTo(val);
-                setPage(0);
-              }}
-            />
-          </Box>
-          {(from || to || search || type !== 'all' || category !== 'all' || account !== 'all') && (
+        {/* Row 3: Active Filters Summary & Quick Reset */}
+        {(from || to || search || type !== 'all' || category !== 'all' || account !== 'all' || sort !== 'new') && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: 1.5,
+              mt: 2,
+              pt: 1.5,
+              borderTop: '1px dashed var(--border-subtle)'
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: 11.5 }}>
+                Đang lọc:
+              </Typography>
+              {search && (
+                <Chip
+                  size="small"
+                  label={`Tìm kiếm: "${search}"`}
+                  onDelete={() => setSearch('')}
+                  sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
+                />
+              )}
+              {type !== 'all' && (
+                <Chip
+                  size="small"
+                  label={`Loại: ${type === 'expense' ? 'Chi tiêu' : type === 'income' ? 'Thu nhập' : 'Chuyển khoản'}`}
+                  onDelete={() => setType('all')}
+                  sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
+                />
+              )}
+              {category !== 'all' && (
+                <Chip
+                  size="small"
+                  label={`Danh mục: ${data.categories.find(c => c.id === category)?.name || category}`}
+                  onDelete={() => setCategory('all')}
+                  sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
+                />
+              )}
+              {account !== 'all' && (
+                <Chip
+                  size="small"
+                  label={`Tài khoản: ${data.accounts.find(a => a.id === account)?.name || account}`}
+                  onDelete={() => setAccount('all')}
+                  sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
+                />
+              )}
+              {(from || to) && (
+                <Chip
+                  size="small"
+                  label={`Thời gian: ${from || '...'} → ${to || '...'}`}
+                  onDelete={() => {
+                    setFrom('');
+                    setTo('');
+                  }}
+                  sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
+                />
+              )}
+            </Box>
+
             <Button
               size="small"
               color="inherit"
+              startIcon={<RotateCcw size={13} />}
               onClick={() => {
                 setSearch('');
                 setType('all');
@@ -403,52 +1008,165 @@ export default function Transactions() {
                 setAccount('all');
                 setFrom('');
                 setTo('');
+                setSort('new');
                 setPage(0);
               }}
-              sx={{ alignSelf: 'center', fontSize: 12 }}
+              sx={{
+                fontSize: 12,
+                textTransform: 'none',
+                color: 'text.secondary',
+                fontWeight: 650,
+                '&:hover': { color: 'text.primary', bgcolor: 'action.hover' }
+              }}
             >
               Đặt lại bộ lọc
             </Button>
-          )}
-        </Box>
+          </Box>
+        )}
       </Paper>
 
-      {/* MUI Table View */}
-      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden' }}>
-        {paginatedList.length ? (
-          <>
-            {/* Desktop Table View */}
-            <Table size="small" sx={{ display: { xs: 'none', md: 'table' } }}>
-              <TableHead sx={{ bgcolor: 'action.hover' }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Giao dịch</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Danh mục</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Tài khoản</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Ngày</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Trạng thái</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 700 }}>
-                    Số tiền
-                  </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 700 }}>
-                    Thao tác
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedList.map(t => {
-                  const cat = data.categories.find(c => c.id === t.categoryId);
-                  const acc = data.accounts.find(a => a.id === t.accountId);
-                  const toAcc = t.toAccountId ? data.accounts.find(a => a.id === t.toAccountId) : null;
-                  const isInstallment = t.name.toLowerCase().includes('trả góp') || (t.note && t.note.toLowerCase().includes('trả góp'));
+      {/* Main Content Area */}
+      {paginatedList.length === 0 ? (
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 5,
+            borderRadius: 3,
+            textAlign: 'center',
+            background: 'var(--card-inset-bg)',
+            boxShadow: 'var(--card-inset-shadow)'
+          }}
+        >
+          <Empty text="Không tìm thấy giao dịch nào phù hợp với bộ lọc. Hãy thử điều chỉnh điều kiện tìm kiếm hoặc thêm mới." />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Plus size={15} />}
+            onClick={() => {
+              reset(defaults);
+              setEditing(null);
+              setOpen(true);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Thêm giao dịch mới
+          </Button>
+        </Paper>
+      ) : viewMode === 'timeline' ? (
+        /* REVOLUTIONARY TIMELINE FEED VIEW */
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {groupedByDate.map(([dateStr, txList]) => {
+            // Day net flow
+            let dayIncome = 0;
+            let dayExpense = 0;
+            for (const t of txList) {
+              if (t.type === 'income') dayIncome += t.amount;
+              else if (t.type === 'expense') dayExpense += t.amount;
+            }
+            const dayNet = dayIncome - dayExpense;
 
-                  return (
-                    <TableRow key={t.id} hover>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            return (
+              <Box key={dateStr} sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                {/* Date Group Header Banner */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    px: 1,
+                    py: 0.5
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Calendar size={15} style={{ color: 'var(--brand-primary)' }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, fontSize: 13.5, color: 'text.primary' }}>
+                      {dateLabel(dateStr)}
+                    </Typography>
+                    <Chip
+                      label={`${txList.length} giao dịch`}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: 10,
+                        fontWeight: 700,
+                        bgcolor: 'action.hover',
+                        color: 'text.secondary'
+                      }}
+                    />
+                  </Box>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {dayIncome > 0 && (
+                      <Typography variant="caption" sx={{ color: 'var(--accent-income)', fontWeight: 700 }}>
+                        +{money(dayIncome)}
+                      </Typography>
+                    )}
+                    {dayExpense > 0 && (
+                      <Typography variant="caption" sx={{ color: 'var(--accent-expense)', fontWeight: 700 }}>
+                        -{money(dayExpense)}
+                      </Typography>
+                    )}
+                    {(dayIncome > 0 || dayExpense > 0) && (
+                      <Chip
+                        label={`Ròng: ${dayNet >= 0 ? '+' : ''}${money(dayNet)}`}
+                        size="small"
+                        sx={{
+                          height: 20,
+                          fontSize: 10,
+                          fontWeight: 800,
+                          bgcolor: dayNet >= 0 ? 'rgba(21, 150, 107, 0.1)' : 'rgba(214, 91, 88, 0.1)',
+                          color: dayNet >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)'
+                        }}
+                      />
+                    )}
+                  </Box>
+                </Box>
+
+                {/* Day's Transaction Items */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {txList.map(t => {
+                    const cat = data.categories.find(c => c.id === t.categoryId);
+                    const acc = data.accounts.find(a => a.id === t.accountId);
+                    const toAcc = t.toAccountId ? data.accounts.find(a => a.id === t.toAccountId) : null;
+                    const isInstallment =
+                      t.name.toLowerCase().includes('trả góp') || (t.note && t.note.toLowerCase().includes('trả góp'));
+
+                    return (
+                      <Paper
+                        key={t.id}
+                        variant="outlined"
+                        sx={{
+                          p: { xs: 1.75, sm: 2 },
+                          borderRadius: 2.5,
+                          background: 'var(--card-inset-bg)',
+                          boxShadow: 'var(--card-inset-shadow)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: { xs: 1.5, sm: 2 },
+                          transition: 'all 0.15s ease',
+                          '&:hover': {
+                            borderColor: 'var(--border-strong)',
+                            transform: 'translateX(2px)'
+                          }
+                        }}
+                      >
+                        {/* Left: Category Avatar & Details */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75, minWidth: 0, flex: 1 }}>
                           <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
-                          <Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight: 800,
+                                  fontSize: { xs: 13.5, sm: 14.5 },
+                                  color: 'text.primary',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
                                 {t.name}
                               </Typography>
                               {isInstallment && (
@@ -459,92 +1177,114 @@ export default function Transactions() {
                                     height: 18,
                                     fontSize: 9.5,
                                     fontWeight: 800,
-                                    bgcolor: 'rgba(180, 83, 9, 0.1)',
+                                    bgcolor: 'rgba(180, 83, 9, 0.12)',
                                     color: '#b45309'
                                   }}
                                 />
                               )}
+                              <Chip
+                                label={cat?.name || 'Chuyển khoản'}
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  height: 20,
+                                  fontSize: 10.5,
+                                  fontWeight: 650,
+                                  display: { xs: 'none', sm: 'inline-flex' }
+                                }}
+                              />
                             </Box>
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
+                              <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
+                              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                                {acc?.name}
+                              </Typography>
+                              {toAcc && (
+                                <>
+                                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>→</span>
+                                  <BankLogoBadge accountName={toAcc.name} accountType={toAcc.type} size="small" />
+                                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                                    {toAcc.name}
+                                  </Typography>
+                                </>
+                              )}
+                              <span style={{ color: 'var(--border-strong)', fontSize: 11 }}>•</span>
+                              <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: 11 }}>
+                                {t.method}
+                              </Typography>
+                            </Box>
+
                             {t.note && (
-                              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: 11.5 }}>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: 'var(--text-muted)',
+                                  fontSize: 11.5,
+                                  display: 'block',
+                                  mt: 0.25,
+                                  fontStyle: 'italic'
+                                }}
+                              >
                                 {t.note}
                               </Typography>
                             )}
                           </Box>
                         </Box>
-                      </TableCell>
 
-                      <TableCell sx={{ fontSize: 13 }}>
-                        <Chip
-                          label={cat?.name || 'Chuyển khoản'}
-                          size="small"
-                          variant="outlined"
-                          sx={{ fontSize: 11, height: 22 }}
-                        />
-                      </TableCell>
-
-                      <TableCell sx={{ fontSize: 13 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                          <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
-                          <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
-                            {acc?.name}
-                          </Typography>
-                          {toAcc && (
-                            <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
-                              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>→</span>
-                              <BankLogoBadge accountName={toAcc.name} accountType={toAcc.type} size="small" />
-                              <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
-                                {toAcc.name}
-                              </Typography>
-                            </Box>
-                          )}
-                        </Box>
-                      </TableCell>
-
-                      <TableCell sx={{ fontSize: 12.5, color: 'text.secondary' }}>
-                        {dateLabel(t.date)}
-                      </TableCell>
-
-                      <TableCell>
-                        <Chip
-                          label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'}
-                          size="small"
-                          color={t.status === 'completed' ? 'success' : 'warning'}
-                          variant="outlined"
-                          sx={{ fontSize: 10.5, height: 20, fontWeight: 700 }}
-                        />
-                      </TableCell>
-
-                      <TableCell align="right">
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 800,
-                            color:
-                              t.type === 'income'
-                                ? 'var(--accent-income)'
-                                : t.type === 'expense'
-                                ? 'var(--accent-expense)'
-                                : 'inherit'
-                          }}
-                        >
-                          {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
-                          {money(t.amount)}
-                        </Typography>
-                      </TableCell>
-
-                      <TableCell align="center">
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
-                          {t.receiptUrl && (
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => setViewingReceipt(t.receiptUrl || null)}
-                              title="Xem hóa đơn / biên lai"
+                        {/* Right: Amount, Status, Receipt Pill, Actions */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flexShrink: 0 }}>
+                          <Box sx={{ textAlign: 'right' }}>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                fontWeight: 900,
+                                fontSize: { xs: 14.5, sm: 16.5 },
+                                letterSpacing: '-0.02em',
+                                fontFeatureSettings: '"tnum"',
+                                fontVariantNumeric: 'tabular-nums',
+                                color:
+                                  t.type === 'income'
+                                    ? 'var(--accent-income)'
+                                    : t.type === 'expense'
+                                    ? 'var(--accent-expense)'
+                                    : 'var(--accent-info)'
+                              }}
                             >
-                              <ReceiptText size={15} />
-                            </IconButton>
+                              {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
+                              {money(t.amount)}
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5, mt: 0.25 }}>
+                              <Chip
+                                label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ'}
+                                size="small"
+                                color={t.status === 'completed' ? 'success' : 'warning'}
+                                variant="outlined"
+                                sx={{ height: 18, fontSize: 9.5, fontWeight: 700 }}
+                              />
+                            </Box>
+                          </Box>
+
+                          {/* Receipt button if present */}
+                          {t.receiptUrl && (
+                            <Tooltip title="Xem hóa đơn / chứng từ">
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => setViewingReceipt(t.receiptUrl || null)}
+                                sx={{
+                                  bgcolor: 'rgba(5, 150, 105, 0.1)',
+                                  border: '1px solid rgba(5, 150, 105, 0.25)',
+                                  width: 32,
+                                  height: 32
+                                }}
+                              >
+                                <ReceiptText size={16} />
+                              </IconButton>
+                            </Tooltip>
                           )}
+
+                          {/* Quick Action Menu */}
                           <ItemActionMenu
                             ariaLabel={`Thao tác giao dịch ${t.name}`}
                             items={[
@@ -567,54 +1307,132 @@ export default function Transactions() {
                             ]}
                           />
                         </Box>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-
-            {/* Mobile Card List View */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1.5, p: 1.5 }}>
+                      </Paper>
+                    );
+                  })}
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
+      ) : (
+        /* DATA GRID / TABLE VIEW */
+        <TableContainer
+          component={Paper}
+          variant="outlined"
+          sx={{
+            borderRadius: 3,
+            overflow: 'hidden',
+            background: 'var(--card-inset-bg)',
+            boxShadow: 'var(--card-inset-shadow)'
+          }}
+        >
+          {/* Desktop Table */}
+          <Table size="small" sx={{ display: { xs: 'none', md: 'table' } }}>
+            <TableHead sx={{ bgcolor: 'action.hover' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 800 }}>Giao dịch</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Danh mục</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Tài khoản</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Ngày</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Trạng thái</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 800 }}>
+                  Số tiền
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 800 }}>
+                  Thao tác
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {paginatedList.map(t => {
                 const cat = data.categories.find(c => c.id === t.categoryId);
                 const acc = data.accounts.find(a => a.id === t.accountId);
-                const isInstallment = t.name.toLowerCase().includes('trả góp') || (t.note && t.note.toLowerCase().includes('trả góp'));
+                const toAcc = t.toAccountId ? data.accounts.find(a => a.id === t.toAccountId) : null;
+                const isInstallment =
+                  t.name.toLowerCase().includes('trả góp') || (t.note && t.note.toLowerCase().includes('trả góp'));
 
                 return (
-                  <Box
-                    key={t.id}
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: 'var(--bg-surface)',
-                      border: '1px solid var(--border-subtle)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 1
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                  <TableRow key={t.id} hover>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                         <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
                         <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 750 }}>
-                            {t.name}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
-                            <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
-                            <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: 11 }}>
-                              {acc?.name} · {dateLabel(t.date)}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                              {t.name}
                             </Typography>
+                            {isInstallment && (
+                              <Chip
+                                label="Trả góp"
+                                size="small"
+                                sx={{
+                                  height: 18,
+                                  fontSize: 9.5,
+                                  fontWeight: 800,
+                                  bgcolor: 'rgba(180, 83, 9, 0.1)',
+                                  color: '#b45309'
+                                }}
+                              />
+                            )}
                           </Box>
+                          {t.note && (
+                            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: 11.5 }}>
+                              {t.note}
+                            </Typography>
+                          )}
                         </Box>
                       </Box>
+                    </TableCell>
 
+                    <TableCell sx={{ fontSize: 13 }}>
+                      <Chip
+                        label={cat?.name || 'Chuyển khoản'}
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontSize: 11, height: 22 }}
+                      />
+                    </TableCell>
+
+                    <TableCell sx={{ fontSize: 13 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
+                        <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
+                          {acc?.name}
+                        </Typography>
+                        {toAcc && (
+                          <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>→</span>
+                            <BankLogoBadge accountName={toAcc.name} accountType={toAcc.type} size="small" />
+                            <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
+                              {toAcc.name}
+                            </Typography>
+                          </Box>
+                        )}
+                      </Box>
+                    </TableCell>
+
+                    <TableCell sx={{ fontSize: 12.5, color: 'text.secondary' }}>
+                      {dateLabel(t.date)}
+                    </TableCell>
+
+                    <TableCell>
+                      <Chip
+                        label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'}
+                        size="small"
+                        color={t.status === 'completed' ? 'success' : 'warning'}
+                        variant="outlined"
+                        sx={{ fontSize: 10.5, height: 20, fontWeight: 700 }}
+                      />
+                    </TableCell>
+
+                    <TableCell align="right">
                       <Typography
                         variant="body2"
                         sx={{
-                          fontWeight: 850,
-                          fontSize: 14,
+                          fontWeight: 800,
+                          fontFeatureSettings: '"tnum"',
+                          fontVariantNumeric: 'tabular-nums',
                           color:
                             t.type === 'income'
                               ? 'var(--accent-income)'
@@ -626,48 +1444,20 @@ export default function Transactions() {
                         {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
                         {money(t.amount)}
                       </Typography>
-                    </Box>
+                    </TableCell>
 
-                    {isInstallment && (
-                      <Chip
-                        label="Giao dịch trả góp thẻ"
-                        size="small"
-                        sx={{
-                          alignSelf: 'flex-start',
-                          height: 20,
-                          fontSize: 10,
-                          fontWeight: 750,
-                          bgcolor: 'rgba(180, 83, 9, 0.1)',
-                          color: '#b45309'
-                        }}
-                      />
-                    )}
-
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 0.75, borderTop: '1px solid var(--border-subtle)' }}>
-                      {t.receiptUrl ? (
-                        <Button
-                          size="small"
-                          variant="text"
-                          color="primary"
-                          startIcon={<ReceiptText size={13} />}
-                          onClick={() => setViewingReceipt(t.receiptUrl || null)}
-                          sx={{ fontSize: 11, minWidth: 0, px: 1, py: 0.25 }}
-                        >
-                          Biên lai
-                        </Button>
-                      ) : (
-                        <span />
-                      )}
-
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Button
-                          size="small"
-                          variant="text"
-                          onClick={() => setDetail(t)}
-                          sx={{ fontSize: 11.5, minWidth: 0, px: 1, py: 0.25, color: 'text.secondary' }}
-                        >
-                          Chi tiết
-                        </Button>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
+                        {t.receiptUrl && (
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => setViewingReceipt(t.receiptUrl || null)}
+                            title="Xem hóa đơn / biên lai"
+                          >
+                            <ReceiptText size={15} />
+                          </IconButton>
+                        )}
                         <ItemActionMenu
                           ariaLabel={`Thao tác giao dịch ${t.name}`}
                           items={[
@@ -690,16 +1480,150 @@ export default function Transactions() {
                           ]}
                         />
                       </Box>
-                    </Box>
-                  </Box>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </Box>
-          </>
-        ) : (
-          <Empty text="Không có giao dịch phù hợp. Hãy thử điều chỉnh bộ lọc hoặc thêm mới." />
-        )}
+            </TableBody>
+          </Table>
 
+          {/* Mobile Table Card Fallback */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1.5, p: 1.5 }}>
+            {paginatedList.map(t => {
+              const cat = data.categories.find(c => c.id === t.categoryId);
+              const acc = data.accounts.find(a => a.id === t.accountId);
+              const isInstallment =
+                t.name.toLowerCase().includes('trả góp') || (t.note && t.note.toLowerCase().includes('trả góp'));
+
+              return (
+                <Box
+                  key={t.id}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: 'var(--bg-surface)',
+                    border: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                      <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                          {t.name}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
+                          <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
+                          <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: 11 }}>
+                            {acc?.name} · {dateLabel(t.date)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 850,
+                        fontSize: 14,
+                        fontFeatureSettings: '"tnum"',
+                        fontVariantNumeric: 'tabular-nums',
+                        color:
+                          t.type === 'income'
+                            ? 'var(--accent-income)'
+                            : t.type === 'expense'
+                            ? 'var(--accent-expense)'
+                            : 'inherit'
+                      }}
+                    >
+                      {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
+                      {money(t.amount)}
+                    </Typography>
+                  </Box>
+
+                  {isInstallment && (
+                    <Chip
+                      label="Giao dịch trả góp thẻ"
+                      size="small"
+                      sx={{
+                        alignSelf: 'flex-start',
+                        height: 20,
+                        fontSize: 10,
+                        fontWeight: 750,
+                        bgcolor: 'rgba(180, 83, 9, 0.1)',
+                        color: '#b45309'
+                      }}
+                    />
+                  )}
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      pt: 0.75,
+                      borderTop: '1px solid var(--border-subtle)'
+                    }}
+                  >
+                    {t.receiptUrl ? (
+                      <Button
+                        size="small"
+                        variant="text"
+                        color="primary"
+                        startIcon={<ReceiptText size={13} />}
+                        onClick={() => setViewingReceipt(t.receiptUrl || null)}
+                        sx={{ fontSize: 11, minWidth: 0, px: 1, py: 0.25 }}
+                      >
+                        Biên lai
+                      </Button>
+                    ) : (
+                      <span />
+                    )}
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Button
+                        size="small"
+                        variant="text"
+                        onClick={() => setDetail(t)}
+                        sx={{ fontSize: 11.5, minWidth: 0, px: 1, py: 0.25, color: 'text.secondary' }}
+                      >
+                        Chi tiết
+                      </Button>
+                      <ItemActionMenu
+                        ariaLabel={`Thao tác giao dịch ${t.name}`}
+                        items={[
+                          {
+                            label: 'Xem chi tiết',
+                            icon: <Eye size={15} />,
+                            onClick: () => setDetail(t)
+                          },
+                          {
+                            label: 'Chỉnh sửa giao dịch',
+                            icon: <Pencil size={15} />,
+                            onClick: () => startEdit(t)
+                          },
+                          {
+                            label: 'Xóa giao dịch',
+                            icon: <Trash2 size={15} />,
+                            color: 'error' as const,
+                            onClick: () => setDeleting(t)
+                          }
+                        ]}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        </TableContainer>
+      )}
+
+      {/* Pagination Bar */}
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <TablePagination
           component="div"
           count={filtered.length}
@@ -710,13 +1634,40 @@ export default function Transactions() {
             setRowsPerPage(parseInt(e.target.value, 10));
             setPage(0);
           }}
-          labelRowsPerPage="Số hàng mỗi trang:"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} trên ${count}`}
+          rowsPerPageOptions={[10, 15, 25, 50]}
+          labelRowsPerPage="Hiển thị:"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} trên tổng ${count}`}
+          sx={{
+            '& .MuiTablePagination-toolbar': {
+              flexWrap: 'wrap',
+              justifyContent: { xs: 'center', sm: 'flex-end' },
+              px: { xs: 1, sm: 2 },
+              minHeight: 52
+            },
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              fontSize: { xs: 11, sm: 12.5 }
+            }
+          }}
         />
-      </TableContainer>
+      </Box>
 
-      {/* MUI Modal: Add / Edit Transaction */}
-      <Dialog open={open} onClose={close} maxWidth="sm" fullWidth>
+      {/* MUI Modal: Add / Edit Transaction (100% MUI, Zero native inputs) */}
+      <Dialog
+        open={open}
+        onClose={close}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1, sm: 2 },
+              width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800, fontSize: 18 }}>
           {editing ? 'Sửa giao dịch' : 'Thêm giao dịch mới'}
         </DialogTitle>
@@ -1022,7 +1973,21 @@ export default function Transactions() {
       </Dialog>
 
       {/* Detail Modal */}
-      <Dialog open={!!detail} onClose={() => setDetail(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!detail}
+        onClose={() => setDetail(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1, sm: 2 },
+              width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+              borderRadius: 3
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>Chi tiết giao dịch</DialogTitle>
         <DialogContent dividers>
           {detail && (
@@ -1080,6 +2045,15 @@ export default function Transactions() {
         onClose={() => setViewingReceipt(null)}
         maxWidth="sm"
         fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1, sm: 2 },
+              width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+              borderRadius: 3
+            }
+          }
+        }}
       >
         <DialogTitle sx={{ fontWeight: 800, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>Hóa đơn / Biên lai đối soát</span>

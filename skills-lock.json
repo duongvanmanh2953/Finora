@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "baoyu-design": {
+      "source": "JimLiu/baoyu-design",
+      "sourceType": "github",
+      "skillPath": "archive/baoyu-design/SKILL.md",
+      "computedHash": "12b9c8e5857cddde4cd38cacd6e9045fa62dc7a8cc2fe67c6d0a166dd8f5703d"
+    },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",

@@ -37,14 +37,14 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         contrastText: '#ffffff'
       },
       background: {
-        default: isDark ? '#0A110E' : '#EDF2EF',
-        paper: isDark ? '#16231D' : '#FFFFFF'
+        default: isDark ? '#090C0A' : '#F6F8F7',
+        paper: isDark ? '#111614' : '#FFFFFF'
       },
       text: {
-        primary: isDark ? '#EEF5F0' : '#17211F',
-        secondary: isDark ? '#A3B5AB' : '#68756F'
+        primary: isDark ? '#F0F4F2' : '#17211D',
+        secondary: isDark ? '#9BA9A1' : '#6E7972'
       },
-      divider: isDark ? '#24352C' : '#D0DDD5'
+      divider: isDark ? '#1F2823' : '#E2E8E4'
     },
     shape: {
       borderRadius: 8
@@ -115,22 +115,38 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
             borderRadius: 12
           },
           outlined: {
-            borderColor: isDark ? '#24352C' : '#D0DDD5'
+            backgroundColor: isDark ? '#111614' : '#FFFFFF',
+            borderRadius: 12,
+            borderColor: isDark ? '#1F2823' : '#E2E8E4',
+            boxShadow: isDark
+              ? '0 1px 3px 0 rgba(0, 0, 0, 0.4)'
+              : '0 1px 3px 0 rgba(0, 0, 0, 0.04)'
           }
+        }
+      },
+      MuiModal: {
+        defaultProps: {
+          disableScrollLock: true
         }
       },
       MuiCard: {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            backgroundColor: isDark ? '#16231D' : '#FFFFFF',
+            backgroundColor: isDark ? '#111614' : '#FFFFFF',
             borderRadius: 12,
-            borderColor: isDark ? '#24352C' : '#D0DDD5',
-            boxShadow: isDark ? '0 1px 3px rgba(0, 0, 0, 0.25)' : '0 1px 3px rgba(18, 61, 53, 0.04)'
+            borderColor: isDark ? '#1F2823' : '#E2E8E4',
+            boxShadow: isDark
+              ? '0 1px 3px 0 rgba(0, 0, 0, 0.4)'
+              : '0 1px 3px 0 rgba(0, 0, 0, 0.04)',
+            transition: 'border-color 0.15s ease, box-shadow 0.15s ease'
           }
         }
       },
       MuiDialog: {
+        defaultProps: {
+          disableScrollLock: true
+        },
         styleOverrides: {
           paper: {
             borderRadius: 16,
@@ -202,6 +218,9 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         }
       },
       MuiMenu: {
+        defaultProps: {
+          disableScrollLock: true
+        },
         styleOverrides: {
           paper: {
             backgroundColor: isDark ? '#16231D' : '#FFFFFF',
@@ -230,6 +249,9 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         }
       },
       MuiPopover: {
+        defaultProps: {
+          disableScrollLock: true
+        },
         styleOverrides: {
           paper: {
             backgroundColor: isDark ? '#16231D' : '#FFFFFF',

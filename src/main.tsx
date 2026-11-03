@@ -18,6 +18,8 @@ import Reports from './features/reports/Reports';
 import Recurring from './features/recurring/Recurring';
 import Settings from './features/settings/Settings';
 import Assets from './features/assets/Assets';
+import Payroll from './features/payroll/Payroll';
+import Admin from './features/admin/Admin';
 import Auth from './features/auth/Auth';
 import { useFinance } from './store';
 import { registerFinanceTools } from './lib/webmcp';
@@ -97,12 +99,15 @@ function App() {
               <Route path="transactions" element={<Transactions />} />
               <Route path="accounts" element={<Accounts />} />
               <Route path="assets" element={<Assets />} />
+              <Route path="payroll" element={<Payroll />} />
               <Route path="categories" element={<Categories />} />
               <Route path="budgets" element={<Budgets />} />
               <Route path="savings" element={<Savings />} />
               <Route path="debts" element={<Debts />} />
               <Route path="reports" element={<Reports />} />
               <Route path="recurring" element={<Recurring />} />
+              <Route path="admin" element={<Admin />} />
+              <Route path="admin/*" element={<Admin />} />
               <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

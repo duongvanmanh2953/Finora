@@ -130,7 +130,7 @@ describe('Quy tắc tài chính cơ bản', () => {
   it('lọc ngày và định dạng VND', () => {
     expect(inRange(base('expense', 1), '2026-10-01', '2026-10-09')).toBe(true);
     expect(inRange(base('expense', 1), '2026-10-10', '2026-10-20')).toBe(false);
-    expect(money(1500000)).toBe('1.500.000 ₫');
+    expect(money(1500000)).toBe('1,500,000 ₫');
   });
 
   it('tài sản ròng không cộng mục tiêu tiết kiệm hai lần', () => {
@@ -195,7 +195,7 @@ describe('NLP Parser Tiếng Việt (Chống lười & Nhập nhanh)', () => {
   });
 });
 
-describe('Chỉ số Safe-to-Spend & Cân bằng số dư 1-Click', () => {
+describe('Chỉ số Safe-to-Spend & Cân bằng số dư ', () => {
   it('tính SafeToSpend dựa trên ngân sách tháng và số ngày còn lại', () => {
     const mockData: FinanceData = {
       ...seed,
@@ -400,7 +400,7 @@ describe('Các trụ cột nâng cấp mới (Finora CFO Thông minh)', () => {
     expect(result.burnRateExhaustionDate).toBeDefined();
   });
 
-  it('Hệ thống Cảnh báo Rủi ro & Điều phối ngân sách 1-Click', () => {
+  it('Hệ thống Cảnh báo Rủi ro & Điều phối ngân sách ', () => {
     const alerts = analyzeFinancialRisks(seed);
     expect(Array.isArray(alerts)).toBe(true);
 

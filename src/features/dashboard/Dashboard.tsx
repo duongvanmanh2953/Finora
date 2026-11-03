@@ -1,29 +1,62 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { differenceInCalendarDays, format, parseISO, subDays } from 'date-fns';
 import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  CartesianGrid,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts';
+  format,
+  parseISO,
+  subMonths,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+  differenceInCalendarDays
+} from 'date-fns';
 import {
   Plus,
-  ArrowRight,
-  CalendarDays,
-  Lightbulb
+  TrendingUp,
+  TrendingDown,
+  Eye,
+  EyeOff,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  Landmark,
+  PiggyBank,
+  ArrowUpRight,
+  ArrowDownRight,
+  Search,
+  Sparkles
 } from 'lucide-react';
-import { Box, Button } from '@mui/material';
+import {
+  Box,
+  Button,
+  Paper,
+  Chip,
+  Typography,
+  IconButton,
+  Tooltip,
+  LinearProgress,
+  InputBase,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
+} from '@mui/material';
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  CartesianGrid,
+  ReferenceLine,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
 import { useFinance } from '../../store';
 import {
@@ -33,477 +66,1292 @@ import {
   goalSaved,
   inRange,
   money,
-  netWorthAt,
-  rangeFor,
   monthKey,
   shortMoney,
-  totals,
-  type RangeKey
+  totals
 } from '../../lib/finance';
-import { PageHead, Progress, Empty } from '../../components/ui';
+import { Empty } from '../../components/ui';
 import { MagicQuickBar } from '../../components/MagicQuickBar';
-import { SafeToSpendCard } from '../../components/SafeToSpendCard';
-import { RiskAlertsCard } from '../../components/RiskAlertsCard';
-import { FinancialFreedomCard } from '../../components/FinancialFreedomCard';
-import { MuiDatePicker, MuiSelect } from '../../components/mui/MuiInputs';
-import { BankLogoBadge, CategoryAvatarBadge } from '../../lib/brandBadges';
-import type { Transaction } from '../../types';
+import { BankLogoBadge, CategoryAvatarBadge, FundLogoBadge } from '../../lib/brandBadges';
 
-const rangeNames: { key: RangeKey; label: string }[] = [
-  { key: 'week', label: 'Tuần này' },
-  { key: 'month', label: 'Tháng này' },
-  { key: '3months', label: '3 tháng' },
-  { key: '6months', label: '6 tháng' },
-  { key: 'year', label: 'Năm nay' },
-  { key: 'custom', label: 'Tùy chỉnh' }
-];
-
-const tooltipStyle = {
-  borderRadius: 8,
-  border: '1px solid var(--border-subtle)',
-  backgroundColor: 'var(--bg-surface)',
-  fontSize: 12,
-  fontWeight: 600,
-  color: 'var(--text-primary)'
-};
+type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
 export default function Dashboard() {
   const data = useFinance(s => s.data)!;
   const openPricing = useFinance(s => s.openPricing);
-  const [range, setRange] = useState<RangeKey>('month');
-  const [custom, setCustom] = useState(rangeFor('month'));
 
-  const bounds = rangeFor(range, custom, data.user.financialMonthStart);
-  const filtered = useMemo(
-    () => data.transactions.filter(t => inRange(t, bounds.from, bounds.to)),
-    [data.transactions, bounds.from, bounds.to]
+  // Month navigation state
+  const [selectedMonthDate, setSelectedMonthDate] = useState<Date>(new Date());
+  const currentMonthKey = monthKey(selectedMonthDate);
+
+  // Privacy: Show or hide financial balances
+  const [showBalance, setShowBalance] = useState<boolean>(true);
+
+  // Cashflow chart period filter
+  const [cashflowPeriod, setCashflowPeriod] = useState<CashflowPeriod>('30days');
+
+  // Search filter for recent transactions
+  const [txSearch, setTxSearch] = useState<string>('');
+
+  // Month Navigation Handlers
+  const handlePrevMonth = () => setSelectedMonthDate(prev => subMonths(prev, 1));
+  const handleNextMonth = () => setSelectedMonthDate(prev => addMonths(prev, 1));
+  const handleCurrentMonth = () => setSelectedMonthDate(new Date());
+
+  // Greeting based on time of day
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Chào buổi sáng!';
+    if (hour < 18) return 'Chào buổi chiều!';
+    return 'Chào buổi tối!';
+  }, []);
+
+  // Selected Month Range Bounds
+  const monthBounds = useMemo(() => {
+    const start = format(startOfMonth(selectedMonthDate), 'yyyy-MM-dd');
+    const end = format(endOfMonth(selectedMonthDate), 'yyyy-MM-dd');
+    return { from: start, to: end };
+  }, [selectedMonthDate]);
+
+  // Transactions in Selected Month
+  const monthTransactions = useMemo(() => {
+    return data.transactions.filter(t => inRange(t, monthBounds.from, monthBounds.to));
+  }, [data.transactions, monthBounds]);
+
+  const { income, expense } = totals(monthTransactions);
+  const netSavings = income - expense;
+  const savingsRate = income > 0 ? Math.round((netSavings / income) * 100) : 0;
+
+  // Comparison with Previous Month
+  const prevMonthDate = subMonths(selectedMonthDate, 1);
+  const prevMonthBounds = {
+    from: format(startOfMonth(prevMonthDate), 'yyyy-MM-dd'),
+    to: format(endOfMonth(prevMonthDate), 'yyyy-MM-dd')
+  };
+  const prevMonthTransactions = data.transactions.filter(t =>
+    inRange(t, prevMonthBounds.from, prevMonthBounds.to)
   );
+  const prevTotals = totals(prevMonthTransactions);
 
-  const { income, expense } = totals(filtered);
-  const days = Math.max(
-    1,
-    differenceInCalendarDays(parseISO(bounds.to), parseISO(bounds.from)) + 1
-  );
-  const priorTo = format(subDays(parseISO(bounds.from), 1), 'yyyy-MM-dd');
-  const priorFrom = format(subDays(parseISO(bounds.from), days), 'yyyy-MM-dd');
-  const previous = totals(data.transactions.filter(t => inRange(t, priorFrom, priorTo)));
-
-  const totalBalance = data.accounts.reduce(
-    (n, a) => n + balance(a, data.transactions.filter(t => t.date <= bounds.to)),
-    0
-  );
-  const previousBalance = data.accounts.reduce(
-    (n, a) => n + balance(a, data.transactions.filter(t => t.date <= priorTo)),
-    0
-  );
-
-  const savedAt = (to: string) =>
-    data.goals.reduce(
-      (n, g) =>
-        n + g.contributions.filter(c => c.date <= to).reduce((sum, c) => sum + c.amount, 0),
-      0
-    );
-  const saved = savedAt(bounds.to);
-  const previousSaved = savedAt(priorTo);
-
-  const rate = income ? Math.round(((income - expense) / income) * 100) : 0;
-  const previousRate = previous.income
-    ? Math.round(((previous.income - previous.expense) / previous.income) * 100)
+  const incomeChange = prevTotals.income
+    ? Math.round(((income - prevTotals.income) / prevTotals.income) * 100)
+    : 0;
+  const expenseChange = prevTotals.expense
+    ? Math.round(((expense - prevTotals.expense) / prevTotals.expense) * 100)
     : 0;
 
-  const pct = (now: number, before: number) =>
-    before ? `${now >= before ? '+' : ''}${Math.round(((now - before) / Math.abs(before)) * 100)}%` : '—';
+  // Total Assets across all active accounts
+  const totalAssets = useMemo(() => {
+    return data.accounts
+      .filter(a => a.active)
+      .reduce((sum, a) => sum + balance(a, data.transactions), 0);
+  }, [data.accounts, data.transactions]);
 
-  const series = useMemo(() => {
-    const dayMap = new Map<string, { date: string; income: number; expense: number }>();
-    for (const t of filtered) {
+  // Overall Monthly Budget Calculation
+  const activeBudgets = useMemo(() => {
+    return data.budgets.filter(b => b.month === currentMonthKey);
+  }, [data.budgets, currentMonthKey]);
+
+  const totalBudgetLimit = useMemo(() => {
+    return activeBudgets.reduce((sum, b) => sum + b.limit, 0);
+  }, [activeBudgets]);
+
+  const totalBudgetSpent = useMemo(() => {
+    return activeBudgets.reduce((sum, b) => sum + budgetSpent(b, data.transactions), 0);
+  }, [activeBudgets, data.transactions]);
+
+  const remainingBudget = Math.max(0, totalBudgetLimit - totalBudgetSpent);
+  const budgetUsagePct = totalBudgetLimit > 0 ? Math.round((totalBudgetSpent / totalBudgetLimit) * 100) : 0;
+
+  // Cashflow Trend Series based on selected cashflowPeriod
+  const cashflowBounds = useMemo(() => {
+    const now = new Date();
+    const to = format(now, 'yyyy-MM-dd');
+    let from: string;
+    if (cashflowPeriod === '7days') from = format(subDays(now, 6), 'yyyy-MM-dd');
+    else if (cashflowPeriod === '30days') from = format(subDays(now, 29), 'yyyy-MM-dd');
+    else if (cashflowPeriod === '3months') from = format(subMonths(now, 3), 'yyyy-MM-dd');
+    else if (cashflowPeriod === '6months') from = format(subMonths(now, 6), 'yyyy-MM-dd');
+    else from = format(new Date(now.getFullYear(), 0, 1), 'yyyy-MM-dd');
+    return { from, to };
+  }, [cashflowPeriod]);
+
+  const cashflowDataset = useMemo(() => {
+    const days = differenceInCalendarDays(parseISO(cashflowBounds.to), parseISO(cashflowBounds.from)) + 1;
+    const isDayAggregate = days <= 35;
+
+    const map = new Map<string, { date: string; income: number; expense: number; net: number }>();
+    const filteredTx = data.transactions.filter(t => inRange(t, cashflowBounds.from, cashflowBounds.to));
+
+    for (const t of filteredTx) {
       if (t.type === 'transfer' || t.status !== 'completed') continue;
-      const key = range === 'week' || range === 'month' ? t.date.slice(5, 10) : t.date.slice(0, 7);
-      const row = dayMap.get(key) || { date: key, income: 0, expense: 0 };
+      const key = isDayAggregate ? t.date.slice(5, 10) : t.date.slice(0, 7);
+      const row = map.get(key) || { date: key, income: 0, expense: 0, net: 0 };
       row[t.type] += t.amount;
-      dayMap.set(key, row);
+      row.net = row.income - row.expense;
+      map.set(key, row);
     }
-    return [...dayMap.values()].sort((a, b) => a.date.localeCompare(b.date));
-  }, [filtered, range]);
+    return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
+  }, [data.transactions, cashflowBounds]);
 
-  const category = useMemo(() => {
-    const map = new Map<string, number>();
-    filtered
-      .filter(t => t.type === 'expense' && t.status === 'completed')
-      .forEach(t => map.set(t.categoryId || 'other', (map.get(t.categoryId || 'other') || 0) + t.amount));
-    return [...map]
-      .map(([id, value]) => ({
-        name: data.categories.find(c => c.id === id)?.name || 'Khác',
-        value,
-        color: data.categories.find(c => c.id === id)?.color || '#94a3b8'
-      }))
+  // Deterministic Cashflow Insight
+  const cashflowInsight = useMemo(() => {
+    if (income > expense) {
+      return `Tháng này bạn đang thặng dư ${money(income - expense)} với tỷ lệ tiết kiệm đạt ${savingsRate}%.`;
+    }
+    if (expense > income) {
+      return `Chi tiêu tháng này đang vượt thu nhập ${money(expense - income)}. Hãy cân nhắc cắt giảm các nhóm không thiết yếu.`;
+    }
+    return `Thu nhập và chi tiêu của bạn đang cân bằng ở mức ${money(income)}.`;
+  }, [income, expense, savingsRate]);
+
+  // Expense Categories Distribution
+  const expenseCategories = useMemo(() => {
+    const list = data.categories
+      .filter(c => c.type === 'expense')
+      .map(c => {
+        const spent = monthTransactions
+          .filter(t => t.type === 'expense' && t.status === 'completed' && t.categoryId === c.id)
+          .reduce((sum, t) => sum + t.amount, 0);
+        return {
+          id: c.id,
+          name: c.name,
+          value: spent,
+          color: c.color,
+          pct: expense > 0 ? Math.round((spent / expense) * 100) : 0
+        };
+      })
+      .filter(c => c.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [filtered, data.categories]);
 
-  const monthSeries = useMemo(() => {
-    const months = new Map<string, { date: string; income: number; expense: number; net: number }>();
-    let running = data.accounts.reduce((n, a) => n + a.openingBalance, 0);
-    for (const t of [...data.transactions].sort((a, b) => a.date.localeCompare(b.date))) {
-      if (t.status !== 'completed' || t.type === 'transfer') continue;
-      const key = t.date.slice(0, 7);
-      const row = months.get(key) || { date: key, income: 0, expense: 0, net: running };
-      row[t.type] += t.amount;
-      running += t.type === 'income' ? t.amount : -t.amount;
-      row.net = netWorthAt(data, key + '-31');
-      months.set(key, row);
-    }
-    return [...months.values()].filter(
-      x => x.date >= bounds.from.slice(0, 7) && x.date <= bounds.to.slice(0, 7)
-    );
-  }, [data, bounds.from, bounds.to]);
+    return list;
+  }, [data.categories, monthTransactions, expense]);
 
-  const recent = [...filtered].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
-  const warn = data.budgets.filter(b => budgetSpent(b, data.transactions) / b.limit >= 0.8);
+  // Recent Transactions (filtered by search if typed)
+  const recentTransactions = useMemo(() => {
+    return [...data.transactions]
+      .filter(t => {
+        if (!txSearch) return true;
+        const q = txSearch.toLowerCase();
+        return t.name.toLowerCase().includes(q) || (t.note && t.note.toLowerCase().includes(q));
+      })
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 6);
+  }, [data.transactions, txSearch]);
 
-  const cards = [
-    { label: 'Tổng số dư', value: totalBalance, note: 'Tất cả tài khoản', delta: pct(totalBalance, previousBalance) },
-    { label: 'Thu nhập', value: income, note: 'Trong khoảng đã chọn', delta: pct(income, previous.income), isIncome: true },
-    { label: 'Chi tiêu', value: expense, note: 'Trong khoảng đã chọn', delta: pct(expense, previous.expense), isExpense: true },
-    { label: 'Tài sản ròng', value: netWorthAt(data, bounds.to), note: 'Số dư ± dư nợ', delta: pct(netWorthAt(data, bounds.to), netWorthAt(data, priorTo)) },
-    { label: 'Dành cho mục tiêu', value: saved, note: 'Tổng tiền đóng góp', delta: pct(saved, previousSaved) },
-    { label: 'Tỷ lệ tiết kiệm', value: rate, note: 'Thu nhập trừ chi tiêu', percent: true, delta: pct(rate, previousRate) }
-  ];
+  const mask = (val: string) => (showBalance ? val : '••••••••');
 
   return (
-    <>
-      <PageHead
-        eyebrow="TỔNG QUAN TÀI CHÍNH"
-        title={`Chào, ${data.user.name}`}
-        subtitle="Một góc nhìn rõ ràng, chính xác về dòng tiền và kế hoạch tài chính của bạn."
-        actions={
-          <>
-            <Box sx={{ width: 140 }}>
-              <MuiSelect
-                label="Khoảng thời gian"
-                value={range}
-                onChange={val => setRange(val as RangeKey)}
-                options={rangeNames.map(x => ({ value: x.key, label: x.label }))}
-              />
-            </Box>
-            <Link to="/transactions?add=1" style={{ textDecoration: 'none' }}>
-              <Button variant="contained" color="primary" startIcon={<Plus size={15} />}>
-                Giao dịch mới
-              </Button>
-            </Link>
-          </>
-        }
-      />
+    <Box sx={{ pb: 6 }}>
+      {/* 5.1. PAGE HEADER (Compact, Executive Fintech Header) */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'flex-start', md: 'center' },
+          gap: 2,
+          mb: 3
+        }}
+      >
+        <Box>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 800,
+              fontSize: 11.5,
+              letterSpacing: '0.04em',
+              color: 'var(--brand-primary)',
+              textTransform: 'uppercase'
+            }}
+          >
+            {greeting}
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 850,
+              fontSize: { xs: 24, sm: 28 },
+              letterSpacing: '-0.03em',
+              color: 'text.primary',
+              mt: 0.25
+            }}
+          >
+            Tổng quan tài chính
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: 13, mt: 0.25 }}>
+            Theo dõi và kiểm soát dòng tiền của bạn.
+          </Typography>
+        </Box>
 
-      {/* Habit Loop: Magic Quick-Bar */}
+        {/* Right Controls: Month Selector, Visibility, + Thêm giao dịch */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, flexWrap: 'wrap' }}>
+          {/* Month Selector Pill */}
+          <Paper
+            variant="outlined"
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              borderRadius: 2.5,
+              p: 0.5,
+              bgcolor: 'background.paper',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+            }}
+          >
+            <Tooltip title="Tháng trước">
+              <IconButton size="small" onClick={handlePrevMonth} sx={{ p: 0.5 }}>
+                <ChevronLeft size={16} />
+              </IconButton>
+            </Tooltip>
+
+            <Box
+              component="button"
+              onClick={handleCurrentMonth}
+              sx={{
+                background: 'none',
+                border: 'none',
+                px: 1.25,
+                fontSize: 12.5,
+                fontWeight: 750,
+                color: 'text.primary',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.75
+              }}
+            >
+              <Calendar size={13} style={{ color: 'var(--brand-primary)' }} />
+              <span>Tháng {format(selectedMonthDate, 'MM/yyyy')}</span>
+            </Box>
+
+            <Tooltip title="Tháng tiếp theo">
+              <IconButton size="small" onClick={handleNextMonth} sx={{ p: 0.5 }}>
+                <ChevronRight size={16} />
+              </IconButton>
+            </Tooltip>
+          </Paper>
+
+          {/* Visibility Eye Button */}
+          <Tooltip title={showBalance ? 'Ẩn số dư tài chính' : 'Hiện số dư tài chính'}>
+            <IconButton
+              size="small"
+              onClick={() => setShowBalance(!showBalance)}
+              sx={{
+                width: 38,
+                height: 38,
+                borderRadius: 2.5,
+                border: '1px solid var(--border-subtle)',
+                bgcolor: 'background.paper'
+              }}
+            >
+              {showBalance ? <Eye size={17} /> : <EyeOff size={17} />}
+            </IconButton>
+          </Tooltip>
+
+          {/* + Thêm giao dịch Button */}
+          <Link to="/transactions?add=1" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Plus size={16} />}
+              sx={{
+                fontWeight: 750,
+                fontSize: 13,
+                height: 38,
+                px: 2,
+                borderRadius: 2.5
+              }}
+            >
+              Thêm giao dịch
+            </Button>
+          </Link>
+        </Box>
+      </Box>
+
+      {/* 5.2. MAIN FINANCIAL SUMMARY (4 Key Financial Cards) */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+          gap: 2,
+          mb: 3
+        }}
+      >
+        {/* Card 1: Tổng tài sản */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 124,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+              TỔNG TÀI SẢN
+            </Typography>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 2,
+                bgcolor: 'rgba(23, 107, 82, 0.1)',
+                color: 'var(--brand-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Landmark size={16} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 22, sm: 24 },
+                letterSpacing: '-0.03em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums',
+                color: 'text.primary'
+              }}
+            >
+              {mask(money(totalAssets))}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                {data.accounts.filter(a => a.active).length} tài khoản đang quản lý
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Card 2: Tổng thu nhập */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 124,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+              TỔNG THU NHẬP
+            </Typography>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 2,
+                bgcolor: 'rgba(22, 134, 91, 0.12)',
+                color: 'var(--accent-income)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <TrendingUp size={16} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 22, sm: 24 },
+                letterSpacing: '-0.03em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums',
+                color: 'var(--accent-income)'
+              }}
+            >
+              {mask(`+${money(income)}`)}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+              {incomeChange !== 0 ? (
+                <Chip
+                  icon={incomeChange > 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                  label={`${incomeChange > 0 ? '+' : ''}${incomeChange}%`}
+                  size="small"
+                  sx={{
+                    height: 18,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    bgcolor: incomeChange > 0 ? 'rgba(22, 134, 91, 0.1)' : 'rgba(214, 92, 89, 0.1)',
+                    color: incomeChange > 0 ? 'var(--accent-income)' : 'var(--accent-expense)'
+                  }}
+                />
+              ) : null}
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                so với tháng trước
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Card 3: Tổng chi tiêu */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 124,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+              TỔNG CHI TIÊU
+            </Typography>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 2,
+                bgcolor: 'rgba(214, 92, 89, 0.12)',
+                color: 'var(--accent-expense)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <TrendingDown size={16} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 22, sm: 24 },
+                letterSpacing: '-0.03em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums',
+                color: 'var(--accent-expense)'
+              }}
+            >
+              {mask(`-${money(expense)}`)}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+              {expenseChange !== 0 ? (
+                <Chip
+                  icon={expenseChange > 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                  label={`${expenseChange > 0 ? '+' : ''}${expenseChange}%`}
+                  size="small"
+                  sx={{
+                    height: 18,
+                    fontSize: 10,
+                    fontWeight: 800,
+                    bgcolor: expenseChange > 0 ? 'rgba(214, 92, 89, 0.1)' : 'rgba(22, 134, 91, 0.1)',
+                    color: expenseChange > 0 ? 'var(--accent-expense)' : 'var(--accent-income)'
+                  }}
+                />
+              ) : null}
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                Đã dùng {budgetUsagePct}% ngân sách
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Card 4: Tiền tiết kiệm */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: 124,
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'var(--border-strong)' }
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+              TIỀN TIẾT KIỆM
+            </Typography>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 2,
+                bgcolor: 'rgba(84, 121, 173, 0.12)',
+                color: 'var(--accent-info)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <PiggyBank size={16} />
+            </Box>
+          </Box>
+          <Box sx={{ mt: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: 22, sm: 24 },
+                letterSpacing: '-0.03em',
+                fontFeatureSettings: '"tnum"',
+                fontVariantNumeric: 'tabular-nums',
+                color: netSavings >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)'
+              }}
+            >
+              {mask(`${netSavings >= 0 ? '+' : ''}${money(netSavings)}`)}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+              <Chip
+                label={`Tiết kiệm ${savingsRate}%`}
+                size="small"
+                sx={{
+                  height: 18,
+                  fontSize: 10,
+                  fontWeight: 800,
+                  bgcolor: savingsRate >= 20 ? 'rgba(22, 134, 91, 0.1)' : 'rgba(215, 155, 61, 0.1)',
+                  color: savingsRate >= 20 ? 'var(--accent-income)' : 'var(--accent-warning)'
+                }}
+              />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                thu nhập tháng
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+
+      {/* 5.3. HABIT LOOP - MAGIC QUICK-BAR (1-TAP QUICK CHIPS & SMS PARSER) */}
       <MagicQuickBar onOpenPricing={openPricing} />
 
-      {/* Executive Bento Grid: Safe-To-Spend & Financial Freedom side-by-side */}
-      <div className="dashboard-bento">
-        <SafeToSpendCard />
-        <FinancialFreedomCard />
-      </div>
+      {/* 6 & 7. CASH FLOW ANALYTICS & EXPENSE DONUT */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: '1.45fr 1fr' },
+          gap: 2.5,
+          mt: 3,
+          mb: 3
+        }}
+      >
+        {/* SECTION 6: DÒNG TIỀN (INCOME VS EXPENSE) */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              gap: 1.5,
+              mb: 2
+            }}
+          >
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                Dòng tiền Hợp nhất
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                Biểu đồ kết hợp: Cột Thu/Chi và Đường cong Thặng dư ròng
+              </Typography>
+            </Box>
 
-      {/* Risk Alert Engine & Smart Budget Rebalancer */}
-      <RiskAlertsCard />
-
-      {range === 'custom' && (
-        <Box sx={{ display: 'flex', gap: 2, mb: 2.5, flexWrap: 'wrap' }}>
-          <Box sx={{ minWidth: 170 }}>
-            <MuiDatePicker
-              label="Từ ngày"
-              value={custom.from}
-              onChange={val => setCustom({ ...custom, from: val })}
-            />
+            {/* Time Controls */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+              {[
+                { id: '7days', label: '7 ngày' },
+                { id: '30days', label: '30 ngày' },
+                { id: '3months', label: '3 tháng' },
+                { id: '6months', label: '6 tháng' },
+                { id: 'year', label: '12 tháng' }
+              ].map(p => (
+                <Chip
+                  key={p.id}
+                  label={p.label}
+                  size="small"
+                  clickable
+                  color={cashflowPeriod === p.id ? 'primary' : 'default'}
+                  variant={cashflowPeriod === p.id ? 'filled' : 'outlined'}
+                  onClick={() => setCashflowPeriod(p.id as CashflowPeriod)}
+                  sx={{
+                    height: 24,
+                    fontSize: 10.5,
+                    fontWeight: cashflowPeriod === p.id ? 800 : 600,
+                    bgcolor: cashflowPeriod === p.id ? 'primary.main' : 'transparent'
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
-          <Box sx={{ minWidth: 170 }}>
-            <MuiDatePicker
-              label="Đến ngày"
-              value={custom.to}
-              onChange={val => setCustom({ ...custom, to: val })}
-            />
-          </Box>
-        </Box>
-      )}
 
-      {/* Grid of Key Financial Stats (Anti-Slop: Type, not tiles) */}
-      <div className="grid-stats">
-        {cards.map(({ label, value, note, percent, delta, isIncome, isExpense }) => (
-          <div className="card stat" key={label}>
-            <div className="stat-top">
-              <span className="stat-label">{label}</span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: delta.startsWith('+') ? 'var(--accent-income)' : delta.startsWith('-') ? 'var(--accent-expense)' : 'var(--text-muted)'
-                }}
-              >
-                {delta}
-              </span>
-            </div>
-            <div
-              className={`stat-value ${
-                isIncome ? 'positive' : isExpense ? 'negative' : ''
-              }`}
-            >
-              {percent ? value + '%' : money(value)}
-            </div>
-            <div className="stat-meta">{note}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Charts Row */}
-      <div className="rowcharts">
-        <section className="card pad">
-          <div className="section-head">
-            <div>
-              <h3>Thu nhập & chi tiêu</h3>
-              <small>Diễn biến theo ngày trong kỳ đã chọn</small>
-            </div>
-            <div className="legend">
-              <span>
-                <i className="dot" style={{ background: '#15966B' }} />
-                Thu nhập
-              </span>
-              <span>
-                <i className="dot" style={{ background: '#D65B58' }} />
-                Chi tiêu
-              </span>
-            </div>
-          </div>
-          <div className="chart-box">
-            {series.length ? (
+          {/* Composed Chart Visualization */}
+          <Box sx={{ width: '100%', height: 280, minHeight: 280 }}>
+            {cashflowDataset.length ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={series} margin={{ top: 8, right: 7, bottom: 0, left: -18 }}>
-                  <defs>
-                    <linearGradient id="gIncome" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#15966B" stopOpacity="0.12" />
-                      <stop offset="100%" stopColor="#15966B" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="var(--border-subtle)" strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={shortMoney} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={v => money(Number(v))} contentStyle={tooltipStyle} />
-                  <Area type="monotone" dataKey="income" name="Thu nhập" stroke="#15966B" strokeWidth={2} fill="url(#gIncome)" />
-                  <Area type="monotone" dataKey="expense" name="Chi tiêu" stroke="#D65B58" strokeWidth={2} fill="transparent" />
-                </AreaChart>
+                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 15, left: 0, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
+                  <XAxis
+                    dataKey="date"
+                    stroke="var(--text-secondary)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={{ stroke: 'var(--border-subtle)' }}
+                  />
+                  <YAxis
+                    stroke="var(--text-secondary)"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={val => shortMoney(val)}
+                  />
+                  <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
+                  <RechartsTooltip
+                    content={({ active, payload, label }: any) => {
+                      if (!active || !payload || !payload.length) return null;
+                      const d = payload[0]?.payload;
+                      if (!d) return null;
+                      return (
+                        <Box
+                          sx={{
+                            bgcolor: 'background.paper',
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: 2,
+                            p: 1.5,
+                            boxShadow: '0 8px 20px rgba(0,0,0,0.22)',
+                            minWidth: 190
+                          }}
+                        >
+                          <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.primary', display: 'block', mb: 0.75 }}>
+                            {label}
+                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>Thu nhập:</Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-income)' }}>
+                              +{money(d.income)}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>Chi tiêu:</Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-expense)' }}>
+                              -{money(d.expense)}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5, borderTop: '1px dashed var(--border-subtle)' }}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>Chênh lệch:</Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 850, color: d.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)' }}>
+                              {d.net >= 0 ? '+' : ''}{money(d.net)}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      );
+                    }}
+                  />
+                  <Bar dataKey="income" name="Thu nhập" fill="#15966B" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                  <Bar dataKey="expense" name="Chi tiêu" fill="#D65B58" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                  <Line
+                    type="monotone"
+                    dataKey="net"
+                    name="Thặng dư ròng"
+                    stroke="#4E7BC5"
+                    strokeWidth={2.5}
+                    dot={{ r: 2.5, fill: '#4E7BC5', strokeWidth: 1.5, stroke: 'var(--bg-surface)' }}
+                    activeDot={{ r: 5 }}
+                  />
+                </ComposedChart>
               </ResponsiveContainer>
             ) : (
-              <Empty />
+              <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
             )}
-          </div>
-        </section>
+          </Box>
 
-        <section className="card pad">
-          <div className="section-head">
-            <div>
-              <h3>Chi tiêu theo danh mục</h3>
-              <small>Tỷ trọng chi tiêu trong kỳ</small>
-            </div>
-          </div>
-          {category.length ? (
+          {/* Cashflow Insight Pill */}
+          <Box
+            sx={{
+              mt: 2,
+              p: 1.25,
+              borderRadius: 2,
+              bgcolor: 'action.hover',
+              border: '1px solid var(--border-subtle)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
+            <Sparkles size={16} color="var(--brand-primary)" style={{ flexShrink: 0 }} />
+            <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 650, fontSize: 12 }}>
+              {cashflowInsight}
+            </Typography>
+          </Box>
+        </Paper>
+
+        {/* SECTION 7: CHI TIÊU THEO DANH MỤC (EXPENSE DONUT & RANKING) */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                Chi tiêu theo danh mục
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                Tháng {format(selectedMonthDate, 'MM/yyyy')}
+              </Typography>
+            </Box>
+            <Link to="/reports" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+              Chi tiết →
+            </Link>
+          </Box>
+
+          {expenseCategories.length ? (
             <>
-              <div className="chart-box" style={{ height: 180 }}>
+              {/* Donut Chart with Recharts */}
+              <Box sx={{ width: '100%', height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={category} dataKey="value" innerRadius={58} outerRadius={78} paddingAngle={2}>
-                      {category.map(c => (
-                        <Cell key={c.name} fill={c.color} />
+                  <RechartsPieChart>
+                    <Pie
+                      data={expenseCategories}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={45}
+                      outerRadius={75}
+                      paddingAngle={3}
+                    >
+                      {expenseCategories.map((entry, index) => (
+                        <Cell key={`dash-cell-${index}`} fill={entry.color || '#27866A'} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={v => money(Number(v))} contentStyle={tooltipStyle} />
-                  </PieChart>
+                    <RechartsTooltip
+                      formatter={(val: any) => [money(Number(val)), 'Chi tiêu']}
+                      contentStyle={{
+                        backgroundColor: 'var(--bg-surface)',
+                        borderColor: 'var(--border-subtle)',
+                        borderRadius: 8,
+                        fontSize: 12,
+                        fontWeight: 650
+                      }}
+                    />
+                  </RechartsPieChart>
                 </ResponsiveContainer>
-              </div>
-              <div className="mini-list" style={{ marginTop: 8 }}>
-                {category.slice(0, 3).map(c => (
-                  <div className="mini-row" key={c.name}>
-                    <span className="mini-name">
-                      <i className="dot" style={{ background: c.color }} />
-                      {c.name}
-                    </span>
-                    <span className="mini-amount">{money(c.value)}</span>
-                  </div>
+              </Box>
+
+              {/* Top 3 Categories */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, mt: 1 }}>
+                {expenseCategories.slice(0, 3).map(c => (
+                  <Box key={c.id}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.25 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CategoryAvatarBadge categoryId={c.id} categoryName={c.name} txType="expense" />
+                        <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 12.5 }}>
+                          {c.name}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" sx={{ fontWeight: 800 }}>
+                        {money(c.value)}{' '}
+                        <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>({c.pct}%)</span>
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={c.pct}
+                      sx={{
+                        height: 5,
+                        borderRadius: 3,
+                        bgcolor: 'action.hover',
+                        '& .MuiLinearProgress-bar': {
+                          bgcolor: c.color || 'primary.main',
+                          borderRadius: 3
+                        }
+                      }}
+                    />
+                  </Box>
                 ))}
-              </div>
+              </Box>
             </>
           ) : (
-            <Empty />
+            <Empty text="Chưa phát sinh chi tiêu trong tháng này" />
           )}
-        </section>
-      </div>
+        </Paper>
+      </Box>
 
-      {/* Recent & Budgets Row */}
-      <div className="rowbottom">
-        <section className="card pad">
-          <div className="section-head">
-            <h3>Giao dịch gần đây</h3>
-            <Link to="/transactions" className="positive" style={{ fontSize: 11.5, fontWeight: 700 }}>
-              Xem tất cả <ArrowRight size={12} style={{ display: 'inline' }} />
-            </Link>
-          </div>
-          <div className="mini-list">
-            {recent.length ? (
-              recent.map((t: Transaction) => (
-                <div className="mini-row" key={t.id}>
-                  <div className="mini-left">
-                    <CategoryAvatarBadge
-                      categoryId={t.categoryId}
-                      categoryName={data.categories.find(c => c.id === t.categoryId)?.name}
-                      txType={t.type}
-                    />
-                    <div>
-                      <div className="mini-name">{t.name}</div>
-                      <div className="mini-sub" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                        <BankLogoBadge accountName={data.accounts.find(a => a.id === t.accountId)?.name} accountType={data.accounts.find(a => a.id === t.accountId)?.type} size="small" />
-                        <span>{data.categories.find(c => c.id === t.categoryId)?.name || 'Chuyển khoản'} · {dateLabel(t.date)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`mini-amount ${
-                      t.type === 'income' ? 'positive' : t.type === 'expense' ? 'negative' : ''
-                    }`}
-                  >
-                    {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
-                    {money(t.amount)}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <Empty />
-            )}
-          </div>
-        </section>
+      {/* 8, 9, 10, 11: RECENT TRANSACTIONS & FINANCIAL HUBS */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: '1.45fr 1fr' },
+          gap: 2.5
+        }}
+      >
+        {/* SECTION 8: GIAO DỊCH GẦN ĐÂY */}
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            background: 'var(--card-inset-bg)',
+            boxShadow: 'var(--card-inset-shadow)'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: 'space-between',
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              gap: 1.5,
+              mb: 2
+            }}
+          >
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                Giao dịch gần đây
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                Đối soát các khoản thu, chi và chuyển tiền mới nhất
+              </Typography>
+            </Box>
 
-        <section className="card pad">
-          <div className="section-head">
-            <h3>Ngân sách tháng này</h3>
-            <Link to="/budgets" className="positive" style={{ fontSize: 11.5, fontWeight: 700 }}>
-              Chi tiết <ArrowRight size={12} style={{ display: 'inline' }} />
-            </Link>
-          </div>
-          {data.budgets
-            .filter(b => b.month === monthKey(new Date()))
-            .map(b => {
-              const spent = budgetSpent(b, data.transactions);
-              const pctSpent = (spent / b.limit) * 100;
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.25,
+                  py: 0.35,
+                  borderRadius: 1.5,
+                  bgcolor: 'action.hover',
+                  border: '1px solid var(--border-subtle)'
+                }}
+              >
+                <Search size={13} style={{ color: 'var(--text-muted)' }} />
+                <InputBase
+                  value={txSearch}
+                  onChange={e => setTxSearch(e.target.value)}
+                  placeholder="Lọc giao dịch..."
+                  sx={{ fontSize: 12, width: { xs: 90, sm: 120 } }}
+                />
+              </Box>
+
+              <Link
+                to="/transactions"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 750,
+                  color: 'var(--brand-primary)',
+                  textDecoration: 'none'
+                }}
+              >
+                Xem tất cả →
+              </Link>
+            </Box>
+          </Box>
+
+          {/* Desktop Table View */}
+          <TableContainer sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Table size="small">
+              <TableHead sx={{ bgcolor: 'action.hover' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Giao dịch</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Tài khoản</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Ngày</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: 12 }}>
+                    Số tiền
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 800, fontSize: 12 }}>
+                    Trạng thái
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {recentTransactions.map(t => {
+                  const cat = data.categories.find(c => c.id === t.categoryId);
+                  const acc = data.accounts.find(a => a.id === t.accountId);
+
+                  return (
+                    <TableRow key={t.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                          <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 750, fontSize: 13 }}>
+                              {t.name}
+                            </Typography>
+                            {t.note && (
+                              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: 11 }}>
+                                {t.note}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell sx={{ fontSize: 12 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
+                          <span>{acc?.name}</span>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell sx={{ fontSize: 12, color: 'text.secondary' }}>
+                        {dateLabel(t.date)}
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 850,
+                            fontFeatureSettings: '"tnum"',
+                            fontVariantNumeric: 'tabular-nums',
+                            fontSize: 13,
+                            color:
+                              t.type === 'income'
+                                ? 'var(--accent-income)'
+                                : t.type === 'expense'
+                                ? 'var(--accent-expense)'
+                                : 'var(--accent-info)'
+                          }}
+                        >
+                          {mask(
+                            `${t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}${money(t.amount)}`
+                          )}
+                        </Typography>
+                      </TableCell>
+
+                      <TableCell align="center">
+                        <Chip
+                          label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ'}
+                          size="small"
+                          color={t.status === 'completed' ? 'success' : 'warning'}
+                          variant="outlined"
+                          sx={{ height: 18, fontSize: 9.5, fontWeight: 700 }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Mobile Card Row Fallback */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1 }}>
+            {recentTransactions.map(t => {
+              const cat = data.categories.find(c => c.id === t.categoryId);
+              const acc = data.accounts.find(a => a.id === t.accountId);
+
               return (
-                <div className="progress-row" key={b.id}>
-                  <div className="top">
-                    <strong>{b.name}</strong>
-                    <span className={pctSpent >= 100 ? 'negative' : pctSpent >= 80 ? 'warning' : ''}>
-                      {Math.round(pctSpent)}% · {shortMoney(spent)} / {shortMoney(b.limit)}
-                    </span>
-                  </div>
-                  <Progress
-                    value={pctSpent}
-                    color={pctSpent >= 100 ? '#ef4444' : pctSpent >= 80 ? '#f59e0b' : '#10b981'}
-                  />
-                </div>
+                <Box
+                  key={t.id}
+                  sx={{
+                    p: 1.25,
+                    borderRadius: 2,
+                    bgcolor: 'action.hover',
+                    border: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
+                    <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 750, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {t.name}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+                        {acc?.name} · {dateLabel(t.date)}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 900,
+                      fontSize: 13.5,
+                      fontFeatureSettings: '"tnum"',
+                      fontVariantNumeric: 'tabular-nums',
+                      color:
+                        t.type === 'income'
+                          ? 'var(--accent-income)'
+                          : t.type === 'expense'
+                          ? 'var(--accent-expense)'
+                          : 'var(--accent-info)',
+                      flexShrink: 0
+                    }}
+                  >
+                    {mask(
+                      `${t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}${money(t.amount)}`
+                    )}
+                  </Typography>
+                </Box>
               );
             })}
-        </section>
-      </div>
+          </Box>
+        </Paper>
 
-      {/* Cashflow Bar Chart & Insights */}
-      <div className="rowbottom">
-        <section className="card pad">
-          <div className="section-head">
-            <h3>Dòng tiền từng tháng</h3>
-            <small>Thu nhập và chi tiêu thực tế</small>
-          </div>
-          <div className="chart-box" style={{ height: 210 }}>
-            {monthSeries.length ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthSeries} margin={{ left: -18 }}>
-                  <CartesianGrid vertical={false} stroke="var(--border-subtle)" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={shortMoney} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={v => money(Number(v))} contentStyle={tooltipStyle} cursor={false} />
-                  <Bar name="Thu nhập" dataKey="income" fill="#15966B" radius={[3, 3, 0, 0]} />
-                  <Bar name="Chi tiêu" dataKey="expense" fill="#D65B58" radius={[3, 3, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Empty />
-            )}
-          </div>
-        </section>
+        {/* RIGHT COLUMN: BUDGETS, GOALS & ACCOUNTS */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          {/* SECTION 9: NGÂN SÁCH THÁNG NÀY */}
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 2.25,
+              borderRadius: 3,
+              background: 'var(--card-inset-bg)',
+              boxShadow: 'var(--card-inset-shadow)'
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 15 }}>
+                  Ngân sách tháng này
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+                  Đã chi {mask(money(totalBudgetSpent))} / {mask(money(totalBudgetLimit))}
+                </Typography>
+              </Box>
+              <Link to="/budgets" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                Quản lý →
+              </Link>
+            </Box>
 
-        <section className="card pad">
-          <div className="section-head">
-            <h3>Kế hoạch & nhắc nhở</h3>
-            <Lightbulb size={16} color="#f59e0b" />
-          </div>
-          <div className="mini-list">
-            <div className="mini-row">
-              <span className="mini-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Lightbulb size={13} style={{ color: 'var(--accent-warning)', flexShrink: 0 }} />
-                <span>{category.length ? `Chi lớn nhất: ${category[0].name} (${money(category[0].value)})` : 'Chưa có chi tiêu trong kỳ đã chọn'}</span>
-              </span>
-            </div>
-            {warn.slice(0, 2).map(b => (
-              <div className="mini-row" key={b.id}>
-                <span className="mini-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ color: 'var(--accent-warning)', display: 'inline-flex' }}>!</span>
-                  <span>{b.name} đã dùng {Math.round((budgetSpent(b, data.transactions) / b.limit) * 100)}%</span>
-                </span>
-              </div>
-            ))}
-            {data.goals.slice(0, 2).map(g => (
-              <div className="mini-row" key={g.id}>
-                <span className="mini-name">{g.name}</span>
-                <span className="mini-amount">{Math.round((goalSaved(g) / g.target) * 100)}%</span>
-              </div>
-            ))}
-            {data.recurring
-              .filter(r => r.active)
-              .slice(0, 2)
-              .map(r => (
-                <div className="mini-row" key={r.id}>
-                  <span className="mini-left">
-                    <CalendarDays size={14} style={{ color: 'var(--accent-transfer)' }} />
-                    <span className="mini-name">{r.name}</span>
-                  </span>
-                  <span className="mini-sub">{dateLabel(r.nextDate)}</span>
-                </div>
-              ))}
-          </div>
-        </section>
-      </div>
+            {/* Total Budget Progress */}
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                  Còn lại: {mask(money(remainingBudget))}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 800,
+                    color: budgetUsagePct >= 100 ? 'var(--accent-expense)' : budgetUsagePct >= 80 ? 'var(--accent-warning)' : 'var(--accent-income)'
+                  }}
+                >
+                  {budgetUsagePct}%
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(100, budgetUsagePct)}
+                sx={{
+                  height: 7,
+                  borderRadius: 3,
+                  bgcolor: 'action.hover',
+                  '& .MuiLinearProgress-bar': {
+                    bgcolor: budgetUsagePct >= 100 ? '#ef4444' : budgetUsagePct >= 80 ? '#f59e0b' : '#16865B',
+                    borderRadius: 3
+                  }
+                }}
+              />
+            </Box>
 
-      {/* Net Worth Chart */}
-      <div className="card pad">
-        <div className="section-head">
-          <h3>Tài sản ròng theo thời gian</h3>
-          <small>Dựa trên số dư đầu kỳ và giao dịch đã hoàn tất</small>
-        </div>
-        <div className="chart-box" style={{ height: 210 }}>
-          {monthSeries.length ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthSeries} margin={{ left: -14, right: 15 }}>
-                <CartesianGrid vertical={false} stroke="var(--border-subtle)" />
-                <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                <YAxis tickFormatter={shortMoney} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-                <Tooltip formatter={v => money(Number(v))} contentStyle={tooltipStyle} />
-                <Line
-                  type="monotone"
-                  dataKey="net"
-                  name="Giá trị tài khoản"
-                  stroke="#10b981"
-                  strokeWidth={2.5}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <Empty />
-          )}
-        </div>
-      </div>
-    </>
+            {/* Category level progress */}
+            {activeBudgets.length ? (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                {activeBudgets.slice(0, 3).map(b => {
+                  const spent = budgetSpent(b, data.transactions);
+                  const pct = Math.round((spent / b.limit) * 100);
+                  const isExceeded = pct >= 100;
+                  const isWarning = pct >= 80;
+
+                  return (
+                    <Box key={b.id}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.25 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 650, fontSize: 12.5 }}>
+                          {b.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 800,
+                            color: isExceeded ? 'var(--accent-expense)' : isWarning ? 'var(--accent-warning)' : 'text.secondary'
+                          }}
+                        >
+                          {mask(shortMoney(spent))} / {shortMoney(b.limit)} ({pct}%)
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={Math.min(100, pct)}
+                        sx={{
+                          height: 5,
+                          borderRadius: 3,
+                          bgcolor: 'action.hover',
+                          '& .MuiLinearProgress-bar': {
+                            bgcolor: isExceeded ? '#ef4444' : isWarning ? '#f59e0b' : '#16865B',
+                            borderRadius: 3
+                          }
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            ) : null}
+          </Paper>
+
+          {/* SECTION 10 & 11: MỤC TIÊU TIẾT KIỆM & TÀI KHOẢN CỦA TÔI */}
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 2.25,
+              borderRadius: 3,
+              background: 'var(--card-inset-bg)',
+              boxShadow: 'var(--card-inset-shadow)'
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 15 }}>
+                Tài khoản & Mục tiêu
+              </Typography>
+              <Link to="/accounts" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                Tài khoản →
+              </Link>
+            </Box>
+
+            {/* Account List */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+              {data.accounts.slice(0, 3).map(a => {
+                const bal = balance(a, data.transactions);
+                return (
+                  <Box
+                    key={a.id}
+                    sx={{
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: 'action.hover',
+                      border: '1px solid var(--border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <BankLogoBadge accountName={a.name} accountType={a.type} size="small" />
+                      <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 12.5 }}>
+                        {a.name}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 800,
+                        fontFeatureSettings: '"tnum"',
+                        fontVariantNumeric: 'tabular-nums',
+                        fontSize: 12.5
+                      }}
+                    >
+                      {mask(money(bal))}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Box>
+
+            {/* Savings Goals */}
+            {data.goals.length ? (
+              <Box sx={{ pt: 1.5, borderTop: '1px solid var(--border-subtle)' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
+                    MỤC TIÊU TÍCH LŨY
+                  </Typography>
+                  <Link to="/savings" style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                    Xem {data.goals.length} mục tiêu →
+                  </Link>
+                </Box>
+                {data.goals.slice(0, 2).map(g => {
+                  const saved = goalSaved(g);
+                  const pct = Math.min(100, Math.round((saved / g.target) * 100));
+
+                  return (
+                    <Box key={g.id} sx={{ mb: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.25 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <FundLogoBadge name={g.name} kind={g.icon} size="small" />
+                          <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 12 }}>
+                            {g.name}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ fontWeight: 800 }}>
+                          {mask(money(saved))} ({pct}%)
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={pct}
+                        sx={{
+                          height: 4,
+                          borderRadius: 2,
+                          bgcolor: 'action.hover',
+                          '& .MuiLinearProgress-bar': {
+                            bgcolor: pct >= 100 ? '#16865B' : '#5479AD',
+                            borderRadius: 2
+                          }
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            ) : null}
+          </Paper>
+        </Box>
+      </Box>
+    </Box>
   );
 }

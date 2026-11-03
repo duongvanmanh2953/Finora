@@ -30,10 +30,10 @@ Dự án yêu cầu thực hiện **5 trụ cột nâng cấp lớn** với tiê
 ## 2.2. Nút bấm 1-Chạm (One-Tap Quick Chips) & Gói Kinh Doanh (Business Bundles)
 - **Quick Chips cá nhân**: Hàng nút `<Chip>` trên Dashboard (`☕ Cafe 35k`, `🛵 Gửi xe 5k`) bấm 1 chạm là lưu ngay.
 - **Gói dòng tiền ổn định / Kinh doanh (Income/Expense Stream Templates)**:
-  - Hỗ trợ người làm Freelance, Kinh doanh nhỏ, Cho thuê nhà: Tạo nút **"Ghi nhận Doanh thu/Lương 1-Click"**.
+  - Hỗ trợ người làm Freelance, Kinh doanh nhỏ, Cho thuê nhà: Tạo nút **"Ghi nhận Doanh thu/Lương "**.
   - Ví dụ: Nhập `"Doanh thu bán hàng: 10.000.000đ"` -> Tự động tách thành giao dịch Thu `10tr` (Dòng tiền kinh doanh) và tự động trích `6tr` vào Chi phí giá vốn/vận hành theo tỷ lệ cấu hình sẵn.
 
-## 2.3. Gợi ý mệnh giá VND & Cân bằng số dư 1-Click
+## 2.3. Gợi ý mệnh giá VND & Cân bằng số dư 
 - Mọi ô nhập tiền tự hiện `<Chip>` gợi ý mệnh giá (`45.000 ₫`, `450.000 ₫`, `4.500.000 ₫`) và hỗ trợ gõ phép tính (`30k + 15k`).
 - Nút **"Cân bằng số dư thực tế"** tại `/accounts`: Chỉ cần nhập số tiền thực có trong ví/ngân hàng hiện tại, hệ thống tự sinh giao dịch bù trừ độ lệch vào mục *"Chi tiêu quên ghi"* trong 3 giây.
 - **Chuỗi ngày ghi chép (Daily Streak 🔥)** trên Header kèm nút **"Hôm nay không tiêu gì (0đ)"**.
@@ -53,7 +53,7 @@ Dự án yêu cầu thực hiện **5 trụ cột nâng cấp lớn** với tiê
 - **Hệ thống Cảnh báo Rủi ro Đa tầng (Risk Alert Engine)**:
   - 🔴 **Nguy cấp (Critical)**: Khoản vay / Sao kê thẻ tín dụng còn `<= 3 ngày` là đến hạn hoặc số dư thanh khoản hiện tại nhỏ hơn tổng nợ phải trả trong 7 ngày tới (Nguy cơ vỡ nợ / phạt lãi).
   - 🟡 **Cảnh báo (Warning)**: Danh mục chi tiêu vượt 80% ngân sách khi chưa đi hết 50% số ngày trong tháng; Phát hiện "Lạm phát lối sống" (Chi tiêu ăn chơi tăng nhanh hơn thu nhập).
-- **Gợi ý Quản lý & Tự động Điều phối 1-Click (Smart Budget Rebalancer)**:
+- **Gợi ý Quản lý & Tự động Điều phối  (Smart Budget Rebalancer)**:
   - Khi 1 ngân sách bị vượt (VD: *Ăn uống vượt 400k*), hệ thống tự tìm danh mục khác đang dư nhiều (VD: *Mua sắm còn dư 1.2tr*) và hiện nút **`[Bù 400k từ Mua sắm sang Ăn uống]`** để người dùng cân đối lại chỉ bằng 1 cú click.
 
 ---
@@ -68,7 +68,7 @@ Bổ sung thực thể `InvestmentAsset` cho phép theo dõi tài sản sinh l�
   3. **Tài sản số (`crypto`)**: Nhập mã (`BTC`, `ETH`, `SOL`, `USDT`), số lượng, vốn gốc.
   4. **Tiết kiệm gửi góp / Bất động sản / Khác (`savings_deposit` | `real_estate`)**: Nhập vốn gốc và lãi suất `%/năm` (tự động cộng dồn lãi tích lũy mỗi ngày).
 - **Cơ chế Tự động Định giá & Thống kê Lãi/Lỗ (PnL)**:
-  - Tích hợp bảng giá tham chiếu tự động (cập nhật giá thị trường hoặc cho phép bấm *"Cập nhật giá thị trường 1-Click"*).
+  - Tích hợp bảng giá tham chiếu tự động (cập nhật giá thị trường hoặc cho phép bấm *"Cập nhật giá thị trường "*).
   - Tự động tính: `Giá trị hiện tại = Số lượng * Giá thị trường`, `Lãi/Lỗ (PnL) = Giá trị hiện tại - Vốn gốc` (hiển thị số tiền và `%` tăng/giảm bằng `<Chip color="success | error">`).
   - Biểu đồ phân bổ cấu trúc Tài sản (Tiền mặt vs Vàng vs Cổ phiếu vs Crypto vs Nợ) và cập nhật thẳng vào **Tài sản ròng (Net Worth)**.
 
@@ -118,6 +118,6 @@ Hãy mở rộng các interface hiện tại (đảm bảo có giá trị mặc 
 # KẾ HOẠCH THỰC THI (STEP-BY-STEP EXECUTION)
 1. **Bước 1 (Core & MUI Setup)**: Cài đặt `@mui/material`, `@emotion/react`, `@emotion/styled`, `@mui/x-date-pickers`, `dayjs`. Tạo `ThemeProvider` và các wrapper component chuẩn MUI cho Form.
 2. **Bước 2 (Data Layer & Engines)**: Nâng cấp `src/types/finance.ts`, `financeService.ts` và Zustand Store. Viết bộ `nlpParser.ts` (bóc tách câu lệnh tiếng Việt cho cả thu chi, mua vàng/cổ phiếu, quẹt thẻ, chia tiền) và bộ `riskAndInsightEngine.ts` (tính True Balance, Cảnh báo quá hạn, Thu nhập thụ động, PnL đầu tư).
-3. **Bước 3 (UI Refactor & Habit Features)**: Refactor toàn bộ các trang hiện tại sang MUI. Đưa **AI Command Bar**, **Quick Chips**, **True Spendable Balance**, **Cảnh báo Rủi ro & Gợi ý điều phối 1-Click** lên trang Tổng quan (`/`).
+3. **Bước 3 (UI Refactor & Habit Features)**: Refactor toàn bộ các trang hiện tại sang MUI. Đưa **AI Command Bar**, **Quick Chips**, **True Spendable Balance**, **Cảnh báo Rủi ro & Gợi ý điều phối ** lên trang Tổng quan (`/`).
 4. **Bước 4 (Investment, Credit & Passive Income)**: Xây dựng giao diện Quản lý Tài sản Đầu tư (thêm mã Chứng khoán/Vàng/Coin + số tiền gốc, bảng PnL), Quản lý Thẻ tín dụng/Rủi ro quá hạn và Thống kê Thu nhập Thụ động / Kinh doanh.
 5. **Bước 5 (WebMCP, Pro Paywall & Tests)**: Cập nhật `src/lib/webmcp.ts`, hoàn thiện `<PricingDialog>` (Finora Pro) và viết đầy đủ Unit Tests (`Vitest`) cho các thuật toán tính toán mới. Đảm bảo `pnpm test` và `pnpm build` thành công 100%.

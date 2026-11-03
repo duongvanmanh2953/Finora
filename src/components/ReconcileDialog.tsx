@@ -66,7 +66,21 @@ export function ReconcileDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            m: { xs: 1.5, sm: 2 },
+            width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+            borderRadius: 3
+          }
+        }
+      }}
+    >
       <DialogTitle
         sx={{
           display: 'flex',
@@ -79,7 +93,7 @@ export function ReconcileDialog({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Scale size={20} color="#059669" />
           <Typography variant="h6" sx={{ fontWeight: 700, fontSize: 17 }}>
-            Cân bằng số dư 1-Click
+            Cân bằng số dư 
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small">
@@ -89,7 +103,7 @@ export function ReconcileDialog({
 
       <DialogContent dividers sx={{ p: 2.5, display: 'grid', gap: 2 }}>
         <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: 13 }}>
-          Cứu cánh khi bạn quên ghi chép một vài giao dịch nhỏ. Chỉ cần nhập số dư hiện tại trong ví hoặc ứng dụng ngân hàng, Tích Lộc sẽ tự động bù đắp chênh lệch.
+          Cứu cánh khi bạn quên ghi chép một vài giao dịch nhỏ. Chỉ cần nhập số dư hiện tại trong ví hoặc ứng dụng ngân hàng, Finora sẽ tự động bù đắp chênh lệch.
         </Typography>
 
         <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'action.hover' }}>

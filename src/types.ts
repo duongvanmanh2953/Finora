@@ -122,17 +122,125 @@ export interface RecurringTransaction {
   autoExecute?: boolean;
 }
 
+export type AssetClass =
+  | 'stock'
+  | 'fund'
+  | 'etf'
+  | 'bond'
+  | 'gold'
+  | 'savings'
+  | 'crypto'
+  | 'real_estate'
+  | 'custom';
+
+export type InvestmentTxType =
+  | 'BUY'
+  | 'SELL'
+  | 'DEPOSIT_FUND'
+  | 'REDEEM_FUND'
+  | 'DIVIDEND_CASH'
+  | 'DIVIDEND_STOCK'
+  | 'RIGHTS_ISSUE'
+  | 'BOND_COUPON'
+  | 'MATURITY'
+  | 'STOCK_SPLIT'
+  | 'TRANSFER_ACCOUNT'
+  | 'ADJUSTMENT';
+
+export type DataFreshness = 'realtime' | 'delayed' | 'eod' | 'nav_published' | 'manual';
+
+export interface InvestmentTransaction {
+  id: string;
+  assetId: string;
+  symbol: string;
+  type: InvestmentTxType;
+  date: string;
+  quantity: number;
+  unitPrice: Money;
+  totalAmount: Money;
+  fee: Money;
+  tax: Money;
+  realizedPnL?: Money;
+  note?: string;
+  accountId?: string;
+}
+
 export interface InvestmentAsset {
   id: string;
   symbol: string;
   name: string;
-  assetClass: 'stock' | 'gold' | 'crypto' | 'savings' | 'real_estate';
+  assetClass: AssetClass;
   quantity: number;
   totalCostBasis: Money;
   currentUnitPrice: Money;
   annualYieldRate?: number;
   accountId?: string;
   updatedAt: string;
+  targetTakeProfit?: Money;
+  targetStopLoss?: Money;
+  riskRewardRatio?: number;
+  freshness?: DataFreshness;
+  notes?: string;
+}
+
+export interface PayrollRecord {
+  id: string;
+  userId: string;
+  month: string; // YYYY-MM
+  status: 'draft' | 'verified' | 'paid';
+  
+  // 1. Contract & Mode
+  contractSalary: Money;
+  isProbation: boolean;
+  probationRate: number; // default 0.85
+  baseSalaryForInsurance: Money;
+
+  // 2. Attendance & Work days
+  standardWorkDays: number; // e.g. 22
+  actualWorkDays: number;
+  paidLeaveDays: number;
+  unpaidLeaveDays: number;
+
+  // 3. Overtime (OT)
+  overtimeWeekdayHours: number; // 150%
+  overtimeWeekendHours: number; // 200%
+  overtimeHolidayHours: number; // 300%
+  overtimePayTotal: Money;
+  overtimeTaxExemptPay: Money;
+
+  // 4. Allowances & Bonuses
+  taxableAllowances: Money;
+  nonTaxableAllowances: Money;
+  performanceBonus: Money;
+  salesCommission: Money;
+
+  // 5. Gross Income
+  grossIncome: Money;
+
+  // 6. Employee Insurance (10.5%)
+  socialInsuranceEmployee: Money; // 8%
+  healthInsuranceEmployee: Money; // 1.5%
+  unemploymentInsuranceEmployee: Money; // 1%
+  totalInsuranceEmployee: Money; // 10.5%
+
+  // 7. Employer Insurance (21.5% - for reference)
+  socialInsuranceEmployer: Money; // 17.5%
+  healthInsuranceEmployer: Money; // 3%
+  unemploymentInsuranceEmployer: Money; // 1%
+  totalInsuranceEmployer: Money; // 21.5%
+
+  // 8. Personal Income Tax (PIT)
+  personalDeduction: Money; // 11,000,000 VND
+  dependentCount: number;
+  dependentDeductionTotal: Money; // count * 4,400,000 VND
+  taxableIncome: Money;
+  assessableIncome: Money; // for 7-bracket progressive calculation
+  pitWithheld: Money;
+
+  // 9. Net Take-Home Salary
+  netSalary: Money;
+  targetAccountId?: string;
+  actualPaidDate?: string;
 }
 
 export interface QuickTemplate {
@@ -175,6 +283,7 @@ export interface FinanceData {
   notifications: Notification[];
   quickTemplates: QuickTemplate[];
   investments?: InvestmentAsset[];
+  investmentTransactions?: InvestmentTransaction[];
+  payrolls?: PayrollRecord[];
   sixJarsConfig?: SixJarsConfig;
 }
-

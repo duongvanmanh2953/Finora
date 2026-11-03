@@ -79,7 +79,7 @@ export function PricingDialog({
     { name: 'Số lượng Tài khoản (/accounts)', free: 'Tối đa 2', pro: 'Không giới hạn + Thẻ tín dụng' },
     { name: 'Danh mục Đầu tư theo Mã & PnL', free: 'Tối đa 2 mã', pro: 'Chứng khoán, Vàng, Coin không giới hạn' },
     { name: 'AI Command Bar (5 Intents) & WebMCP', free: '5 lần / ngày', pro: 'Không giới hạn + Lệnh tự nhiên' },
-    { name: 'Cảnh báo Rủi ro & Bù ngân sách 1-Click', free: 'Cơ bản', pro: 'Đa tầng (Critical / Warning) + Rebalancer' },
+    { name: 'Cảnh báo Rủi ro & Bù ngân sách ', free: 'Cơ bản', pro: 'Đa tầng (Critical / Warning) + Rebalancer' },
     { name: 'Chia tiền nhóm & Trả góp thẻ', free: 'Thủ công', pro: 'Tự động tính & đẩy vào Sổ nợ' },
     { name: 'Thu nhập Thụ động & Tự do Tài chính', free: 'Không hỗ trợ', pro: 'Thước đo Tự do & Runway tháng' },
     { name: 'Mẫu nhập 1-Chạm & Gói Kinh doanh', free: 'Tối đa 3 mẫu', pro: 'Không giới hạn + Trích giá vốn' },
@@ -128,7 +128,7 @@ export function PricingDialog({
           </Box>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-              Nâng cấp Tích Lộc Pro
+              Nâng cấp Finora Pro
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               Mở khóa toàn bộ sức mạnh tài chính cá nhân và tự động hóa không giới hạn
@@ -224,13 +224,13 @@ export function PricingDialog({
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Sparkles size={16} color="#20705B" /> So sánh đặc quyền gói Free vs Pro
             </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2.5, overflow: 'hidden' }}>
-              <Table size="small">
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2.5, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <Table size="small" sx={{ minWidth: { xs: 460, sm: '100%' } }}>
                 <TableHead sx={{ bgcolor: 'action.hover' }}>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 600 }}>Tính năng / Giới hạn</TableCell>
                     <TableCell sx={{ fontWeight: 600, width: '28%' }}>Gói Free</TableCell>
-                    <TableCell sx={{ fontWeight: 600, width: '35%', color: 'primary.main' }}>Tích Lộc Pro</TableCell>
+                    <TableCell sx={{ fontWeight: 600, width: '35%', color: 'primary.main' }}>Finora Pro</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -346,7 +346,7 @@ export function PricingDialog({
                 </Paper>
 
                 <Alert severity="success" icon={<ShieldCheck size={18} />} sx={{ borderRadius: 2, mb: 2 }}>
-                  Đây là màn hình demo giả lập giao dịch. Bạn có thể bấm nút bên dưới để trải nghiệm ngay quyền lợi Tích Lộc Pro!
+                  Đây là màn hình demo giả lập giao dịch. Bạn có thể bấm nút bên dưới để trải nghiệm ngay quyền lợi Finora Pro!
                 </Alert>
               </Box>
             </Box>

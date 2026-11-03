@@ -3,7 +3,6 @@ import {
   Box,
   Paper,
   TextField,
-  IconButton,
   Chip,
   Typography,
   Button,
@@ -531,117 +530,190 @@ export function MagicQuickBar({
 
   return (
     <Box sx={{ mb: 2.5 }}>
-      {/* 1. Main Clean Spotlight Command Input */}
+      {/* 1. Main 2-Tier Spotlight Command Card with Liquid Glass */}
       <Paper
         elevation={0}
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          p: { xs: '6px 10px', sm: '8px 14px' },
-          display: 'flex',
-          alignItems: 'center',
-          gap: { xs: 1, sm: 1.5 },
-          borderRadius: 3,
+          p: { xs: 1.5, sm: 2 },
+          borderRadius: 3.5,
           border: '1.5px solid',
           borderColor: commandResult ? 'primary.main' : 'var(--border-subtle)',
-          bgcolor: 'var(--bg-surface)',
-          boxShadow: '0 2px 8px rgba(18, 61, 53, 0.04)',
-          transition: 'all 0.15s ease',
+          bgcolor: 'var(--bg-glass)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          boxShadow: 'var(--glass-shadow)',
+          transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
           '&:focus-within': {
             borderColor: 'primary.main',
-            boxShadow: '0 0 0 3px rgba(32, 112, 91, 0.12)'
+            boxShadow: '0 0 0 4px rgba(32, 112, 91, 0.15), var(--glass-shadow)'
           }
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 32,
-            height: 32,
-            borderRadius: 2,
-            bgcolor: commandResult ? 'rgba(32, 112, 91, 0.1)' : 'var(--bg-subtle)',
-            color: 'primary.main',
-            flexShrink: 0
-          }}
-        >
-          {commandResult ? getIntentIcon(commandResult.intent) : <Sparkles size={16} />}
+        {/* Tier 1 (Dòng 1): Header Guidance, Badges & Quick Action Controls */}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25, flexWrap: 'wrap', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                borderRadius: 2,
+                bgcolor: commandResult ? 'rgba(32, 112, 91, 0.15)' : 'rgba(32, 112, 91, 0.08)',
+                color: 'primary.main',
+                flexShrink: 0
+              }}
+            >
+              {commandResult ? getIntentIcon(commandResult.intent) : <Sparkles size={16} />}
+            </Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800, fontSize: { xs: 12.5, sm: 13.5 }, color: 'text.primary', letterSpacing: '-0.01em' }}>
+              Nhập lệnh nhanh AI hoặc dán SMS ngân hàng
+            </Typography>
+            <Chip
+              label="Ctrl + K"
+              size="small"
+              sx={{
+                display: { xs: 'none', sm: 'inline-flex' },
+                height: 20,
+                fontSize: 10,
+                fontWeight: 700,
+                bgcolor: 'var(--bg-subtle)',
+                color: 'var(--text-muted)',
+                border: '1px solid var(--border-subtle)'
+              }}
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {!isProUser(data) && (
+              <Tooltip title="Lượt nhận diện AI hôm nay">
+                <Chip
+                  label={`AI: ${nlpQuota.remaining}/5`}
+                  size="small"
+                  color={nlpQuota.remaining > 0 ? 'default' : 'error'}
+                  onClick={() => nlpQuota.remaining === 0 && onOpenPricing('Hết lượt AI hôm nay')}
+                  sx={{ fontSize: 10.5, fontWeight: 750, height: 22, cursor: 'pointer' }}
+                />
+              </Tooltip>
+            )}
+
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              startIcon={<Landmark size={14} />}
+              onClick={() => setBankSmsModalOpen(true)}
+              sx={{
+                fontSize: 11.5,
+                fontWeight: 700,
+                height: 28,
+                px: 1.25,
+                borderRadius: 2,
+                borderColor: 'rgba(21, 150, 107, 0.35)',
+                color: '#15966B',
+                bgcolor: 'rgba(21, 150, 107, 0.06)',
+                '&:hover': {
+                  bgcolor: 'rgba(21, 150, 107, 0.15)',
+                  borderColor: '#15966B'
+                }
+              }}
+            >
+              Dán SMS
+            </Button>
+          </Box>
         </Box>
 
-        <TextField
-          fullWidth
-          variant="standard"
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder='Nhập lệnh nhanh hoặc dán SMS (VD: "ăn sáng 35k", "lương 25tr", "quẹt VCB 12tr"...)'
-          inputRef={inputRef}
-          slotProps={{
-            input: {
-              disableUnderline: true,
-              sx: {
-                fontSize: { xs: 13, sm: 14 },
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                fontFamily: 'inherit'
-              }
-            }
-          }}
-        />
-
-        {/* Quick SMS Trigger Button */}
-        <Tooltip title="Dán tin nhắn SMS/OTT biến động số dư ngân hàng">
-          <IconButton
-            size="small"
-            onClick={() => setBankSmsModalOpen(true)}
-            sx={{
-              bgcolor: 'rgba(21, 150, 107, 0.1)',
-              color: '#15966B',
-              width: 32,
-              height: 32,
-              borderRadius: 2,
-              flexShrink: 0,
-              '&:hover': {
-                bgcolor: 'rgba(21, 150, 107, 0.2)'
+        {/* Tier 2 (Dòng 2): Spacious 2-line input + Fast Submit Button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <TextField
+            fullWidth
+            variant="standard"
+            multiline
+            rows={2}
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
               }
             }}
-          >
-            <Landmark size={15} />
-          </IconButton>
-        </Tooltip>
-
-        {!isProUser(data) && (
-          <Tooltip title="Lượt nhập AI hôm nay">
-            <Chip
-              label={`AI: ${nlpQuota.remaining}/5`}
-              size="small"
-              color={nlpQuota.remaining > 0 ? 'default' : 'error'}
-              onClick={() => nlpQuota.remaining === 0 && onOpenPricing('Hết lượt AI hôm nay')}
-              sx={{ display: { xs: 'none', sm: 'inline-flex' }, fontSize: 10.5, fontWeight: 700, height: 22, cursor: 'pointer' }}
-            />
-          </Tooltip>
-        )}
-
-        <IconButton
-          color="primary"
-          type="submit"
-          disabled={!text.trim()}
-          size="small"
-          sx={{
-            bgcolor: text.trim() ? '#20705B' : 'var(--bg-subtle)',
-            color: text.trim() ? '#ffffff !important' : 'var(--text-muted)',
-            width: 32,
-            height: 32,
-            borderRadius: 2,
-            flexShrink: 0,
-            transition: 'all 0.15s ease',
-            '&:hover': {
-              bgcolor: text.trim() ? '#185548' : 'var(--bg-subtle)'
+            placeholder={
+              'Dòng 1: Gõ lệnh tắt (VD: "ăn sáng 35k", "lương 25tr", "quẹt VCB 12tr", "mua 2 chỉ vàng 17tr")...\n' +
+              'Dòng 2: hoặc dán toàn bộ tin nhắn SMS biến động số dư Vietcombank, Techcombank, MB, Momo...'
             }
-          }}
-        >
-          <CornerDownLeft size={16} />
-        </IconButton>
+            inputRef={inputRef}
+            slotProps={{
+              input: {
+                disableUnderline: true,
+                sx: {
+                  fontSize: { xs: 13, sm: 14.5 },
+                  fontWeight: 500,
+                  color: 'var(--text-primary)',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.5,
+                  p: 0
+                }
+              }
+            }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={!text.trim()}
+            startIcon={<CornerDownLeft size={16} />}
+            sx={{
+              height: 48,
+              minWidth: { xs: 44, sm: 110 },
+              px: { xs: 1.5, sm: 2 },
+              borderRadius: 2.5,
+              fontWeight: 700,
+              fontSize: 13,
+              boxShadow: text.trim() ? '0 4px 14px rgba(32, 112, 91, 0.3)' : 'none',
+              flexShrink: 0
+            }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              Ghi nhận
+            </Box>
+          </Button>
+        </Box>
+
+        {/* Realtime Parsed Intent & Extracted Data Bar */}
+        {commandResult && (
+          <Box
+            sx={{
+              mt: 1.5,
+              pt: 1.25,
+              borderTop: '1px solid var(--border-subtle)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+              <Chip
+                label={commandResult.badgeLabel}
+                size="small"
+                color={commandResult.badgeColor}
+                sx={{ height: 22, fontSize: 11, fontWeight: 800 }}
+              />
+              <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary', fontWeight: 600 }}>
+                {commandResult.explanation}
+              </Typography>
+            </Box>
+            <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 700, fontSize: 11.5 }}>
+              Nhấn Enter ↵ để lưu ngay
+            </Typography>
+          </Box>
+        )}
       </Paper>
 
       {/* 2. Gợi ý mẫu lệnh & Mẫu 1-Chạm (1 hàng cuộn ngang mượt mà) */}

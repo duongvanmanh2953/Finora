@@ -54,7 +54,7 @@ export interface FinancialFreedomProgress {
   freedomRunwayMonths: number;
 }
 
-// Market reference prices for 1-Click Update
+// Market reference prices for  Update
 export const MARKET_PRICES: Record<string, number> = {
   FPT: 138000,
   VCB: 94500,
@@ -150,7 +150,7 @@ export function calculateTrueSpendableBalance(data: FinanceData): TrueSpendableR
 }
 
 /**
- * 3.2. Hệ thống Cảnh báo Rủi ro Đa tầng (Risk Alert Engine) & Điều phối 1-Click
+ * 3.2. Hệ thống Cảnh báo Rủi ro Đa tầng (Risk Alert Engine) & Điều phối 
  */
 export function analyzeFinancialRisks(data: FinanceData): RiskAlert[] {
   const alerts: RiskAlert[] = [];
@@ -268,7 +268,7 @@ export function analyzeFinancialRisks(data: FinanceData): RiskAlert[] {
       alerts.push({
         id: `rebalance-${worst.budget.id}-${best.budget.id}`,
         level: 'warning',
-        title: `Gợi ý điều phối ngân sách 1-Click: "${worst.catName}" vượt ngân sách`,
+        title: `Gợi ý điều phối ngân sách : "${worst.catName}" vượt ngân sách`,
         description: `Danh mục "${worst.catName}" vượt ${new Intl.NumberFormat('vi-VN').format(worst.exceeded)} ₫, trong khi "${best.catName}" đang dư ${new Intl.NumberFormat('vi-VN').format(best.surplus)} ₫.`,
         actionLabel: `Bù ${new Intl.NumberFormat('vi-VN').format(rebalanceAmt)} ₫ từ ${best.catName} sang ${worst.catName}`,
         actionType: 'rebalance',
@@ -287,7 +287,7 @@ export function analyzeFinancialRisks(data: FinanceData): RiskAlert[] {
 }
 
 /**
- * Execute 1-Click Budget Rebalance
+ * Execute  Budget Rebalance
  */
 export function executeBudgetRebalance(
   budgets: Budget[],
@@ -315,19 +315,27 @@ export function calculateInvestmentSummary(investments: InvestmentAsset[] = []):
   let totalCurrentValue = 0;
 
   const classLabels: Record<InvestmentAsset['assetClass'], { label: string; color: string }> = {
-    stock: { label: 'Chứng khoán / Quỹ', color: '#3b82f6' },
+    stock: { label: 'Cổ phiếu', color: '#3b82f6' },
+    fund: { label: 'Quỹ mở', color: '#8b5cf6' },
+    etf: { label: 'Quỹ ETF', color: '#06b6d4' },
+    bond: { label: 'Trái phiếu', color: '#6366f1' },
     gold: { label: 'Vàng SJC / 9999', color: '#f59e0b' },
-    crypto: { label: 'Tài sản số (Crypto)', color: '#f97316' },
-    savings: { label: 'Tiết kiệm / Gửi góp', color: '#10b981' },
-    real_estate: { label: 'Bất động sản', color: '#ec4899' }
+    crypto: { label: 'Tài sản số', color: '#f97316' },
+    savings: { label: 'Tiết kiệm', color: '#10b981' },
+    real_estate: { label: 'Bất động sản', color: '#ec4899' },
+    custom: { label: 'Tài sản khác', color: '#64748b' }
   };
 
   const classTotals: Record<string, number> = {
     stock: 0,
+    fund: 0,
+    etf: 0,
+    bond: 0,
     gold: 0,
     crypto: 0,
     savings: 0,
-    real_estate: 0
+    real_estate: 0,
+    custom: 0
   };
 
   const assetsWithPnL = investments.map(asset => {

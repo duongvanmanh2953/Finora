@@ -38,10 +38,13 @@ export function RiskAlertsCard() {
       sx={{
         p: 2,
         mb: 2.5,
-        borderRadius: 3,
-        bgcolor: 'var(--bg-surface)',
+        borderRadius: 3.5,
+        bgcolor: 'transparent',
+        backgroundImage: 'var(--card-inset-bg)',
         borderColor: 'var(--border-subtle)',
-        boxShadow: 'none'
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        boxShadow: 'var(--card-inset-shadow)'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -87,7 +90,7 @@ export function RiskAlertsCard() {
                     onClick={() => handleRebalance(alert)}
                     sx={{ textTransform: 'none', fontWeight: 700, fontSize: 11, whiteSpace: 'nowrap' }}
                   >
-                    1-Click Bù ngân sách
+                     Bù ngân sách
                   </Button>
                 ) : undefined
               }

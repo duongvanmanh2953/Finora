@@ -132,7 +132,7 @@ export default function Recurring() {
 
   const toggleAutoExecute = (r: RecurringTransaction) => {
     if (!canAutoExecuteRecurring(data)) {
-      openPricing('Tự động ghi nhận định kỳ (Auto-Execute) là tính năng của gói Tích Lộc Pro');
+      openPricing('Tự động ghi nhận định kỳ (Auto-Execute) là tính năng của gói Finora Pro');
       return;
     }
     update(d => ({
@@ -160,7 +160,7 @@ export default function Recurring() {
       <PageHead
         eyebrow="LỊCH THANH TOÁN"
         title="Giao dịch định kỳ"
-        subtitle="Lên lịch thanh toán lặp lại; Tích Lộc Pro hỗ trợ tự động ghi nhận ngầm không cần bấm tay."
+        subtitle="Lên lịch thanh toán lặp lại; Finora Pro hỗ trợ tự động ghi nhận ngầm không cần bấm tay."
         actions={
           <Button
             variant="contained"

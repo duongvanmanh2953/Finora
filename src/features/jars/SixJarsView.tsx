@@ -26,6 +26,7 @@ import { useFinance } from '../../store';
 import { money, monthKey } from '../../lib/finance';
 import { MuiCurrencyInput, MuiMonthPicker } from '../../components/mui/MuiInputs';
 import { Progress } from '../../components/ui';
+import { FundLogoBadge } from '../../lib/brandBadges';
 
 interface JarDefinition {
   key: 'nec' | 'ltss' | 'educ' | 'play' | 'ffa' | 'give';
@@ -254,7 +255,6 @@ export const SixJarsView: React.FC = () => {
       {/* 6 Jars Tiles: 3 to 6 square rounded tiles */}
       <div className="tiles">
         {JARS_DATA.map(jar => {
-          const Icon = jar.icon;
           const pct = percentages[jar.key] || jar.defaultPct;
           const allocatedMoney = Math.round((totalIncomeForJars * pct) / 100);
           const spentMoney = getJarSpending(jar.key);
@@ -270,20 +270,7 @@ export const SixJarsView: React.FC = () => {
             >
               {/* Top info */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                <Box
-                  sx={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: `${jar.color}18`,
-                    color: jar.color
-                  }}
-                >
-                  <Icon size={20} />
-                </Box>
+                <FundLogoBadge name={jar.name} kind={jar.key} size="medium" />
                 <Chip
                   label={`${pct}% Thu nhập`}
                   size="small"

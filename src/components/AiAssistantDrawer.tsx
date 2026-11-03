@@ -48,7 +48,7 @@ export function AiAssistantDrawer({
     {
       id: 'welcome',
       sender: 'assistant',
-      text: 'Xin chào! Tôi là Trợ lý Tài chính AI Tích Lộc (WebMCP Copilot). Bạn có thể yêu cầu tôi kiểm tra rủi ro, phân tích dòng tiền, hoặc gõ nhanh lệnh chi tiêu, mua vàng/cổ phiếu, quẹt thẻ trả góp hay chia tiền.',
+      text: 'Xin chào! Tôi là Trợ lý Tài chính AI Finora (WebMCP Copilot). Bạn có thể yêu cầu tôi kiểm tra rủi ro, phân tích dòng tiền, hoặc gõ nhanh lệnh chi tiêu, mua vàng/cổ phiếu, quẹt thẻ trả góp hay chia tiền.',
       timestamp: '18:00'
     }
   ]);
@@ -212,7 +212,7 @@ export function AiAssistantDrawer({
           </Box>
           <Box>
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              Tích Lộc AI Copilot
+              Finora AI Copilot
             </Typography>
             <Chip
               label="WebMCP Active"

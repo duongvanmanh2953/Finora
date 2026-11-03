@@ -76,9 +76,9 @@ export default function Auth() {
       >
         <Link to="/" className="brand" style={{ padding: 0, color: 'white' }}>
           <span className="brandmark">
-            <img src="/logo.png" alt="Logo Tích Lộc" className="brandmark-img" />
+            <img src="/logo.png" alt="Logo Finora" className="brandmark-img" />
           </span>
-          Tích Lộc
+          Finora
         </Link>
         <div>
           <div

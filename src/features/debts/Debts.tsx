@@ -330,7 +330,22 @@ export default function Debts() {
       </div>
 
       {/* Add / Edit Debt Modal */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           {edit ? 'Sửa khoản nợ' : 'Thêm khoản nợ mới'}
         </DialogTitle>
@@ -388,7 +403,22 @@ export default function Debts() {
       </Dialog>
 
       {/* Payment / Recovery Modal */}
-      <Dialog open={!!pay} onClose={() => setPay(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!pay}
+        onClose={() => setPay(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           {pay?.kind === 'owed' ? 'Ghi trả nợ' : 'Ghi thu hồi nợ'} · {pay?.name || ''}
         </DialogTitle>
@@ -423,7 +453,22 @@ export default function Debts() {
       </Dialog>
 
       {/* Payment History Modal */}
-      <Dialog open={!!history} onClose={() => setHistory(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!history}
+        onClose={() => setHistory(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           Lịch sử thanh toán · {history?.name || ''}
         </DialogTitle>
@@ -477,7 +522,7 @@ export default function Debts() {
           {reminderDebt && (() => {
             const rem = debtRemaining(reminderDebt);
             const defaultAcc = data.accounts.find(a => a.id === data.user.defaultAccountId) || data.accounts[0];
-            const msg = `Chào ${reminderDebt.name}, Tích Lộc gửi lời nhắn giúp bạn khoản tiền ${money(rem)} mượn ngày ${dateLabel(reminderDebt.startDate)} đã đến hạn thanh toán (${dateLabel(reminderDebt.dueDate)}). Khi nào tiện nhờ bạn chuyển khoản giúp mình qua tài khoản [${defaultAcc?.name || 'Ngân hàng'}] nhé. Cảm ơn bạn nhiều!`;
+            const msg = `Chào ${reminderDebt.name}, Finora gửi lời nhắn giúp bạn khoản tiền ${money(rem)} mượn ngày ${dateLabel(reminderDebt.startDate)} đã đến hạn thanh toán (${dateLabel(reminderDebt.dueDate)}). Khi nào tiện nhờ bạn chuyển khoản giúp mình qua tài khoản [${defaultAcc?.name || 'Ngân hàng'}] nhé. Cảm ơn bạn nhiều!`;
 
             return (
               <>

@@ -44,12 +44,18 @@ export function MuiCurrencyInput({
 }: MuiCurrencyInputProps) {
   const strVal = String(value ?? '');
   const numericVal = parseInt(strVal.replace(/\D/g, ''), 10) || 0;
+  const formattedDisplay = numericVal > 0 ? new Intl.NumberFormat('en-US').format(numericVal) : (strVal === '0' ? '0' : '');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawDigits = e.target.value.replace(/\D/g, '');
+    onChange(rawDigits);
+  };
 
   // Smart VND Denomination Suggestions
   const suggestions = useMemo(() => {
     if (!showDenominations || numericVal <= 0) return [];
 
-    // If user typed small digits like 35, suggest 35.000, 350.000, 3.500.000
+    // If user typed small digits like 35, suggest 35,000, 350,000, 3,500,000
     if (numericVal < 1000) {
       return [
         numericVal * 1000,
@@ -71,16 +77,21 @@ export function MuiCurrencyInput({
         fullWidth
         size="small"
         label={label}
-        type="number"
-        value={value}
-        onChange={e => onChange(e.target.value)}
+        type="text"
+        value={formattedDisplay}
+        onChange={handleChange}
+        placeholder="0"
         slotProps={{
           input: {
             endAdornment: (
-              <InputAdornment position="end" sx={{ fontWeight: 700, color: 'text.secondary' }}>
+              <InputAdornment position="end" sx={{ fontWeight: 800, color: 'primary.main' }}>
                 ₫
               </InputAdornment>
-            )
+            ),
+            sx: {
+              fontVariantNumeric: 'tabular-nums',
+              fontWeight: 650
+            }
           }
         }}
         {...rest}
@@ -93,13 +104,13 @@ export function MuiCurrencyInput({
           {suggestions.map(s => (
             <Chip
               key={s}
-              label={`${new Intl.NumberFormat('vi-VN').format(s)} ₫`}
+              label={`${new Intl.NumberFormat('en-US').format(s)} ₫`}
               size="small"
               clickable
               color="primary"
               variant="outlined"
               onClick={() => onChange(String(s))}
-              sx={{ fontSize: 11, height: 22 }}
+              sx={{ fontSize: 11, height: 22, fontWeight: 650 }}
             />
           ))}
         </Box>

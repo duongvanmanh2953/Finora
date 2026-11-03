@@ -280,7 +280,22 @@ export default function Budgets() {
       )}
 
       {/* Add / Edit Budget Modal */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           {edit ? 'Sửa ngân sách' : 'Tạo ngân sách mới'}
         </DialogTitle>

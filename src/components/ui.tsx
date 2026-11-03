@@ -38,7 +38,10 @@ export function Modal({
           sx: {
             p: 1,
             borderRadius: 3,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            m: { xs: 1, sm: 2 },
+            width: { xs: 'calc(100% - 16px)', sm: 'auto' },
+            maxHeight: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 64px)' }
           }
         }
       }}
@@ -210,7 +213,21 @@ export function Confirm({
   message: string;
 }) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            m: { xs: 1.5, sm: 2 },
+            width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+            borderRadius: 3
+          }
+        }
+      }}
+    >
       <DialogTitle sx={{ fontWeight: 700, fontSize: 17 }}>{title}</DialogTitle>
       <DialogContent>
         <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>

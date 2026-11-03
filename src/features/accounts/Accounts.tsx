@@ -389,7 +389,7 @@ export default function Accounts() {
         })}
       </div>
 
-      {/* 1-Click Balance Reconciliation Modal */}
+      {/*  Balance Reconciliation Modal */}
       <ReconcileDialog
         account={reconcileAccount}
         open={!!reconcileAccount}
@@ -397,7 +397,22 @@ export default function Accounts() {
       />
 
       {/* Add / Edit Account Modal */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           {edit ? 'Sửa thông tin tài khoản' : 'Thêm tài khoản mới'}
         </DialogTitle>
@@ -531,7 +546,22 @@ export default function Accounts() {
       </Dialog>
 
       {/* Internal Transfer Modal */}
-      <Dialog open={transfer} onClose={() => setTransfer(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={transfer}
+        onClose={() => setTransfer(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>Chuyển tiền nội bộ</DialogTitle>
         <DialogContent dividers sx={{ display: 'grid', gap: 2, pt: '16px !important' }}>
           {error && <Alert severity="error">{error}</Alert>}
@@ -577,7 +607,22 @@ export default function Accounts() {
       </Dialog>
 
       {/* Account History Modal */}
-      <Dialog open={!!history} onClose={() => setHistory(null)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={!!history}
+        onClose={() => setHistory(null)}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           Lịch sử giao dịch · {history?.name || ''}
         </DialogTitle>

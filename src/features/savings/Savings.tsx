@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { differenceInCalendarMonths, parseISO } from 'date-fns';
-import { Plus, Target, Pencil, Trash2, History, Laptop, ShieldCheck, Plane } from 'lucide-react';
+import { Plus, Pencil, Trash2, History } from 'lucide-react';
 import {
   Box,
   Button,
@@ -25,6 +25,7 @@ import {
   MuiCurrencyInput,
   MuiDatePicker
 } from '../../components/mui/MuiInputs';
+import { FundLogoBadge } from '../../lib/brandBadges';
 import type { SavingsGoal, Transaction } from '../../types';
 
 export default function Savings() {
@@ -170,10 +171,6 @@ export default function Savings() {
 
       <div className="tiles">
         {data.goals.map(g => {
-          const Icon =
-            { Target, Laptop, ShieldCheck, Plane }[
-              g.icon as 'Target' | 'Laptop' | 'ShieldCheck' | 'Plane'
-            ] || Target;
           const saved = goalSaved(g),
             remaining = Math.max(0, g.target - saved),
             months = Math.max(1, differenceInCalendarMonths(parseISO(g.dueDate), new Date()));
@@ -185,20 +182,7 @@ export default function Savings() {
               sx={{ borderRadius: 3, p: 2.5 }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                <Box
-                  sx={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: 'rgba(21, 150, 107, 0.12)',
-                    color: '#15966B'
-                  }}
-                >
-                  <Icon size={18} />
-                </Box>
+                <FundLogoBadge name={g.name} kind={g.icon} size="medium" />
                 <Chip
                   label={saved >= g.target ? 'Hoàn thành' : dateLabel(g.dueDate)}
                   size="small"
@@ -278,7 +262,22 @@ export default function Savings() {
       </div>
 
       {/* Add / Edit Goal Modal */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           {edit ? 'Sửa mục tiêu tiết kiệm' : 'Tạo mục tiêu tiết kiệm mới'}
         </DialogTitle>
@@ -339,7 +338,22 @@ export default function Savings() {
       </Dialog>
 
       {/* Contribute Funds Modal */}
-      <Dialog open={!!contribute} onClose={() => setContribute(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!contribute}
+        onClose={() => setContribute(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           Thêm tiền vào · {contribute?.name || ''}
         </DialogTitle>
@@ -374,7 +388,22 @@ export default function Savings() {
       </Dialog>
 
       {/* Contribution History Modal */}
-      <Dialog open={!!history} onClose={() => setHistory(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={!!history}
+        onClose={() => setHistory(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1.5, sm: 2 },
+              width: { xs: 'calc(100% - 24px)', sm: 'auto' },
+              borderRadius: 3,
+              maxHeight: 'calc(100% - 32px)'
+            }
+          }
+        }}
+      >
         <DialogTitle sx={{ fontWeight: 800 }}>
           Lịch sử đóng góp · {history?.name || ''}
         </DialogTitle>

@@ -90,7 +90,7 @@ export function updateStreak(user: User, activityDate: string = todayKey()): { s
 }
 
 /**
- * 1-Click Balance Reconciliation
+ *  Balance Reconciliation
  * chênh_lệch = Số_dư_thực_tế - Số_dư_trên_app
  * Sinh ra 1 giao dịch điều chỉnh (Thu hoặc Chi) vào danh mục "Điều chỉnh số dư / Quên ghi"
  */

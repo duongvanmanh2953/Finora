@@ -7,7 +7,8 @@ import {
   Palette,
   Tags,
   Crown,
-  Sparkles
+  Sparkles,
+  Star
 } from 'lucide-react';
 import {
   Box,
@@ -38,6 +39,42 @@ export default function Settings() {
   const [day, setDay] = useState(data.user.financialMonthStart);
   const [alerts, setAlerts] = useState(localStorage.getItem('finora:alerts') !== 'off');
   const [resetOpen, setResetOpen] = useState(false);
+
+  // Favorites Navigation Customization
+  const DEFAULT_FAVORITES = ['/', '/transactions', '/budgets', '/reports'];
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('finora_favorite_menus');
+      return saved ? JSON.parse(saved) : DEFAULT_FAVORITES;
+    } catch {
+      return DEFAULT_FAVORITES;
+    }
+  });
+
+  const toggleFavorite = (url: string) => {
+    setFavorites(prev => {
+      const next = prev.includes(url) ? prev.filter(u => u !== url) : [...prev, url];
+      localStorage.setItem('finora_favorite_menus', JSON.stringify(next));
+      window.dispatchEvent(new Event('finora-favorites-updated'));
+      notify(next.includes(url) ? 'Đã thêm vào Mục Yêu Thích ⭐' : 'Đã đưa về Mục Gốc');
+      return next;
+    });
+  };
+
+  const ALL_FEATURES = [
+    { url: '/', label: 'Tổng quan', category: 'Tổng quan' },
+    { url: '/transactions', label: 'Giao dịch', category: 'Tài chính' },
+    { url: '/accounts', label: 'Tài khoản & Ví', category: 'Tài chính' },
+    { url: '/budgets', label: 'Ngân sách', category: 'Tài chính' },
+    { url: '/categories', label: 'Danh mục thu chi', category: 'Tài chính' },
+    { url: '/payroll', label: 'Lương & Thuế', category: 'Tài chính' },
+    { url: '/assets', label: 'Tài sản & Đầu tư', category: 'Tài sản & Đầu tư' },
+    { url: '/savings', label: 'Mục tiêu tiết kiệm', category: 'Tài sản & Đầu tư' },
+    { url: '/debts', label: 'Quản lý nợ & Cho vay', category: 'Tài sản & Đầu tư' },
+    { url: '/reports', label: 'Báo cáo & Phân tích', category: 'Hệ thống' },
+    { url: '/recurring', label: 'Giao dịch định kỳ', category: 'Hệ thống' },
+    { url: '/settings', label: 'Cài đặt hệ thống', category: 'Hệ thống' }
+  ];
 
   const isPro = isProUser(data);
 
@@ -264,6 +301,70 @@ export default function Settings() {
             >
               Khôi phục dữ liệu mẫu
             </Button>
+          </Box>
+        </Card>
+
+        {/* Navigation Favorites Customization Card */}
+        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
+          <div className="section-head">
+            <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Star size={18} fill="#F59E0B" color="#F59E0B" /> Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.25 }}>
+              Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại <strong>Mục Yêu Thích</strong> và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu.
+            </Typography>
+          </div>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
+              gap: 1.5,
+              mt: 2
+            }}
+          >
+            {ALL_FEATURES.map(feat => {
+              const isFav = favorites.includes(feat.url);
+              return (
+                <Paper
+                  key={feat.url}
+                  variant="outlined"
+                  onClick={() => toggleFavorite(feat.url)}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    bgcolor: isFav ? 'rgba(245, 158, 11, 0.08)' : 'background.paper',
+                    borderColor: isFav ? 'rgba(245, 158, 11, 0.4)' : 'divider',
+                    transition: 'all 0.15s ease',
+                    '&:hover': {
+                      borderColor: '#F59E0B',
+                      bgcolor: 'rgba(245, 158, 11, 0.04)'
+                    }
+                  }}
+                >
+                  <Box sx={{ minWidth: 0, pr: 1 }}>
+                    <Typography variant="body2" sx={{ fontWeight: isFav ? 800 : 650, color: isFav ? '#B45309' : 'text.primary', fontSize: '0.88rem' }}>
+                      {feat.label}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                      {feat.category}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Star
+                      size={17}
+                      fill={isFav ? '#F59E0B' : 'none'}
+                      color={isFav ? '#F59E0B' : 'var(--text-secondary)'}
+                    />
+                  </Box>
+                </Paper>
+              );
+            })}
           </Box>
         </Card>
       </div>

@@ -33,6 +33,7 @@ import ArrowCircleDownRounded from '@mui/icons-material/ArrowCircleDownRounded';
 import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded';
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded';
 import SearchRounded from '@mui/icons-material/SearchRounded';
+import AddCircleRounded from '@mui/icons-material/AddCircleRounded';
 
 import { useFinance } from '../../store';
 import { money, todayKey, uid } from '../../lib/finance';
@@ -41,9 +42,10 @@ import type { InvestmentNote } from '../../types/smartLedger';
 
 interface UnrecoveredAssetsTableProps {
   notes: InvestmentNote[];
+  onOpenAddModal?: () => void;
 }
 
-export function UnrecoveredAssetsTable({ notes }: UnrecoveredAssetsTableProps) {
+export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAssetsTableProps) {
   const { data, update, notify } = useFinance();
 
   const [activeTab, setActiveTab] = useState<'ALL' | 'SAFE' | 'RISKY' | 'RECOVERED'>('ALL');
@@ -222,18 +224,39 @@ export function UnrecoveredAssetsTable({ notes }: UnrecoveredAssetsTableProps) {
           </Tabs>
         </Box>
 
-        <TextField
-          size="small"
-          placeholder="Tìm kiếm tài sản, mã..."
-          value={searchTerm}
-          onChange={e => { setSearchTerm(e.target.value); setPage(0); }}
-          slotProps={{
-            input: {
-              startAdornment: <SearchRounded sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />,
-              sx: { borderRadius: '4px', fontSize: '0.82rem', height: 34 }
-            }
-          }}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TextField
+            size="small"
+            placeholder="Tìm kiếm tài sản, mã..."
+            value={searchTerm}
+            onChange={e => { setSearchTerm(e.target.value); setPage(0); }}
+            slotProps={{
+              input: {
+                startAdornment: <SearchRounded sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />,
+                sx: { borderRadius: '4px', fontSize: '0.82rem', height: 34 }
+              }
+            }}
+          />
+          {onOpenAddModal && (
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<AddCircleRounded sx={{ fontSize: 16 }} />}
+              onClick={onOpenAddModal}
+              sx={{
+                height: 34,
+                px: 1.5,
+                fontWeight: 750,
+                fontSize: '0.82rem',
+                textTransform: 'none',
+                bgcolor: 'var(--brand-primary, #315C50)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+              }}
+            >
+              Thêm mục đầu tư
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* 2. Table */}

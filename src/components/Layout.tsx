@@ -27,7 +27,9 @@ import {
   Cloud,
   Banknote,
   Server,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Star,
+  Lock
 } from 'lucide-react';
 import {
   Button,
@@ -47,36 +49,46 @@ import { PricingDialog } from './PricingDialog';
 import { AiAssistantDrawer } from './AiAssistantDrawer';
 import { CloudSyncModal } from './CloudSyncModal';
 
-const navOverview = [
-  ['/', 'Tổng quan', LayoutDashboard]
-] as const;
+export interface NavItemConfig {
+  url: string;
+  label: string;
+  icon: any;
+  isPro?: boolean;
+  subItems?: { url: string; label: string }[];
+}
 
-const navFinance = [
-  ['/transactions', 'Giao dịch', ArrowLeftRight],
-  ['/accounts', 'Tài khoản & Ví', Wallet],
-  ['/budgets', 'Ngân sách', ChartPie],
-  ['/categories', 'Danh mục thu chi', CircleDollarSign],
-  ['/payroll', 'Lương & Thuế', Banknote]
-] as const;
+const navOverview: NavItemConfig[] = [
+  { url: '/', label: 'Tổng quan', icon: LayoutDashboard }
+];
 
-const navWealth = [
-  ['/assets', 'Tài sản & Đầu tư', TrendingUp],
-  ['/savings', 'Mục tiêu tiết kiệm', Target],
-  ['/debts', 'Quản lý nợ & Cho vay', HandCoins]
-] as const;
+const navFinance: NavItemConfig[] = [
+  { url: '/transactions', label: 'Giao dịch', icon: ArrowLeftRight },
+  { url: '/accounts', label: 'Tài khoản & Ví', icon: Wallet },
+  { url: '/budgets', label: 'Ngân sách', icon: ChartPie },
+  { url: '/categories', label: 'Danh mục thu chi', icon: CircleDollarSign },
+  { url: '/payroll', label: 'Lương & Thuế', icon: Banknote, isPro: true }
+];
 
-const navSystem = [
-  ['/reports', 'Báo cáo & Phân tích', ChartNoAxesCombined],
-  ['/recurring', 'Giao dịch định kỳ', CalendarClock],
-  ['/settings', 'Cài đặt hệ thống', Settings]
-] as const;
+const navWealth: NavItemConfig[] = [
+  { url: '/assets', label: 'Tài sản & Đầu tư', icon: TrendingUp, isPro: true },
+  { url: '/savings', label: 'Mục tiêu tiết kiệm', icon: Target },
+  { url: '/debts', label: 'Quản lý nợ & Cho vay', icon: HandCoins }
+];
 
-const nav = [
+const navSystem: NavItemConfig[] = [
+  { url: '/reports', label: 'Báo cáo & Phân tích', icon: ChartNoAxesCombined, isPro: true },
+  { url: '/recurring', label: 'Giao dịch định kỳ', icon: CalendarClock, isPro: true },
+  { url: '/settings', label: 'Cài đặt hệ thống', icon: Settings }
+];
+
+const allNavItems: NavItemConfig[] = [
   ...navOverview,
   ...navFinance,
   ...navWealth,
   ...navSystem
-] as const;
+];
+
+const nav = allNavItems.map(n => [n.url, n.label, n.icon] as const);
 
 export function Layout() {
   const [open, setOpen] = useState(false);
@@ -102,6 +114,50 @@ export function Layout() {
 
   const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Finora';
   const isPro = data ? isProUser(data) : false;
+
+  // Favorite / Pinned Menu Items in Sidebar
+  const DEFAULT_FAVORITES = ['/', '/transactions', '/budgets', '/reports'];
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('finora_favorite_menus');
+      return saved ? JSON.parse(saved) : DEFAULT_FAVORITES;
+    } catch {
+      return DEFAULT_FAVORITES;
+    }
+  });
+
+  // Sync favorites when updated from Settings or other components
+  useEffect(() => {
+    const handleFavSync = () => {
+      try {
+        const saved = localStorage.getItem('finora_favorite_menus');
+        if (saved) setFavorites(JSON.parse(saved));
+      } catch {}
+    };
+    window.addEventListener('finora-favorites-updated', handleFavSync);
+    window.addEventListener('storage', handleFavSync);
+    return () => {
+      window.removeEventListener('finora-favorites-updated', handleFavSync);
+      window.removeEventListener('storage', handleFavSync);
+    };
+  }, []);
+
+  const toggleFavorite = (e: React.MouseEvent, url: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFavorites(prev => {
+      const next = prev.includes(url) ? prev.filter(u => u !== url) : [...prev, url];
+      localStorage.setItem('finora_favorite_menus', JSON.stringify(next));
+      window.dispatchEvent(new Event('finora-favorites-updated'));
+      return next;
+    });
+  };
+
+  const favoriteNavItems = allNavItems.filter(item => favorites.includes(item.url));
+  const unpinnedOverview = navOverview.filter(item => !favorites.includes(item.url));
+  const unpinnedFinance = navFinance.filter(item => !favorites.includes(item.url));
+  const unpinnedWealth = navWealth.filter(item => !favorites.includes(item.url));
+  const unpinnedSystem = navSystem.filter(item => !favorites.includes(item.url));
 
   const handleTogglePro = async () => {
     const nextPlan = isPro ? 'free' : 'pro';
@@ -169,6 +225,92 @@ export function Layout() {
   const streak = data?.user.streakCount || 1;
   const isCheckedInToday = data?.user.lastCheckInDate === todayKey();
 
+  const renderNavItem = (item: NavItemConfig, isPinnedSection = false) => {
+    const Icon = item.icon;
+    const isLocked = item.isPro && !isPro;
+    const isFav = favorites.includes(item.url);
+
+    return (
+      <Box key={`${isPinnedSection ? 'fav-' : ''}${item.url}`} sx={{ mb: 0.25 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+          <NavLink
+            to={item.url}
+            end={item.url === '/'}
+            className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+            onClick={(e) => {
+              if (isLocked) {
+                e.preventDefault();
+                openPricing(item.label);
+                return;
+              }
+              setOpen(false);
+            }}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              paddingRight: 6
+            }}
+          >
+            <Icon size={18} />
+            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {item.label}
+            </span>
+
+            {/* Lock Icon for Advanced/PRO features */}
+            {isLocked && (
+              <Tooltip title="Tính năng nâng cao (Gói Pro) - Bấm để nạp tiền/nâng cấp">
+                <Box
+                  component="span"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openPricing(item.label);
+                  }}
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.25,
+                    px: 0.6,
+                    py: 0.2,
+                    borderRadius: '4px',
+                    bgcolor: 'rgba(217, 154, 54, 0.15)',
+                    color: '#D99A36',
+                    fontSize: 10,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    mr: 0.5
+                  }}
+                >
+                  <Lock size={11} />
+                  <span>PRO</span>
+                </Box>
+              </Tooltip>
+            )}
+
+            {/* Star Favorite Button */}
+            <IconButton
+              size="small"
+              onClick={(e) => toggleFavorite(e, item.url)}
+              title={isFav ? 'Bỏ ghim khỏi yêu thích (về mục gốc)' : 'Ghim vào mục yêu thích'}
+              sx={{
+                p: 0.35,
+                color: isFav ? '#F59E0B' : 'text.secondary',
+                opacity: isFav ? 1 : 0.35,
+                transition: 'all 0.15s ease',
+                '&:hover': { opacity: 1, color: '#F59E0B' }
+              }}
+              aria-label={isFav ? 'Bỏ ghim yêu thích' : 'Ghim tính năng yêu thích'}
+            >
+              <Star size={13} fill={isFav ? '#F59E0B' : 'none'} />
+            </IconButton>
+          </NavLink>
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <div className={theme}>
       <div className="app">
@@ -231,59 +373,49 @@ export function Layout() {
             </Box>
           )}
 
-          <div className="navlabel">TỔNG QUAN</div>
           <nav aria-label="Điều hướng chính">
-            {navOverview.map(([url, label, Icon]) => (
-              <NavLink
-                key={url}
-                to={url}
-                end={url === '/'}
-                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            {/* 0. MỤC YÊU THÍCH (PINNED FAVORITES) */}
+            {favoriteNavItems.length > 0 && (
+              <Box sx={{ mb: 1.5, pb: 1, borderBottom: '1px solid var(--border-subtle)' }}>
+                <div className="navlabel" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#F59E0B', paddingBottom: 4 }}>
+                  <Star size={12} fill="#F59E0B" color="#F59E0B" />
+                  <span>MỤC YÊU THÍCH ({favoriteNavItems.length})</span>
+                </div>
+                {favoriteNavItems.map(item => renderNavItem(item, true))}
+              </Box>
+            )}
 
-            <div className="navlabel">TÀI CHÍNH</div>
-            {navFinance.map(([url, label, Icon]) => (
-              <NavLink
-                key={url}
-                to={url}
-                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            {/* 1. TỔNG QUAN (Chỉ hiện nếu chưa ghim vào Yêu thích) */}
+            {unpinnedOverview.length > 0 && (
+              <>
+                <div className="navlabel">TỔNG QUAN</div>
+                {unpinnedOverview.map(item => renderNavItem(item))}
+              </>
+            )}
 
-            <div className="navlabel">TÀI SẢN & ĐẦU TƯ</div>
-            {navWealth.map(([url, label, Icon]) => (
-              <NavLink
-                key={url}
-                to={url}
-                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            {/* 2. TÀI CHÍNH (Chỉ hiện nếu chưa ghim vào Yêu thích) */}
+            {unpinnedFinance.length > 0 && (
+              <>
+                <div className="navlabel">TÀI CHÍNH</div>
+                {unpinnedFinance.map(item => renderNavItem(item))}
+              </>
+            )}
 
-            <div className="navlabel">HỆ THỐNG</div>
-            {navSystem.map(([url, label, Icon]) => (
-              <NavLink
-                key={url}
-                to={url}
-                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </NavLink>
-            ))}
+            {/* 3. TÀI SẢN & ĐẦU TƯ (Chỉ hiện nếu chưa ghim vào Yêu thích) */}
+            {unpinnedWealth.length > 0 && (
+              <>
+                <div className="navlabel">TÀI SẢN & ĐẦU TƯ</div>
+                {unpinnedWealth.map(item => renderNavItem(item))}
+              </>
+            )}
+
+            {/* 4. HỆ THỐNG (Chỉ hiện nếu chưa ghim vào Yêu thích) */}
+            {unpinnedSystem.length > 0 && (
+              <>
+                <div className="navlabel">HỆ THỐNG</div>
+                {unpinnedSystem.map(item => renderNavItem(item))}
+              </>
+            )}
 
             <div className="navlabel">QUẢN TRỊ NỀN TẢNG</div>
             <NavLink

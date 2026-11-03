@@ -41,7 +41,9 @@ import {
   Alert,
   ToggleButtonGroup,
   ToggleButton,
-  Tooltip
+  Tooltip,
+  Tabs,
+  Tab
 } from '@mui/material';
 
 import { useFinance } from '../../store';
@@ -101,6 +103,17 @@ export default function Transactions() {
   const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string>('');
   const [open, setOpen] = useState(params.get('add') === '1');
+
+  // Submenu tabs: 'ledger' (Sổ giao dịch CRUD) vs 'timeline' (Dòng thời gian & Hóa đơn)
+  const activeSubTab = (params.get('tab') as 'ledger' | 'timeline') || 'ledger';
+
+  const handleSubTabChange = (newTab: 'ledger' | 'timeline') => {
+    setParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', newTab);
+      return next;
+    });
+  };
 
   // View mode: 'timeline' (revolutionary feed) vs 'table' (classic grid)
   const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
@@ -367,25 +380,62 @@ export default function Transactions() {
         }
       />
 
+      {/* Submenu Navigation: Sổ giao dịch (CRUD) vs Dòng thời gian & Hóa đơn */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2.5 }}>
+        <Tabs
+          value={activeSubTab}
+          onChange={(_, v) => handleSubTabChange(v)}
+          sx={{
+            minHeight: 42,
+            '& .MuiTab-root': {
+              minHeight: 42,
+              py: 0.5,
+              px: { xs: 1.5, sm: 2.5 },
+              fontWeight: 800,
+              fontSize: { xs: '0.8rem', sm: '0.88rem' },
+              textTransform: 'none'
+            }
+          }}
+        >
+          <Tab
+            value="ledger"
+            label="Sổ giao dịch (Quản lý CRUD)"
+            icon={<List size={16} />}
+            iconPosition="start"
+          />
+          <Tab
+            value="timeline"
+            label="Dòng thời gian & Hóa đơn"
+            icon={<Calendar size={16} />}
+            iconPosition="start"
+          />
+        </Tabs>
+      </Box>
+
       {/* Smart NLP Quick Entry Bar */}
       <Box sx={{ mb: 3 }}>
         <SmartQuickEntry />
       </Box>
 
-      {/* Full CRUD Transaction Manager Table & Filters */}
-      <Box sx={{ mb: 3 }}>
-        <TransactionManagerCRUD />
-      </Box>
+      {/* SUBMENU 1: Full CRUD Transaction Manager Table & Filters */}
+      {activeSubTab === 'ledger' && (
+        <Box sx={{ mb: 3 }}>
+          <TransactionManagerCRUD />
+        </Box>
+      )}
 
-      {/* 3D Debossed Executive Flow Summary Bento */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-          gap: 2,
-          mb: 3
-        }}
-      >
+      {/* SUBMENU 2: 3D Debossed Flow Summary Bento & Interactive Timeline Feed */}
+      {activeSubTab === 'timeline' && (
+        <>
+          {/* 3D Debossed Executive Flow Summary Bento */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+              gap: 2,
+              mb: 3
+            }}
+          >
         {/* Total Inflow */}
         <Box
           sx={{
@@ -1662,6 +1712,8 @@ export default function Transactions() {
           }}
         />
       </Box>
+      </>
+      )}
 
       {/* MUI Modal: Add / Edit Transaction (100% MUI, Zero native inputs) */}
       <Dialog

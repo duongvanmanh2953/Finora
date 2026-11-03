@@ -16,22 +16,24 @@ export interface SemiCircleGaugeProps {
   factors?: { label: string; impact: string; isPositive?: boolean }[];
   recommendation?: string;
   size?: number; // default width 220
-  inverted?: boolean; // if true, higher score is better (e.g. Feasibility)
+  inverted?: boolean; // if true, 0 is best (green) and 100 is worst (red). Default: 100 is best (green), 0 is worst (red)
   unitLabel?: string; // default '/100'
 }
 
-const DEFAULT_RISK_ZONES: GaugeZone[] = [
-  { min: 0, max: 24, color: '#15803D', label: 'An toàn' },
-  { min: 25, max: 49, color: '#D97706', label: 'Trung bình' },
-  { min: 50, max: 74, color: '#EA580C', label: 'Cảnh báo' },
-  { min: 75, max: 100, color: '#DC2626', label: 'Nguy cấp' }
+// 4 equal contiguous zones (25% each): Đỏ -> Vàng -> Xanh dương -> Xanh lá (Bright & High-Contrast)
+const HEALTH_ZONES: GaugeZone[] = [
+  { min: 0, max: 25, color: '#FF5252', label: 'Báo động' },
+  { min: 25, max: 50, color: '#FBBF24', label: 'Cần chú ý' },
+  { min: 50, max: 75, color: '#38BDF8', label: 'An toàn' },
+  { min: 75, max: 100, color: '#34D399', label: 'Rất tốt' }
 ];
 
-const FEASIBILITY_ZONES: GaugeZone[] = [
-  { min: 0, max: 39, color: '#DC2626', label: 'Khó đạt' },
-  { min: 40, max: 69, color: '#D97706', label: 'Cần nỗ lực' },
-  { min: 70, max: 89, color: '#2563EB', label: 'Khả thi tốt' },
-  { min: 90, max: 100, color: '#15803D', label: 'Rất khả thi' }
+// Inverted risk zones: Xanh lá -> Xanh dương -> Vàng -> Đỏ
+const RISK_ZONES: GaugeZone[] = [
+  { min: 0, max: 25, color: '#34D399', label: 'An toàn' },
+  { min: 25, max: 50, color: '#38BDF8', label: 'Thấp' },
+  { min: 50, max: 75, color: '#FBBF24', label: 'Cảnh báo' },
+  { min: 75, max: 100, color: '#FF5252', label: 'Nguy cấp' }
 ];
 
 export function SemiCircleGauge({
@@ -46,22 +48,21 @@ export function SemiCircleGauge({
   unitLabel = '/100'
 }: SemiCircleGaugeProps) {
   const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
-  const zones = inverted ? FEASIBILITY_ZONES : DEFAULT_RISK_ZONES;
+  const zones = inverted ? RISK_ZONES : HEALTH_ZONES;
 
   // Find active zone
   const activeZone = zones.find(z => clampedScore >= z.min && clampedScore <= z.max) || zones[0];
 
   // SVG Geometry Constants
-  const strokeWidth = 16;
+  const strokeWidth = 14;
   const radius = (size - strokeWidth * 2) / 2;
   const centerX = size / 2;
-  const centerY = size / 2 + 10;
+  const centerY = size / 2;
 
-  // Arc Angle: 180 degrees (from PI to 2*PI, or -180 to 0)
-  // Needle Angle: 0 score = -180deg (left), 100 score = 0deg (right)
-  const needleAngle = -180 + (clampedScore / 100) * 180;
+  // Needle Angle: Unrotated needle points straight UP (0deg = NORTH = 50 score)
+  // Score 0 = WEST (-90deg), Score 50 = NORTH (0deg), Score 100 = EAST (+90deg)
+  const needleAngle = -90 + (clampedScore / 100) * 180;
 
-  // Generate 4 arc paths for the 4 zones with a small gap
   const polarToCartesian = (cx: number, cy: number, r: number, angleInDegrees: number) => {
     const angleInRadians = (angleInDegrees * Math.PI) / 180;
     return {
@@ -77,9 +78,10 @@ export function SemiCircleGauge({
     return ['M', start.x, start.y, 'A', r, r, 0, largeArcFlag, 0, end.x, end.y].join(' ');
   };
 
+  // 4 equal contiguous segments (45 degrees each), perfectly meeting without gaps
   const zoneArcs = zones.map((z, idx) => {
-    const startAngle = -180 + (z.min / 100) * 180 + (idx > 0 ? 1.5 : 0);
-    const endAngle = -180 + (z.max / 100) * 180 - (idx < zones.length - 1 ? 1.5 : 0);
+    const startAngle = -180 + idx * 45;
+    const endAngle = -180 + (idx + 1) * 45;
     return {
       ...z,
       d: describeArc(centerX, centerY, radius, startAngle, endAngle)
@@ -90,7 +92,7 @@ export function SemiCircleGauge({
     <Paper
       elevation={0}
       sx={{
-        p: 2.25,
+        p: { xs: 1.75, sm: 2.25 },
         borderRadius: '12px',
         border: '1px solid',
         borderColor: 'divider',
@@ -138,37 +140,46 @@ export function SemiCircleGauge({
       </Box>
 
       {/* Speedometer Gauge Visual */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5 }}>
-        <svg width={size} height={size / 2 + 34} viewBox={`0 0 ${size} ${size / 2 + 34}`}>
-          {/* Background Arc Tracks */}
-          {zoneArcs.map((arc, i) => (
-            <path
-              key={i}
-              d={arc.d}
-              fill="none"
-              stroke={arc.color}
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              opacity={clampedScore >= arc.min && clampedScore <= arc.max ? 1 : 0.3}
-            />
-          ))}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%' }}>
+        <svg
+          width="100%"
+          height={size / 2 + 16}
+          viewBox={`0 0 ${size} ${size / 2 + 16}`}
+          style={{ maxWidth: size, display: 'block', overflow: 'visible' }}
+        >
+          {/* Background Arc: 4 equal seamless contiguous segments */}
+          {zoneArcs.map((arc, i) => {
+            const isActive = arc === activeZone;
+            return (
+              <path
+                key={i}
+                d={arc.d}
+                fill="none"
+                stroke={arc.color}
+                strokeWidth={isActive ? strokeWidth + 1 : strokeWidth}
+                strokeLinecap={i === 0 || i === zoneArcs.length - 1 ? 'round' : 'butt'}
+                opacity={isActive ? 1 : 0.45}
+                style={{ transition: 'all 0.3s ease' }}
+              />
+            );
+          })}
 
-          {/* Needle Center Pivot */}
-          <circle cx={centerX} cy={centerY} r={8} fill="currentColor" opacity={0.85} />
+          {/* Needle Center Pivot Base */}
+          <circle cx={centerX} cy={centerY} r={8} fill="var(--text-primary, #1e293b)" opacity={0.9} />
           <circle cx={centerX} cy={centerY} r={4} fill="#FFFFFF" />
 
-          {/* Rotating Needle */}
+          {/* Rotating Needle pointing accurately to current value */}
           <g transform={`rotate(${needleAngle}, ${centerX}, ${centerY})`}>
             <polygon
               points={`${centerX - 3},${centerY} ${centerX + 3},${centerY} ${centerX},${centerY - radius + 4}`}
               fill={activeZone.color}
-              style={{ transition: 'transform 0.4s ease-out' }}
+              style={{ transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }}
             />
           </g>
         </svg>
 
-        {/* Center Score & Assessment Badge */}
-        <Box sx={{ textAlign: 'center', mt: -2.5 }}>
+        {/* Value and Zone Badge sitting cleanly UNDER the speedometer needle pivot */}
+        <Box sx={{ textAlign: 'center', mt: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5 }}>
             <Typography
               variant="h4"
@@ -176,12 +187,13 @@ export function SemiCircleGauge({
                 fontWeight: 900,
                 color: activeZone.color,
                 letterSpacing: '-0.02em',
-                lineHeight: 1
+                lineHeight: 1,
+                fontSize: { xs: '1.75rem', sm: '2rem' }
               }}
             >
               {clampedScore}
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: '0.85rem' }}>
               {unitLabel}
             </Typography>
           </Box>
@@ -190,15 +202,15 @@ export function SemiCircleGauge({
             variant="caption"
             sx={{
               display: 'inline-block',
-              mt: 0.5,
-              px: 1,
-              py: 0.25,
+              mt: 0.75,
+              px: 1.25,
+              py: 0.35,
               borderRadius: '6px',
               fontWeight: 750,
-              fontSize: '0.72rem',
+              fontSize: '0.74rem',
               bgcolor: `${activeZone.color}15`,
               color: activeZone.color,
-              border: `1px solid ${activeZone.color}35`
+              border: `1px solid ${activeZone.color}40`
             }}
           >
             {activeZone.label}
@@ -215,7 +227,7 @@ export function SemiCircleGauge({
           {factors.map((f, i) => (
             <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
               <span style={{ color: 'var(--text-secondary)' }}>{f.label}</span>
-              <strong style={{ color: f.isPositive ? '#15803D' : f.isPositive === false ? '#B91C1C' : 'inherit' }}>
+              <strong style={{ color: f.isPositive ? '#10B981' : f.isPositive === false ? '#EF4444' : 'inherit' }}>
                 {f.impact}
               </strong>
             </Box>

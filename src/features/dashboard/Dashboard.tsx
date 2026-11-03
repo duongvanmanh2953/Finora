@@ -297,21 +297,31 @@ export default function Dashboard() {
             variant="h4"
             sx={{
               fontWeight: 850,
-              fontSize: { xs: 24, sm: 28 },
+              fontSize: { xs: 21, sm: 26, md: 28 },
               letterSpacing: '-0.03em',
               color: 'text.primary',
-              mt: 0.25
+              mt: 0.25,
+              lineHeight: 1.2
             }}
           >
             Tổng quan tài chính
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: 13, mt: 0.25 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: { xs: 12, sm: 13 }, mt: 0.25 }}>
             Theo dõi và kiểm soát dòng tiền của bạn.
           </Typography>
         </Box>
 
         {/* Right Controls: Month Selector, Visibility, + Thêm giao dịch */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 0.75, sm: 1.25 },
+            flexWrap: 'wrap',
+            width: { xs: '100%', md: 'auto' },
+            justifyContent: { xs: 'flex-start', sm: 'flex-end' }
+          }}
+        >
           {/* Month Selector Pill */}
           <Paper
             variant="outlined"
@@ -336,8 +346,8 @@ export default function Dashboard() {
               sx={{
                 background: 'none',
                 border: 'none',
-                px: 1.25,
-                fontSize: 12.5,
+                px: { xs: 0.75, sm: 1.25 },
+                fontSize: { xs: 11.5, sm: 12.5 },
                 fontWeight: 750,
                 color: 'text.primary',
                 cursor: 'pointer',
@@ -383,6 +393,7 @@ export default function Dashboard() {
               variant="primary"
               size="medium"
               startIcon={<Plus size={16} />}
+              sx={{ minHeight: 38, fontSize: { xs: 12, sm: 13 }, px: { xs: 1.5, sm: 2 } }}
             >
               Thêm giao dịch
             </FinoraButton>
@@ -395,7 +406,7 @@ export default function Dashboard() {
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-          gap: 2,
+          gap: { xs: 1.5, sm: 2 },
           mb: 3
         }}
       >
@@ -404,7 +415,7 @@ export default function Dashboard() {
           id="tour-net-worth-card"
           variant="outlined"
           sx={{
-            p: 2.25,
+            p: { xs: 1.75, sm: 2.25 },
             borderRadius: '12px',
             bgcolor: 'background.paper',
             borderColor: data.hideRiskyAssetsGlobal ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-subtle)',
@@ -412,14 +423,14 @@ export default function Dashboard() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 124,
+            minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
             '&:hover': { borderColor: 'var(--border-strong)' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
                 TỔNG TÀI SẢN RÒNG
               </Typography>
               {data.hideRiskyAssetsGlobal && (
@@ -430,24 +441,27 @@ export default function Dashboard() {
                 />
               )}
             </Box>
-            <IconContainer icon={<Landmark size={16} />} module="accounts" size={32} />
+            <IconContainer icon={<Landmark size={16} />} module="accounts" size={30} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
               variant="h5"
               sx={{
                 fontWeight: 900,
-                fontSize: { xs: 22, sm: 24 },
+                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: data.hideRiskyAssetsGlobal ? '#059669' : 'text.primary'
+                color: data.hideRiskyAssetsGlobal ? '#059669' : 'text.primary',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
             >
               {mask(money(netWorthSummary.headlineNetWorth))}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5, flexWrap: 'wrap', gap: 0.5 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
                 Tiền mặt: {shortMoney(netWorthSummary.cashBalance)} · Đầu tư: {shortMoney(netWorthSummary.totalInvestmentValue)}
               </Typography>
             </Box>
@@ -458,7 +472,7 @@ export default function Dashboard() {
         <Paper
           variant="outlined"
           sx={{
-            p: 2.25,
+            p: { xs: 1.75, sm: 2.25 },
             borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
@@ -466,32 +480,35 @@ export default function Dashboard() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 124,
+            minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
             '&:hover': { borderColor: 'var(--border-strong)' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
               TỔNG THU NHẬP
             </Typography>
-            <IconContainer icon={<TrendingUp size={16} />} module="income" size={32} />
+            <IconContainer icon={<TrendingUp size={16} />} module="income" size={30} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
               variant="h5"
               sx={{
                 fontWeight: 900,
-                fontSize: { xs: 22, sm: 24 },
+                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--accent-income)'
+                color: 'var(--accent-income)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
             >
               {mask(`+${money(income)}`)}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
               {incomeChange !== 0 ? (
                 <StatusBadge
                   label={`${incomeChange > 0 ? '+' : ''}${incomeChange}%`}
@@ -500,7 +517,7 @@ export default function Dashboard() {
                   size="small"
                 />
               ) : null}
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
                 so với tháng trước
               </Typography>
             </Box>
@@ -511,7 +528,7 @@ export default function Dashboard() {
         <Paper
           variant="outlined"
           sx={{
-            p: 2.25,
+            p: { xs: 1.75, sm: 2.25 },
             borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
@@ -519,32 +536,35 @@ export default function Dashboard() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 124,
+            minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
             '&:hover': { borderColor: 'var(--border-strong)' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
               TỔNG CHI TIÊU
             </Typography>
-            <IconContainer icon={<TrendingDown size={16} />} module="expense" size={32} />
+            <IconContainer icon={<TrendingDown size={16} />} module="expense" size={30} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
               variant="h5"
               sx={{
                 fontWeight: 900,
-                fontSize: { xs: 22, sm: 24 },
+                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: 'var(--accent-expense)'
+                color: 'var(--accent-expense)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
             >
               {mask(`-${money(expense)}`)}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
               {expenseChange !== 0 ? (
                 <StatusBadge
                   label={`${expenseChange > 0 ? '+' : ''}${expenseChange}%`}
@@ -553,7 +573,7 @@ export default function Dashboard() {
                   size="small"
                 />
               ) : null}
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
                 Đã dùng {budgetUsagePct}% ngân sách
               </Typography>
             </Box>
@@ -564,7 +584,7 @@ export default function Dashboard() {
         <Paper
           variant="outlined"
           sx={{
-            p: 2.25,
+            p: { xs: 1.75, sm: 2.25 },
             borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
@@ -572,32 +592,35 @@ export default function Dashboard() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 124,
+            minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
             '&:hover': { borderColor: 'var(--border-strong)' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
               TIỀN TIẾT KIỆM
             </Typography>
-            <IconContainer icon={<PiggyBank size={16} />} module="savings" size={32} />
+            <IconContainer icon={<PiggyBank size={16} />} module="savings" size={30} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
               variant="h5"
               sx={{
                 fontWeight: 900,
-                fontSize: { xs: 22, sm: 24 },
+                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: netSavings >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)'
+                color: netSavings >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
               }}
             >
               {mask(`${netSavings >= 0 ? '+' : ''}${money(netSavings)}`)}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
               <Chip
                 label={`Tiết kiệm ${savingsRate}%`}
                 size="small"
@@ -609,7 +632,7 @@ export default function Dashboard() {
                   color: savingsRate >= 20 ? 'var(--accent-income)' : 'var(--accent-warning)'
                 }}
               />
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
                 thu nhập tháng
               </Typography>
             </Box>
@@ -671,7 +694,7 @@ export default function Dashboard() {
             </Box>
 
             {/* Time Controls */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' }, pt: { xs: 0.5, sm: 0 } }}>
               {[
                 { id: '7days', label: '7 ngày' },
                 { id: '30days', label: '30 ngày' },

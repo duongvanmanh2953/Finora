@@ -12,10 +12,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination
+  TablePagination,
+  Typography
 } from '@mui/material';
 import {
-  RefreshCw
+  RefreshCw,
+  Plus
 } from 'lucide-react';
 
 import { useFinance } from '../../store';
@@ -26,6 +28,7 @@ import { marketApiClient } from '../../services/marketApiClient';
 import { QuickInvestmentBar } from '../../components/investment/QuickInvestmentBar';
 import { UnifiedPortfolioDashboard } from '../../components/investment/UnifiedPortfolioDashboard';
 import { DataSourceSettingsModal } from '../../components/investment/DataSourceSettingsModal';
+import { AddInvestmentModal } from '../../components/investment/AddInvestmentModal';
 import { NetWorthControlHeader } from '../../components/smartLedger/NetWorthControlHeader';
 import { QuickInvestmentNoteForm } from '../../components/smartLedger/QuickInvestmentNoteForm';
 import { UnrecoveredAssetsTable } from '../../components/smartLedger/UnrecoveredAssetsTable';
@@ -40,6 +43,7 @@ import type { InvestmentAsset } from '../../types';
 export default function Assets() {
   const { data, update } = useFinance();
   const [openDataSourceModal, setOpenDataSourceModal] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'ledger' | 'positions' | 'transactions'>('overview');
   const [txPage, setTxPage] = useState(0);
@@ -141,7 +145,7 @@ export default function Assets() {
         title="Quản Lý Tài Sản & Vốn Đầu Tư"
         subtitle="Hệ thống Personal Wealth Management: Phân biệt Tiền thực có, Vốn chưa thu hồi, Cơ cấu 4 cấp độ rủi ro & Dự phóng tài chính"
         actions={
-          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
             <HelpButton pageKey="assets" />
             <Button
               variant="outlined"
@@ -159,6 +163,21 @@ export default function Assets() {
               sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 650 }}
             >
               Đồng bộ giá thị trường
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Plus size={16} />}
+              onClick={() => setOpenAddModal(true)}
+              size="small"
+              sx={{
+                borderRadius: '8px',
+                textTransform: 'none',
+                fontWeight: 750,
+                bgcolor: 'var(--brand-primary, #315C50)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+              }}
+            >
+              Thêm mục đầu tư
             </Button>
           </Box>
         }
@@ -198,6 +217,23 @@ export default function Assets() {
       {/* TAB 1: TỔNG QUAN & DỰ PHÓNG TÀI SẢN */}
       {activeTab === 'overview' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<Plus size={15} />}
+              onClick={() => setOpenAddModal(true)}
+              sx={{
+                borderRadius: '6px',
+                textTransform: 'none',
+                fontWeight: 750,
+                bgcolor: 'var(--brand-primary, #315C50)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+              }}
+            >
+              Thêm mục đầu tư mới
+            </Button>
+          </Box>
           <AssetProjectionSection
             currentNetWorth={netWorthSummary.headlineNetWorth}
             initialMonthlySavings={5000000}
@@ -209,19 +245,39 @@ export default function Assets() {
       {/* TAB 2: SỔ THEO DÕI VỐN & THU HỒI */}
       {activeTab === 'ledger' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <UnrecoveredAssetsTable notes={notes} onOpenAddModal={() => setOpenAddModal(true)} />
           <QuickInvestmentNoteForm />
-          <UnrecoveredAssetsTable notes={notes} />
         </Box>
       )}
 
       {/* TAB 3: VỊ THẾ DANH MỤC ĐẦU TƯ CHỨNG KHOÁN / VÀNG */}
       {activeTab === 'positions' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+              Danh mục vị thế nắm giữ
+            </Typography>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<Plus size={15} />}
+              onClick={() => setOpenAddModal(true)}
+              sx={{
+                borderRadius: '6px',
+                textTransform: 'none',
+                fontWeight: 750,
+                bgcolor: 'var(--brand-primary, #315C50)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+              }}
+            >
+              Thêm mục đầu tư
+            </Button>
+          </Box>
           <QuickInvestmentBar onSuccess={handleRefreshMarketPrices} />
           <UnifiedPortfolioDashboard
             onOpenSettings={() => setOpenDataSourceModal(true)}
-            onOpenAddModal={() => setActiveTab('ledger')}
-            onOpenOrderModal={() => {}}
+            onOpenAddModal={() => setOpenAddModal(true)}
+            onOpenOrderModal={() => setOpenAddModal(true)}
           />
         </Box>
       )}
@@ -316,6 +372,13 @@ export default function Assets() {
       <DataSourceSettingsModal
         open={openDataSourceModal}
         onClose={() => setOpenDataSourceModal(false)}
+      />
+
+      {/* Add Investment Modal */}
+      <AddInvestmentModal
+        open={openAddModal}
+        onClose={() => setOpenAddModal(false)}
+        onSuccess={handleRefreshMarketPrices}
       />
     </Box>
   );

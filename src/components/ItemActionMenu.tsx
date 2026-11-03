@@ -57,7 +57,7 @@ export function ItemActionMenu({
           paper: {
             sx: {
               minWidth: 160,
-              borderRadius: 2,
+              borderRadius: '4px',
               boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
               border: '1px solid var(--border-subtle)',
               bgcolor: 'var(--bg-surface)'

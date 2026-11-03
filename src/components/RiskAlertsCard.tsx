@@ -38,7 +38,7 @@ export function RiskAlertsCard() {
       sx={{
         p: 2,
         mb: 2.5,
-        borderRadius: 3.5,
+        borderRadius: '6px',
         bgcolor: 'transparent',
         backgroundImage: 'var(--card-inset-bg)',
         borderColor: 'var(--border-subtle)',
@@ -74,7 +74,7 @@ export function RiskAlertsCard() {
               severity={alert.level === 'critical' ? 'error' : 'warning'}
               variant="outlined"
               sx={{
-                borderRadius: 2,
+                borderRadius: '4px',
                 fontSize: 12,
                 bgcolor: 'var(--bg-subtle)',
                 alignItems: 'center',

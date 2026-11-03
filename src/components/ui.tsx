@@ -37,7 +37,7 @@ export function Modal({
         paper: {
           sx: {
             p: 1,
-            borderRadius: 3,
+            borderRadius: '6px',
             overflow: 'hidden',
             m: { xs: 1, sm: 2 },
             width: { xs: 'calc(100% - 16px)', sm: 'auto' },
@@ -94,11 +94,11 @@ export function Progress({
         value={clamped}
         sx={{
           height: 8,
-          borderRadius: 4,
+          borderRadius: '4px',
           bgcolor: 'action.hover',
           '& .MuiLinearProgress-bar': {
             bgcolor: color,
-            borderRadius: 4
+            borderRadius: '4px'
           }
         }}
       />
@@ -223,7 +223,7 @@ export function Confirm({
           sx: {
             m: { xs: 1.5, sm: 2 },
             width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-            borderRadius: 3
+            borderRadius: '6px'
           }
         }
       }}
@@ -252,3 +252,7 @@ export function Confirm({
     </Dialog>
   );
 }
+
+export * from './ui/StatusBadge';
+export * from './ui/FinoraButton';
+export * from './ui/CardVariants';

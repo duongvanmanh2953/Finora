@@ -41,7 +41,7 @@ export function SafeToSpendCard() {
       variant="outlined"
       sx={{
         p: 2.25,
-        borderRadius: 3.5,
+        borderRadius: '6px',
         bgcolor: 'transparent',
         backgroundImage: 'var(--card-inset-bg)',
         borderColor: 'var(--border-subtle)',
@@ -157,7 +157,7 @@ export function SafeToSpendCard() {
         sx={{
           mt: 2,
           p: 1.5,
-          borderRadius: 2,
+          borderRadius: '4px',
           bgcolor: 'var(--bg-subtle)',
           border: '1px solid var(--border-subtle)'
         }}
@@ -194,7 +194,7 @@ export function SafeToSpendCard() {
           color={result.status === 'danger' ? 'error' : result.status === 'warning' ? 'warning' : 'success'}
           sx={{
             height: 5,
-            borderRadius: 2.5,
+            borderRadius: '6px',
             bgcolor: 'action.hover'
           }}
         />

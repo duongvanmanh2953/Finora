@@ -263,7 +263,7 @@ export default function Accounts() {
               variant="outlined"
               className="card tile"
               key={a.id}
-              sx={{ borderRadius: 3, p: 2.5 }}
+              sx={{ borderRadius: '6px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                 <BankLogoBadge accountName={a.name} accountType={a.type} size="large" />
@@ -324,11 +324,11 @@ export default function Accounts() {
                           value={pct}
                           sx={{
                             height: 6,
-                            borderRadius: 3,
+                            borderRadius: '6px',
                             bgcolor: 'action.hover',
                             '& .MuiLinearProgress-bar': {
                               bgcolor: pct > 70 ? '#ef4444' : pct > 40 ? '#f59e0b' : '#10b981',
-                              borderRadius: 3
+                              borderRadius: '4px'
                             }
                           }}
                         />
@@ -407,7 +407,7 @@ export default function Accounts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -497,7 +497,7 @@ export default function Accounts() {
           </Box>
 
           {/* Shared Wallet Section */}
-          <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover', border: '1px solid var(--border-subtle)' }}>
+          <Box sx={{ p: 1.5, borderRadius: '4px', bgcolor: 'action.hover', border: '1px solid var(--border-subtle)' }}>
             <FormControlLabel
               control={
                 <Switch
@@ -556,7 +556,7 @@ export default function Accounts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -617,7 +617,7 @@ export default function Accounts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }

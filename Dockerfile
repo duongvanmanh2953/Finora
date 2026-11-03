@@ -14,6 +14,7 @@ RUN pnpm install --frozen-lockfile
 
 # Copy toàn bộ mã nguồn và thực hiện build production
 COPY . .
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
 # --- Giai đoạn 2: Serve bằng Nginx ---

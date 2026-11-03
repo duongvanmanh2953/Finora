@@ -15,7 +15,7 @@ export function FinancialFreedomCard() {
       variant="outlined"
       sx={{
         p: 2.25,
-        borderRadius: 3.5,
+        borderRadius: '6px',
         bgcolor: 'transparent',
         backgroundImage: 'var(--card-inset-bg)',
         borderColor: 'var(--border-subtle)',
@@ -76,7 +76,7 @@ export function FinancialFreedomCard() {
           color="info"
           sx={{
             height: 6,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'var(--bg-subtle)'
           }}
         />
@@ -89,7 +89,7 @@ export function FinancialFreedomCard() {
           gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(3, 1fr)' },
           gap: 1.5,
           p: 1.5,
-          borderRadius: 2,
+          borderRadius: '4px',
           bgcolor: 'var(--bg-subtle)',
           border: '1px solid var(--border-subtle)'
         }}

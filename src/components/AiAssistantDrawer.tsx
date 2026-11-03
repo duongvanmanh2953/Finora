@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Drawer,
   Box,
@@ -10,29 +10,18 @@ import {
   CircularProgress
 } from '@mui/material';
 import {
-  Bot,
   X,
   Send,
-  ShieldAlert,
-  BarChart3,
-  TrendingUp
+  Crown,
+  Sparkles,
+  Bot
 } from 'lucide-react';
 import { useFinance } from '../store';
-import { parseVietnameseCommand } from '../lib/nlpParser';
-import { money } from '../lib/finance';
-import {
-  calculateTrueSpendableBalance,
-  analyzeFinancialRisks,
-  calculateInvestmentSummary
-} from '../lib/riskAndInsightEngine';
-
-interface Message {
-  id: string;
-  sender: 'user' | 'assistant';
-  text: string;
-  data?: any;
-  timestamp: string;
-}
+import { isProUser } from '../lib/subscription';
+import { aiApiClient } from '../services/aiApiClient';
+import type { AIChatMessage, ActionPlan } from '../server/ai/types';
+import { AIActionPlanCard } from './ai/AIActionPlanCard';
+import { FinoraButton } from './ui/FinoraButton';
 
 export function AiAssistantDrawer({
   open,
@@ -41,27 +30,42 @@ export function AiAssistantDrawer({
   open: boolean;
   onClose: () => void;
 }) {
-  const { data, update } = useFinance();
+  const { data, update, openPricing } = useFinance();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<AIChatMessage[]>([
     {
       id: 'welcome',
       sender: 'assistant',
-      text: 'Xin chào! Tôi là Trợ lý Tài chính AI Finora (WebMCP Copilot). Bạn có thể yêu cầu tôi kiểm tra rủi ro, phân tích dòng tiền, hoặc gõ nhanh lệnh chi tiêu, mua vàng/cổ phiếu, quẹt thẻ trả góp hay chia tiền.',
+      type: 'text',
+      text: 'Xin chào! Tôi là **Finora AI** — Trợ lý Trí tuệ & Điều hành Tài chính cá nhân của bạn.\n\nTôi có thể giúp bạn:\n• Phân tích thu chi, ngân sách và dòng tiền thực tế.\n• Kiểm tra danh mục đầu tư, lãi/lỗ và cảnh báo cắt lỗ SL/TP.\n• Đề xuất và tự động lập kế hoạch **Action Plan** nhiều bước (Ghi nhận chi tiêu, tạo ngân sách) có chọn lọc trước khi bạn phê duyệt.',
       timestamp: '18:00'
     }
   ]);
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, loading]);
+
   if (!data) return null;
+
+  const isPro = isProUser(data);
+  const usage = aiApiClient.getUsage(data);
 
   const handleSend = async (customPrompt?: string) => {
     const textToSend = (customPrompt || input).trim();
     if (!textToSend || loading) return;
 
-    const userMsg: Message = {
+    const userMsg: AIChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
+      type: 'text',
       text: textToSend,
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
     };
@@ -71,104 +75,53 @@ export function AiAssistantDrawer({
     setLoading(true);
 
     try {
-      // 1. Check if user asked for Finance Summary
-      if (textToSend.toLowerCase().includes('tổng quan') || textToSend.toLowerCase().includes('summary')) {
-        const trueSpendable = calculateTrueSpendableBalance(data);
-        const inv = calculateInvestmentSummary(data.investments || []);
-        const responseText = `**TỔNG QUAN TÀI CHÍNH HIỆN TẠI**:\n- **Số dư thực được tiêu**: ${money(trueSpendable.trueBalance)}\n- **Hạn mức an toàn hôm nay**: ${money(trueSpendable.dailySafeToSpend)} / ngày\n- **Dự báo ngày cháy túi**: Còn khoảng ${trueSpendable.burnRateDaysLeft} ngày\n- **Danh mục đầu tư**: ${inv.assetsWithPnL.length} mã (Tổng giá trị: ${money(inv.totalCurrentValue)}, Lãi/lỗ: ${money(inv.totalPnL)})`;
-
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `ai-${Date.now()}`,
-            sender: 'assistant',
-            text: responseText,
-            timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setLoading(false);
-        return;
-      }
-
-      // 2. Check if user asked for Risk Analysis
-      if (textToSend.toLowerCase().includes('rủi ro') || textToSend.toLowerCase().includes('nguy cơ') || textToSend.toLowerCase().includes('risk')) {
-        const risks = analyzeFinancialRisks(data);
-        let responseText = '';
-        if (risks.length === 0) {
-          responseText = '**AN TOÀN**: Hệ thống không phát hiện rủi ro quá hạn thẻ tín dụng hay lạm chi nào trong tháng này!';
-        } else {
-          responseText = `**PHÂN TÍCH RỦI RO (${risks.length} cảnh báo)**:\n` + risks.map(r => `• [${r.level.toUpperCase()}]: ${r.title}\n  ${r.description}`).join('\n\n');
-        }
-
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `ai-${Date.now()}`,
-            sender: 'assistant',
-            text: responseText,
-            timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setLoading(false);
-        return;
-      }
-
-      // 3. Otherwise, parse as Smart Command
-      const parsed = parseVietnameseCommand(textToSend, data.categories, data.accounts, data.user.defaultAccountId);
-
-      if (!parsed) {
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `ai-${Date.now()}`,
-            sender: 'assistant',
-            text: 'Tôi chưa hiểu rõ câu lệnh. Bạn có thể thử:\n- "ăn trưa 45k"\n- "mua 100 cổ FPT 13.8tr"\n- "quẹt thẻ VCB 12tr góp 6 tháng"\n- "ăn lẩu 1200k chia 4 người"\n- "số dư ví tiền mặt còn 350k"',
-            timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-          }
-        ]);
-        setLoading(false);
-        return;
-      }
-
-      // Execute through smart parser
-      if (parsed.intent === 'transaction' && parsed.transaction) {
-        const tx = parsed.transaction;
-        await update(d => ({
-          ...d,
-          transactions: [
-            {
-              id: `tx-ai-${Date.now()}`,
-              name: tx.name,
-              amount: tx.amount,
-              type: tx.type,
-              categoryId: tx.categoryId,
-              accountId: tx.accountId,
-              date: tx.date,
-              method: 'WebMCP AI Copilot',
-              note: 'Tạo tự động: ' + parsed.raw,
-              status: 'completed'
-            },
-            ...d.transactions
-          ]
-        }));
-      }
-
-      setMessages(prev => [
-        ...prev,
-        {
-          id: `ai-${Date.now()}`,
-          sender: 'assistant',
-          text: `**ĐÃ XỬ LÝ Ý ĐỊNH: ${parsed.badgeLabel}**\n\n${parsed.explanation}`,
-          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
-        }
-      ]);
+      const responseMsg = await aiApiClient.sendMessage(textToSend, data);
+      setMessages(prev => [...prev, responseMsg]);
     } catch (err: any) {
       setMessages(prev => [
         ...prev,
         {
-          id: `ai-${Date.now()}`,
+          id: `ai-err-${Date.now()}`,
           sender: 'assistant',
-          text: `Đã xảy ra lỗi: ${err?.message || 'Không thể thực thi lệnh'}`,
+          type: 'error',
+          text: `Đã xảy ra lỗi khi xử lý: ${err?.message || 'Không thể kết nối đến máy chủ AI'}`,
+          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExecuteActionPlan = async (planId: string, _approvedPlan: ActionPlan) => {
+    setLoading(true);
+    try {
+      const result = await aiApiClient.executeActionPlan(planId, data);
+
+      if (result.success || result.totalExecuted > 0) {
+        // Commit deterministic state mutation to Finance store
+        await update(() => result.updatedData, result.summaryText);
+
+        setMessages(prev => [
+          ...prev,
+          {
+            id: `ai-exec-${Date.now()}`,
+            sender: 'assistant',
+            type: 'action_result',
+            text: `✅ **KẾT QUẢ THỰC THI THÀNH CÔNG**:\n\n${result.summaryText}\n\n` +
+              result.results.map(r => `• [${r.status === 'success' ? 'THÀNH CÔNG' : 'THẤT BẠI'}]: ${r.message}`).join('\n'),
+            timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+          }
+        ]);
+      }
+    } catch (err: any) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `ai-exec-err-${Date.now()}`,
+          sender: 'assistant',
+          type: 'error',
+          text: `Không thể áp dụng hành động vào Sổ cái: ${err?.message}`,
           timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -185,155 +138,255 @@ export function AiAssistantDrawer({
       slotProps={{
         paper: {
           sx: {
-            width: { xs: '100%', sm: 400 },
+            width: { xs: '100%', sm: 460 },
             display: 'flex',
             flexDirection: 'column',
-            bgcolor: 'var(--bg-surface)'
+            bgcolor: 'background.default',
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.1)'
           }
         }
       }}
     >
-      {/* Header */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {/* Drawer Header with Gold PRO Identity */}
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--border-subtle)',
+          bgcolor: 'background.paper'
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
           <Box
             sx={{
-              width: 32,
-              height: 32,
-              borderRadius: 2,
-              bgcolor: 'var(--brand-primary-tint)',
+              width: 36,
+              height: 36,
+              borderRadius: '6px',
+              bgcolor: 'rgba(23, 107, 82, 0.12)',
               color: 'primary.main',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}
           >
-            <Bot size={18} />
+            <Bot size={22} />
           </Box>
           <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              Finora AI Copilot
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 15 }}>
+                Finora AI
+              </Typography>
+
+              {/* Gold PRO Badge */}
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  px: 0.75,
+                  py: 0.2,
+                  borderRadius: '4px',
+                  bgcolor: '#FFF5D9',
+                  border: '1px solid #EED99D',
+                  color: '#A9791D',
+                  fontSize: 10,
+                  fontWeight: 800,
+                  letterSpacing: '0.04em'
+                }}
+              >
+                <Crown size={11} color="#C99A32" />
+                <span>{isPro ? 'PRO INTELLIGENCE' : 'PRO COPILOT'}</span>
+              </Box>
+            </Box>
+
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
+              {isPro
+                ? 'Không giới hạn lượt hội thoại & Action Plans'
+                : `Lượt dùng hôm nay: ${usage.freeQuotaUsedToday}/${usage.freeQuotaMaxDaily} (Gói Free)`}
             </Typography>
-            <Chip
-              label="WebMCP Active"
-              size="small"
-              color="success"
-              sx={{ height: 16, fontSize: 9.5, fontWeight: 800 }}
-            />
           </Box>
         </Box>
-        <IconButton size="small" onClick={onClose}>
+
+        <IconButton size="small" onClick={onClose} sx={{ borderRadius: '4px' }}>
           <X size={18} />
         </IconButton>
       </Box>
 
-      {/* Quick Action Chips */}
-      <Box sx={{ p: 1.5, display: 'flex', gap: 0.75, flexWrap: 'wrap', borderBottom: '1px solid var(--border-subtle)', bgcolor: 'var(--bg-subtle)' }}>
-        <Chip
-          icon={<BarChart3 size={12} />}
-          label="Tổng quan"
-          size="small"
-          onClick={() => handleSend('Báo cáo tổng quan')}
-          clickable
-          sx={{ fontSize: 11, fontWeight: 700 }}
-        />
-        <Chip
-          icon={<ShieldAlert size={12} />}
-          label="Quét rủi ro"
-          size="small"
-          onClick={() => handleSend('Phân tích rủi ro tài chính')}
-          clickable
-          sx={{ fontSize: 11, fontWeight: 700 }}
-        />
-        <Chip
-          icon={<TrendingUp size={12} />}
-          label="Mua 100 cổ FPT"
-          size="small"
-          onClick={() => handleSend('mua 100 cổ FPT 13.8tr')}
-          clickable
-          sx={{ fontSize: 11, fontWeight: 700 }}
-        />
-      </Box>
+      {/* Message Feed */}
+      <Box sx={{ flex: 1, p: 2, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {messages.map(msg => {
+          const isUser = msg.sender === 'user';
 
-      {/* Message Chat Feed */}
-      <Box sx={{ flex: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {messages.map(m => (
-          <Box
-            key={m.id}
-            sx={{
-              alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '85%'
-            }}
-          >
-            <Paper
-              elevation={0}
-              sx={{
-                p: 1.5,
-                borderRadius: 2.5,
-                bgcolor: m.sender === 'user' ? 'primary.main' : 'var(--bg-subtle)',
-                color: m.sender === 'user' ? '#fff' : 'text.primary',
-                border: m.sender === 'user' ? 'none' : '1px solid var(--border-subtle)',
-                fontSize: 13,
-                lineHeight: 1.5,
-                whiteSpace: 'pre-wrap'
-              }}
-            >
-              {m.text}
-            </Paper>
-            <Typography variant="caption" sx={{ fontSize: 10, color: 'var(--text-muted)', px: 0.5, mt: 0.25, display: 'block', textAlign: m.sender === 'user' ? 'right' : 'left' }}>
-              {m.timestamp}
-            </Typography>
-          </Box>
-        ))}
+          if (isUser) {
+            return (
+              <Box key={msg.id} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Paper
+                  sx={{
+                    p: 1.5,
+                    maxWidth: '85%',
+                    borderRadius: '6px',
+                    bgcolor: 'primary.main',
+                    color: '#FFFFFF',
+                    fontSize: 13.5,
+                    lineHeight: 1.5
+                  }}
+                >
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                    {msg.text}
+                  </Typography>
+                  <Typography variant="caption" sx={{ display: 'block', textAlign: 'right', mt: 0.5, opacity: 0.8, fontSize: 10 }}>
+                    {msg.timestamp}
+                  </Typography>
+                </Paper>
+              </Box>
+            );
+          }
+
+          // Assistant Message
+          return (
+            <Box key={msg.id} sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: '96%' }}>
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 1.75,
+                  borderRadius: '6px',
+                  bgcolor: msg.type === 'subscription_required' ? '#FFFDF5' : 'background.paper',
+                  borderColor: msg.type === 'subscription_required' ? '#EED99D' : 'var(--border-subtle)',
+                  fontSize: 13.5,
+                  lineHeight: 1.6
+                }}
+              >
+                {/* Pro Upgrade Message */}
+                {msg.type === 'subscription_required' ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#A9791D' }}>
+                      <Crown size={20} color="#C99A32" />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                        Đạt Giới Hạn Gói Miễn Phí (Free Tier Quota)
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" sx={{ color: 'text.primary', fontSize: 13 }}>
+                      {msg.text}
+                    </Typography>
+                    <FinoraButton
+                      variant="primary"
+                      size="small"
+                      icon={<Sparkles size={14} />}
+                      onClick={() => openPricing('Nâng cấp gói Pro để trò chuyện Finora AI không giới hạn!')}
+                      sx={{
+                        alignSelf: 'flex-start',
+                        bgcolor: '#C99A32',
+                        '&:hover': { bgcolor: '#A9791D' }
+                      }}
+                    >
+                      Nâng cấp Pro ngay
+                    </FinoraButton>
+                  </Box>
+                ) : (
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', color: 'text.primary', fontSize: 13.5 }}>
+                    {msg.text}
+                  </Typography>
+                )}
+
+                <Typography variant="caption" sx={{ display: 'block', mt: 1, color: 'text.secondary', fontSize: 10 }}>
+                  {msg.timestamp} · Finora AI Copilot
+                </Typography>
+              </Paper>
+
+              {/* Action Plan Interactive Cards */}
+              {msg.type === 'action_plan' && msg.actionPlan && (
+                <AIActionPlanCard
+                  plan={msg.actionPlan}
+                  onExecute={handleExecuteActionPlan}
+                />
+              )}
+            </Box>
+          );
+        })}
+
         {loading && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
-            <CircularProgress size={16} />
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Đang phân tích & thực thi qua WebMCP...
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, color: 'text.secondary', p: 1 }}>
+            <CircularProgress size={16} color="primary" />
+            <Typography variant="caption" sx={{ fontSize: 12 }}>
+              Finora AI đang phân tích dữ liệu và lập kế hoạch tài chính...
             </Typography>
           </Box>
         )}
+
+        <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input Field */}
-      <Box
-        component="form"
-        onSubmit={e => {
-          e.preventDefault();
-          handleSend();
-        }}
-        sx={{
-          p: 1.5,
-          borderTop: '1px solid var(--border-subtle)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1
-        }}
-      >
+      {/* Quick Suggestion Chips */}
+      <Box sx={{ px: 2, pt: 1, pb: 0.5, borderTop: '1px solid var(--border-subtle)', bgcolor: 'background.paper' }}>
+        <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 11, display: 'block', mb: 0.75 }}>
+          Gợi ý nhanh cho bạn:
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 0.75, overflowX: 'auto', pb: 0.5 }}>
+          {[
+            { label: '📊 Tổng quan tài chính', prompt: 'Tổng quan tình hình tài chính của tôi' },
+            { label: '💸 Chi tiêu tháng này', prompt: 'Tháng này tôi tiêu hết bao nhiêu và khoản nào ngốn tiền nhất?' },
+            { label: '🎯 Đặt 3 ngân sách', prompt: 'Tạo ngân sách tháng này: ăn uống 3 triệu, đi lại 1 triệu, mua sắm 1,5 triệu' },
+            { label: '📝 Ghi 3 khoản chi', prompt: 'Thêm 3 khoản chi: 50k ăn sáng, 30k gửi xe, 80k ăn trưa' },
+            { label: '📈 Rà soát đầu tư', prompt: 'Danh mục cổ phiếu và đầu tư của tôi đang ra sao?' }
+          ].map((chip, idx) => (
+            <Chip
+              key={idx}
+              label={chip.label}
+              size="small"
+              onClick={() => handleSend(chip.prompt)}
+              sx={{
+                borderRadius: '4px',
+                fontSize: 11.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                bgcolor: 'action.hover',
+                '&:hover': { bgcolor: 'action.selected' },
+                whiteSpace: 'nowrap'
+              }}
+            />
+          ))}
+        </Box>
+      </Box>
+
+      {/* Input Composer */}
+      <Box sx={{ p: 1.5, bgcolor: 'background.paper' }}>
         <Paper
-          elevation={0}
+          variant="outlined"
           sx={{
-            flex: 1,
             display: 'flex',
             alignItems: 'center',
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 2,
-            border: '1px solid var(--border-subtle)',
-            bgcolor: 'var(--bg-subtle)'
+            p: '4px 8px',
+            borderRadius: '4px',
+            borderColor: 'primary.light',
+            '&:focus-within': { borderColor: 'primary.main', boxShadow: '0 0 0 1px #176B52' }
           }}
         >
           <InputBase
+            fullWidth
+            placeholder="Hỏi về chi tiêu, đầu tư hoặc gõ lệnh 'thêm 3 khoản chi'..."
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Hỏi AI hoặc nhập lệnh..."
-            fullWidth
-            sx={{ fontSize: 13 }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            disabled={loading}
+            sx={{ fontSize: 13.5, px: 1 }}
           />
+
+          <IconButton
+            color="primary"
+            disabled={!input.trim() || loading}
+            onClick={() => handleSend()}
+            sx={{ p: 0.75, borderRadius: '4px' }}
+          >
+            <Send size={16} />
+          </IconButton>
         </Paper>
-        <IconButton color="primary" type="submit" disabled={!input.trim() || loading} size="small">
-          <Send size={16} />
-        </IconButton>
       </Box>
     </Drawer>
   );

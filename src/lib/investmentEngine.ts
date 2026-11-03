@@ -3,6 +3,7 @@ import type {
   DataFreshness,
   InvestmentTransaction
 } from '../types';
+import { VERIFIED_VN_MARKET_CATALOG } from './vietnamMarketService';
 
 // ============================================================================
 // 1. VIETNAMESE ASSET CATALOG (Verified Presets)
@@ -19,31 +20,19 @@ export interface AssetCatalogItem {
 }
 
 export const VIETNAMESE_ASSET_CATALOG: AssetCatalogItem[] = [
-  // HOSE & HNX Bluechips
-  { symbol: 'FPT', name: 'Công ty Cổ phần FPT', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 138000, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'VCB', name: 'Ngân hàng TMCP Ngoại thương Việt Nam', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 94500, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'HPG', name: 'Tập đoàn Hòa Phát', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 26500, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'TCB', name: 'Ngân hàng TMCP Kỹ Thương Việt Nam', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 24200, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'SSI', name: 'Công ty Cổ phần Chứng khoán SSI', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 31200, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'MWG', name: 'Công ty Cổ phần Thế Giới Di Động', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 62500, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'MBB', name: 'Ngân hàng TMCP Quân Đội', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 23800, unit: 'cổ phiếu', freshness: 'realtime' },
-  { symbol: 'VNM', name: 'Công ty Cổ phần Sữa Việt Nam (Vinamilk)', assetClass: 'stock', exchangeOrManager: 'HOSE', referencePrice: 66000, unit: 'cổ phiếu', freshness: 'realtime' },
-
-  // Mutual Funds & ETFs
-  { symbol: 'DCDS', name: 'Quỹ Đầu tư Chứng khoán Năng động DC (Dragon Capital)', assetClass: 'fund', exchangeOrManager: 'Dragon Capital', referencePrice: 84200, unit: 'CCQ', freshness: 'nav_published' },
-  { symbol: 'VESAF', name: 'Quỹ Đầu tư Cổ phiếu Tiếp cận Thị trường VinaCapital', assetClass: 'fund', exchangeOrManager: 'VinaCapital', referencePrice: 32600, unit: 'CCQ', freshness: 'nav_published' },
-  { symbol: 'SSISCA', name: 'Quỹ Đầu tư Lợi thế Cạnh tranh Bền vững SSI', assetClass: 'fund', exchangeOrManager: 'SSIAM', referencePrice: 41800, unit: 'CCQ', freshness: 'nav_published' },
-  { symbol: 'E1VFVN30', name: 'Quỹ ETF VFMVN30', assetClass: 'etf', exchangeOrManager: 'Dragon Capital', referencePrice: 24800, unit: 'chứng chỉ', freshness: 'realtime' },
-  { symbol: 'FUEVFVND', name: 'Quỹ ETF KIM Growth VNFIN LEAD', assetClass: 'etf', exchangeOrManager: 'KIM Vietnam', referencePrice: 32900, unit: 'chứng chỉ', freshness: 'realtime' },
-
-  // Gold & Precious Metals
-  { symbol: 'SJC', name: 'Vàng miếng SJC 999.9', assetClass: 'gold', exchangeOrManager: 'SJC Vietnam', referencePrice: 89000000, unit: 'lượng', freshness: 'eod' },
-  { symbol: 'Nhẫn 9999', name: 'Vàng nhẫn trơn 999.9 PNJ / Doji', assetClass: 'gold', exchangeOrManager: 'PNJ/Doji', referencePrice: 87500000, unit: 'lượng', freshness: 'eod' },
+  ...VERIFIED_VN_MARKET_CATALOG.map(item => ({
+    symbol: item.symbol,
+    name: item.name,
+    assetClass: item.assetClass as AssetClass,
+    exchangeOrManager: item.exchangeOrIssuer,
+    referencePrice: item.referencePrice,
+    unit: item.unit,
+    freshness: item.freshness
+  })),
 
   // Deposits & Fixed Income
   { symbol: 'BIDV-SAVING', name: 'Tiền gửi Tiết kiệm BIDV 12 tháng (5.2%/năm)', assetClass: 'savings', exchangeOrManager: 'BIDV', referencePrice: 10000000, unit: 'sổ', freshness: 'manual' },
   { symbol: 'VCB-SAVING', name: 'Tiền gửi Tiết kiệm Vietcombank 6 tháng (4.8%/năm)', assetClass: 'savings', exchangeOrManager: 'Vietcombank', referencePrice: 20000000, unit: 'sổ', freshness: 'manual' },
-  { symbol: 'TCBS-IBOND', name: 'Trái phiếu Doanh nghiệp Masan Techcom iBond (8.5%/năm)', assetClass: 'bond', exchangeOrManager: 'TCBS', referencePrice: 100000, unit: 'trái phiếu', freshness: 'manual' },
 
   // Digital Assets
   { symbol: 'BTC', name: 'Bitcoin', assetClass: 'crypto', exchangeOrManager: 'Binance', referencePrice: 2350000000, unit: 'BTC', freshness: 'realtime' },

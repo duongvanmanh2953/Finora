@@ -247,7 +247,7 @@ export default function Reports() {
         sx={{
           bgcolor: 'background.paper',
           border: '1px solid var(--border-subtle)',
-          borderRadius: 2.5,
+          borderRadius: '6px',
           p: 1.75,
           boxShadow: '0 8px 24px rgba(0,0,0,0.22)',
           minWidth: 220
@@ -345,7 +345,7 @@ export default function Reports() {
         sx={{
           p: { xs: 1.75, sm: 2 },
           mb: 3,
-          borderRadius: 3,
+          borderRadius: '6px',
           bgcolor: 'background.paper',
           borderColor: 'var(--border-subtle)',
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
@@ -438,7 +438,7 @@ export default function Reports() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -490,7 +490,7 @@ export default function Reports() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -545,7 +545,7 @@ export default function Reports() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -597,7 +597,7 @@ export default function Reports() {
         sx={{
           p: { xs: 2, sm: 2.75 },
           mb: 3,
-          borderRadius: 3,
+          borderRadius: '6px',
           bgcolor: 'background.paper',
           borderColor: 'var(--border-subtle)',
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
@@ -791,7 +791,7 @@ export default function Reports() {
           sx={{
             mt: 3,
             p: 2,
-            borderRadius: 2.5,
+            borderRadius: '6px',
             bgcolor: 'action.hover',
             border: '1px solid var(--border-subtle)',
             display: 'grid',
@@ -864,7 +864,7 @@ export default function Reports() {
           variant="outlined"
           sx={{
             p: 2.5,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -911,7 +911,7 @@ export default function Reports() {
                     contentStyle={{
                       backgroundColor: 'var(--bg-surface)',
                       borderColor: 'var(--border-subtle)',
-                      borderRadius: 8,
+                      borderRadius: '4px',
                       fontSize: 12,
                       fontWeight: 650
                     }}
@@ -948,11 +948,11 @@ export default function Reports() {
                   value={c.pct}
                   sx={{
                     height: 5,
-                    borderRadius: 3,
+                    borderRadius: '6px',
                     bgcolor: 'action.hover',
                     '& .MuiLinearProgress-bar': {
                       bgcolor: c.color || 'primary.main',
-                      borderRadius: 3
+                      borderRadius: '4px'
                     }
                   }}
                 />
@@ -966,7 +966,7 @@ export default function Reports() {
           variant="outlined"
           sx={{
             p: 2.5,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',

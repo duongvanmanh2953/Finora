@@ -411,7 +411,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -433,7 +433,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -455,7 +455,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -477,7 +477,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -499,7 +499,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -521,7 +521,7 @@ export function FundLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -571,7 +571,7 @@ export function DebtLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -593,7 +593,7 @@ export function DebtLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -615,7 +615,7 @@ export function DebtLogoBadge({
       sx={{
         width: dim,
         height: dim,
-        borderRadius: 3,
+        borderRadius: '6px',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -649,7 +649,7 @@ export function AssetLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -673,7 +673,7 @@ export function AssetLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -695,7 +695,7 @@ export function AssetLogoBadge({
         sx={{
           width: dim,
           height: dim,
-          borderRadius: 3,
+          borderRadius: '6px',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -717,7 +717,7 @@ export function AssetLogoBadge({
       sx={{
         width: dim,
         height: dim,
-        borderRadius: 3,
+        borderRadius: '6px',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -752,7 +752,7 @@ export function CategoryAvatarBadge({
         sx={{
           width: 34,
           height: 34,
-          borderRadius: 2,
+          borderRadius: '4px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -813,7 +813,7 @@ export function CategoryAvatarBadge({
       sx={{
         width: 34,
         height: 34,
-        borderRadius: 2,
+        borderRadius: '4px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

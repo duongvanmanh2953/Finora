@@ -26,7 +26,8 @@ import {
   HardDrive,
   Cloud,
   Banknote,
-  Server
+  Server,
+  FileSpreadsheet
 } from 'lucide-react';
 import {
   Button,
@@ -46,20 +47,35 @@ import { PricingDialog } from './PricingDialog';
 import { AiAssistantDrawer } from './AiAssistantDrawer';
 import { CloudSyncModal } from './CloudSyncModal';
 
-const nav = [
-  ['/', 'Tổng quan', LayoutDashboard],
+const navOverview = [
+  ['/', 'Tổng quan', LayoutDashboard]
+] as const;
+
+const navFinance = [
   ['/transactions', 'Giao dịch', ArrowLeftRight],
-  ['/accounts', 'Tài khoản', Wallet],
-  ['/assets', 'Đầu tư', TrendingUp],
-  ['/payroll', 'Lương & Thuế', Banknote],
-  ['/categories', 'Danh mục', CircleDollarSign],
+  ['/accounts', 'Tài khoản & Ví', Wallet],
   ['/budgets', 'Ngân sách', ChartPie],
-  ['/savings', 'Tiết kiệm', Target],
-  ['/debts', 'Khoản nợ', HandCoins],
-  ['/reports', 'Báo cáo', ChartNoAxesCombined],
-  ['/recurring', 'Định kỳ', CalendarClock],
-  ['/admin', 'Quản trị SaaS', Server],
-  ['/settings', 'Cài đặt', Settings]
+  ['/categories', 'Danh mục thu chi', CircleDollarSign],
+  ['/payroll', 'Lương & Thuế', Banknote]
+] as const;
+
+const navWealth = [
+  ['/assets', 'Tài sản & Đầu tư', TrendingUp],
+  ['/savings', 'Mục tiêu tiết kiệm', Target],
+  ['/debts', 'Quản lý nợ & Cho vay', HandCoins]
+] as const;
+
+const navSystem = [
+  ['/reports', 'Báo cáo & Phân tích', ChartNoAxesCombined],
+  ['/recurring', 'Giao dịch định kỳ', CalendarClock],
+  ['/settings', 'Cài đặt hệ thống', Settings]
+] as const;
+
+const nav = [
+  ...navOverview,
+  ...navFinance,
+  ...navWealth,
+  ...navSystem
 ] as const;
 
 export function Layout() {
@@ -215,9 +231,9 @@ export function Layout() {
             </Box>
           )}
 
-          <div className="navlabel">Không gian của bạn</div>
+          <div className="navlabel">TỔNG QUAN</div>
           <nav aria-label="Điều hướng chính">
-            {nav.slice(0, 5).map(([url, label, Icon]) => (
+            {navOverview.map(([url, label, Icon]) => (
               <NavLink
                 key={url}
                 to={url}
@@ -225,22 +241,73 @@ export function Layout() {
                 className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
                 onClick={() => setOpen(false)}
               >
-                <Icon />
-                {label}
+                <Icon size={18} />
+                <span>{label}</span>
               </NavLink>
             ))}
-            <div className="navlabel">Kế hoạch tài chính</div>
-            {nav.slice(5, 11).map(([url, label, Icon]) => (
+
+            <div className="navlabel">TÀI CHÍNH</div>
+            {navFinance.map(([url, label, Icon]) => (
               <NavLink
                 key={url}
                 to={url}
                 className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
                 onClick={() => setOpen(false)}
               >
-                <Icon />
-                {label}
+                <Icon size={18} />
+                <span>{label}</span>
               </NavLink>
             ))}
+
+            <div className="navlabel">TÀI SẢN & ĐẦU TƯ</div>
+            {navWealth.map(([url, label, Icon]) => (
+              <NavLink
+                key={url}
+                to={url}
+                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+
+            <div className="navlabel">HỆ THỐNG</div>
+            {navSystem.map(([url, label, Icon]) => (
+              <NavLink
+                key={url}
+                to={url}
+                className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+
+            <div className="navlabel">QUẢN TRỊ NỀN TẢNG</div>
+            <NavLink
+              to="/admin"
+              className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+              onClick={() => setOpen(false)}
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              <Server size={18} />
+              <span>Admin Console</span>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                  color: '#10B981',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  fontSize: 10,
+                  fontWeight: 800
+                }}
+              >
+                ADMIN
+              </span>
+            </NavLink>
           </nav>
 
           <div className="sidebottom">
@@ -313,20 +380,20 @@ export function Layout() {
             </Box>
 
             <NavLink
-              to="/admin"
+              to="/legal"
               className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <Server />
-              Quản trị SaaS
+              <FileSpreadsheet size={18} />
+              <span>Chính sách & Pháp lý</span>
             </NavLink>
             <NavLink
               to="/settings"
               className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
               onClick={() => setOpen(false)}
             >
-              <Settings />
-              Cài đặt
+              <Settings size={18} />
+              <span>Cài đặt</span>
             </NavLink>
             <div className="profile">
               <div className="avatar">
@@ -505,23 +572,46 @@ export function Layout() {
               </Tooltip>
 
               {/* Admin SaaS Console */}
-              <Tooltip title="Mở Bảng điều khiển Quản trị SaaS">
+              <Tooltip title="Mở Bảng điều khiển Quản trị Doanh nghiệp (Finora SaaS Admin)">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate('/admin')}
+                  startIcon={<Server size={14} color="#10B981" />}
+                  sx={{
+                    display: { xs: 'none', sm: 'inline-flex' },
+                    fontSize: 12,
+                    fontWeight: 700,
+                    height: 28,
+                    borderRadius: '4px',
+                    borderColor: 'rgba(16, 185, 129, 0.4)',
+                    color: '#10B981',
+                    bgcolor: 'rgba(16, 185, 129, 0.08)',
+                    '&:hover': {
+                      bgcolor: 'rgba(16, 185, 129, 0.16)',
+                      borderColor: '#10B981'
+                    }
+                  }}
+                >
+                  Trang Admin
+                </Button>
+              </Tooltip>
+
+              <Tooltip title="Mở Trang Quản trị SaaS">
                 <IconButton
                   size="small"
                   onClick={() => navigate('/admin')}
                   sx={{
-                    color: 'text.secondary',
-                    bgcolor: 'var(--bg-subtle)',
-                    border: '1px solid var(--border-subtle)',
-                    width: { xs: 40, sm: 34 },
-                    height: { xs: 40, sm: 34 },
-                    minWidth: { xs: 40, sm: 34 },
-                    minHeight: { xs: 40, sm: 34 },
-                    p: 0.75,
-                    '&:hover': {
-                      color: 'primary.main',
-                      borderColor: 'primary.main'
-                    }
+                    display: { xs: 'inline-flex', sm: 'none' },
+                    color: '#10B981',
+                    bgcolor: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '4px',
+                    width: 34,
+                    height: 34,
+                    minWidth: 34,
+                    minHeight: 34,
+                    p: 0.75
                   }}
                   aria-label="Quản trị SaaS"
                 >
@@ -759,7 +849,7 @@ export function Layout() {
                   </Button>
                 ) : undefined
               }
-              sx={{ width: '100%', borderRadius: 2, fontWeight: 600, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
+              sx={{ width: '100%', borderRadius: '4px', fontWeight: 600, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
             >
               {toast.message}
             </Alert>

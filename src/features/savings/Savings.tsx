@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { differenceInCalendarMonths, parseISO } from 'date-fns';
-import { Plus, Pencil, Trash2, History } from 'lucide-react';
+import { Plus, Pencil, Trash2, History, LayoutGrid, List } from 'lucide-react';
 import {
   Box,
   Button,
@@ -11,7 +11,16 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 
 import { useFinance } from '../../store';
@@ -41,6 +50,9 @@ export default function Savings() {
   const [amount, setAmount] = useState('');
   const [source, setSource] = useState(data.accounts[0]?.id || '');
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
   const blank = {
     name: '',
@@ -145,9 +157,15 @@ export default function Savings() {
         actions={
           <Button
             variant="contained"
-            color="primary"
-            startIcon={<Plus size={14} />}
+            startIcon={<Plus size={15} />}
             onClick={() => start()}
+            sx={{
+              bgcolor: '#15966B',
+              '&:hover': { bgcolor: '#0D7A55' },
+              fontWeight: 800,
+              borderRadius: '4px',
+              boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
+            }}
           >
             Tạo mục tiêu
           </Button>
@@ -169,97 +187,332 @@ export default function Savings() {
         </div>
       </div>
 
-      <div className="tiles">
-        {data.goals.map(g => {
-          const saved = goalSaved(g),
-            remaining = Math.max(0, g.target - saved),
-            months = Math.max(1, differenceInCalendarMonths(parseISO(g.dueDate), new Date()));
-          return (
-            <Card
-              variant="outlined"
-              className="card tile"
-              key={g.id}
-              sx={{ borderRadius: 3, p: 2.5 }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                <FundLogoBadge name={g.name} kind={g.icon} size="medium" />
-                <Chip
-                  label={saved >= g.target ? 'Hoàn thành' : dateLabel(g.dueDate)}
-                  size="small"
-                  color={saved >= g.target ? 'success' : 'default'}
-                  variant="outlined"
-                  sx={{ height: 22, fontSize: 11, fontWeight: 700 }}
-                />
-              </Box>
+      {/* View Mode Toggle Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+          Danh sách mục tiêu ({data.goals.length})
+        </Typography>
 
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.25 }}>
-                {g.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                Tài khoản: {data.accounts.find(a => a.id === g.accountId)?.name}
-              </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: { xs: 'none', sm: 'inline-block' } }}>
+            Chế độ xem:
+          </Typography>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, val) => val && setViewMode(val)}
+            size="small"
+            sx={{
+              bgcolor: 'action.hover',
+              p: 0.3,
+              borderRadius: '4px',
+              '& .MuiToggleButton-root': {
+                borderRadius: '4px',
+                border: 'none',
+                px: 1.25,
+                py: 0.5,
+                fontWeight: 750,
+                fontSize: '0.78rem',
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: '#FFFFFF'
+                }
+              }
+            }}
+          >
+            <ToggleButton value="grid" aria-label="Xem ô lưới">
+              <LayoutGrid size={14} style={{ marginRight: 6 }} /> Ô lưới
+            </ToggleButton>
+            <ToggleButton value="table" aria-label="Xem danh sách">
+              <List size={14} style={{ marginRight: 6 }} /> Danh sách
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Box>
 
-              <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
-                {money(saved)}{' '}
-                <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
-                  / {money(g.target)}
-                </Typography>
-              </Typography>
+      {viewMode === 'grid' ? (
+        /* ========================================== */
+        /* BENTO GRID VIEW OF SAVINGS GOALS           */
+        /* ========================================== */
+        <Box>
+          <div className="tiles">
+            {data.goals
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map(g => {
+                const saved = goalSaved(g),
+                  remaining = Math.max(0, g.target - saved),
+                  months = Math.max(1, differenceInCalendarMonths(parseISO(g.dueDate), new Date()));
+                return (
+                  <Card
+                    variant="outlined"
+                    className="card tile"
+                    key={g.id}
+                    sx={{
+                      borderRadius: '6px',
+                      p: 2.5,
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+                      }
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                      <FundLogoBadge name={g.name} kind={g.icon} size="medium" />
+                      <Chip
+                        label={saved >= g.target ? 'Hoàn thành' : dateLabel(g.dueDate)}
+                        size="small"
+                        color={saved >= g.target ? 'success' : 'default'}
+                        variant="outlined"
+                        sx={{ height: 22, fontSize: 11, fontWeight: 700 }}
+                      />
+                    </Box>
 
-              <Progress value={(saved / g.target) * 100} />
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.25 }}>
+                      {g.name}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
+                      Tài khoản: {data.accounts.find(a => a.id === g.accountId)?.name}
+                    </Typography>
 
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: 11, color: 'text.secondary' }}>
-                <span>Còn thiếu {money(remaining)}</span>
-                <span>{Math.round((saved / g.target) * 100)}%</span>
-              </Box>
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
+                      {money(saved)}{' '}
+                      <Typography component="span" variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                        / {money(g.target)}
+                      </Typography>
+                    </Typography>
 
-              <Typography variant="body2" sx={{ mt: 1.5, fontSize: 12 }}>
-                Cần dành khoảng <strong>{money(Math.ceil(remaining / months))}</strong> / tháng
-              </Typography>
+                    <Progress value={(saved / g.target) * 100} />
 
-              {/* Action Buttons: 1 Nút chính + Nút More */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto', pt: 1.5, borderTop: '1px solid var(--border-subtle)' }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Plus size={14} />}
-                  onClick={() => {
-                    setContribute(g);
-                    setSource(data.accounts.find(a => a.id !== g.accountId)?.id || g.accountId);
-                    setError('');
-                  }}
-                  sx={{ fontWeight: 600, fontSize: 11.5, borderRadius: 1.5 }}
-                >
-                  Thêm tiền
-                </Button>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: 11, color: 'text.secondary' }}>
+                      <span>Còn thiếu {money(remaining)}</span>
+                      <span>{Math.round((saved / g.target) * 100)}%</span>
+                    </Box>
 
-                <ItemActionMenu
-                  ariaLabel={`Tùy chọn mục tiêu ${g.name}`}
-                  items={[
-                    {
-                      label: 'Lịch sử tích lũy',
-                      icon: <History size={15} />,
-                      onClick: () => setHistory(g)
-                    },
-                    {
-                      label: 'Chỉnh sửa mục tiêu',
-                      icon: <Pencil size={15} />,
-                      onClick: () => start(g)
-                    },
-                    {
-                      label: 'Xóa mục tiêu',
-                      icon: <Trash2 size={15} />,
-                      color: 'error' as const,
-                      onClick: () => setDeleting(g)
-                    }
-                  ]}
-                />
-              </Box>
-            </Card>
-          );
-        })}
-      </div>
+                    <Typography variant="body2" sx={{ mt: 1.5, fontSize: 12 }}>
+                      Cần dành khoảng <strong>{money(Math.ceil(remaining / months))}</strong> / tháng
+                    </Typography>
+
+                    {/* Action Buttons: 1 Nút chính có màu + Nút More */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto', pt: 1.5, borderTop: '1px solid var(--border-subtle)' }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        startIcon={<Plus size={14} />}
+                        onClick={() => {
+                          setContribute(g);
+                          setSource(data.accounts.find(a => a.id !== g.accountId)?.id || g.accountId);
+                          setError('');
+                        }}
+                        sx={{
+                          fontWeight: 750,
+                          fontSize: '0.78rem',
+                          borderRadius: '4px',
+                          bgcolor: '#10B981',
+                          color: '#FFFFFF',
+                          boxShadow: '0 2px 6px rgba(16, 185, 129, 0.25)',
+                          '&:hover': { bgcolor: '#059669' }
+                        }}
+                      >
+                        Thêm tiền
+                      </Button>
+
+                      <ItemActionMenu
+                        ariaLabel={`Tùy chọn mục tiêu ${g.name}`}
+                        items={[
+                          {
+                            label: 'Lịch sử tích lũy',
+                            icon: <History size={15} />,
+                            onClick: () => setHistory(g)
+                          },
+                          {
+                            label: 'Chỉnh sửa mục tiêu',
+                            icon: <Pencil size={15} />,
+                            onClick: () => start(g)
+                          },
+                          {
+                            label: 'Xóa mục tiêu',
+                            icon: <Trash2 size={15} />,
+                            color: 'error' as const,
+                            onClick: () => setDeleting(g)
+                          }
+                        ]}
+                      />
+                    </Box>
+                  </Card>
+                );
+              })}
+          </div>
+
+          {/* Grid Pagination */}
+          {data.goals.length > 0 && (
+            <TablePagination
+              component="div"
+              count={data.goals.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={e => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              rowsPerPageOptions={[6, 12, 24]}
+              labelRowsPerPage="Số thẻ / trang:"
+              sx={{
+                mt: 2,
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                bgcolor: 'background.paper',
+                borderRadius: '4px'
+              }}
+            />
+          )}
+        </Box>
+      ) : (
+        /* ========================================== */
+        /* TABLE VIEW OF SAVINGS GOALS                */
+        /* ========================================== */
+        <Card sx={{ p: 0, overflow: 'hidden', borderRadius: '6px' }}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}>Mục tiêu tiết kiệm</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Tài khoản giữ tiền</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Đã dành</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Mục tiêu</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Còn thiếu</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Hạn chót</TableCell>
+                  <TableCell sx={{ fontWeight: 700, minWidth: 150 }}>Tiến độ tích lũy</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700 }}>Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.goals
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map(g => {
+                    const saved = goalSaved(g),
+                      remaining = Math.max(0, g.target - saved),
+                      pct = (saved / g.target) * 100;
+                    return (
+                      <TableRow key={g.id} hover>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            <FundLogoBadge name={g.name} kind={g.icon} size="small" />
+                            <Box>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                                {g.name}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                Bắt đầu: {g.startDate}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+
+                        <TableCell sx={{ fontWeight: 600 }}>
+                          {data.accounts.find(a => a.id === g.accountId)?.name || 'Mặc định'}
+                        </TableCell>
+
+                        <TableCell align="right" sx={{ fontWeight: 800, color: '#10B981' }}>
+                          {money(saved)}
+                        </TableCell>
+
+                        <TableCell align="right" sx={{ fontWeight: 800 }}>
+                          {money(g.target)}
+                        </TableCell>
+
+                        <TableCell align="right" sx={{ fontWeight: 700, color: remaining === 0 ? '#10B981' : 'text.secondary' }}>
+                          {money(remaining)}
+                        </TableCell>
+
+                        <TableCell>
+                          <Chip
+                            label={saved >= g.target ? 'Hoàn thành' : dateLabel(g.dueDate)}
+                            size="small"
+                            color={saved >= g.target ? 'success' : 'default'}
+                            variant="outlined"
+                            sx={{ height: 22, fontSize: 11, fontWeight: 700 }}
+                          />
+                        </TableCell>
+
+                        <TableCell>
+                          <Box sx={{ width: '100%' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, fontSize: '0.725rem' }}>
+                              <span style={{ fontWeight: 700 }}>{Math.round(pct)}%</span>
+                            </Box>
+                            <Progress value={pct} />
+                          </Box>
+                        </TableCell>
+
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, alignItems: 'center' }}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              startIcon={<Plus size={13} />}
+                              onClick={() => {
+                                setContribute(g);
+                                setSource(data.accounts.find(a => a.id !== g.accountId)?.id || g.accountId);
+                                setError('');
+                              }}
+                              sx={{
+                                fontWeight: 750,
+                                fontSize: '0.75rem',
+                                borderRadius: '4px',
+                                bgcolor: '#10B981',
+                                color: '#FFFFFF',
+                                '&:hover': { bgcolor: '#059669' }
+                              }}
+                            >
+                              Thêm tiền
+                            </Button>
+
+                            <ItemActionMenu
+                              ariaLabel={`Tùy chọn mục tiêu ${g.name}`}
+                              items={[
+                                {
+                                  label: 'Lịch sử tích lũy',
+                                  icon: <History size={15} />,
+                                  onClick: () => setHistory(g)
+                                },
+                                {
+                                  label: 'Chỉnh sửa mục tiêu',
+                                  icon: <Pencil size={15} />,
+                                  onClick: () => start(g)
+                                },
+                                {
+                                  label: 'Xóa mục tiêu',
+                                  icon: <Trash2 size={15} />,
+                                  color: 'error' as const,
+                                  onClick: () => setDeleting(g)
+                                }
+                              ]}
+                            />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            component="div"
+            count={data.goals.length}
+            page={page}
+            onPageChange={(_, p) => setPage(p)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={e => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[6, 12, 24]}
+            labelRowsPerPage="Số hàng / trang:"
+          />
+        </Card>
+      )}
 
       {/* Add / Edit Goal Modal */}
       <Dialog
@@ -272,7 +525,7 @@ export default function Savings() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -348,7 +601,7 @@ export default function Savings() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -398,7 +651,7 @@ export default function Savings() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }

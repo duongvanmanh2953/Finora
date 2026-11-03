@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Pencil, Trash2, History, Bell, Send, Copy, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, History, Bell, Send, Copy, AlertTriangle, CheckCircle2, LayoutGrid, List } from 'lucide-react';
 import {
   Box,
   Button,
@@ -10,12 +10,22 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 
 import { useFinance } from '../../store';
 import { balance, dateLabel, debtRemaining, money, uid, todayKey } from '../../lib/finance';
 import { Confirm, PageHead, Progress } from '../../components/ui';
+import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ItemActionMenu } from '../../components/ItemActionMenu';
 import { DebtLogoBadge } from '../../lib/brandBadges';
 import {
@@ -41,6 +51,9 @@ export default function Debts() {
   const [amount, setAmount] = useState('');
   const [account, setAccount] = useState(data.accounts[0]?.id || '');
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
   const blank = {
     name: '',
@@ -152,9 +165,15 @@ export default function Debts() {
         actions={
           <Button
             variant="contained"
-            color="primary"
-            startIcon={<Plus size={14} />}
+            startIcon={<Plus size={15} />}
             onClick={() => start()}
+            sx={{
+              bgcolor: '#15966B',
+              '&:hover': { bgcolor: '#0D7A55' },
+              fontWeight: 800,
+              borderRadius: '4px',
+              boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
+            }}
           >
             Thêm khoản nợ
           </Button>
@@ -168,7 +187,7 @@ export default function Debts() {
           sx={{
             mb: 2.5,
             p: 2,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'action.hover',
             border: '1.5px solid #d97706'
           }}
@@ -226,108 +245,375 @@ export default function Debts() {
         </div>
       </div>
 
-      <div className="tiles">
-        {data.debts.map(d => {
-          const remaining = debtRemaining(d);
-          const overdue = d.dueDate < todayKey() && remaining > 0;
-          return (
-            <Card
-              variant="outlined"
-              className="card tile"
-              key={d.id}
-              sx={{ borderRadius: 3, p: 2.5 }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                <DebtLogoBadge debtName={d.name} lenderName={d.name} size="large" />
-                <Chip
-                  label={
-                    remaining === 0
-                      ? 'Đã tất toán'
-                      : overdue
-                      ? 'Quá hạn'
-                      : d.kind === 'owed'
-                      ? 'Phải trả'
-                      : 'Cần thu'
-                  }
-                  size="small"
-                  color={remaining === 0 ? 'success' : overdue ? 'error' : 'warning'}
-                  variant="outlined"
-                  sx={{ height: 22, fontSize: 11, fontWeight: 700 }}
-                />
-              </Box>
+      {/* View Mode Toggle Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+          Danh sách sổ nợ ({data.debts.length})
+        </Typography>
 
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.25 }}>
-                {d.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                Bắt đầu {dateLabel(d.startDate)} · Hạn {dateLabel(d.dueDate)}
-              </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: { xs: 'none', sm: 'inline-block' } }}>
+            Chế độ xem:
+          </Typography>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, val) => val && setViewMode(val)}
+            size="small"
+            sx={{
+              bgcolor: 'action.hover',
+              p: 0.3,
+              borderRadius: '4px',
+              '& .MuiToggleButton-root': {
+                borderRadius: '4px',
+                border: 'none',
+                px: 1.25,
+                py: 0.5,
+                fontWeight: 750,
+                fontSize: '0.78rem',
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: '#FFFFFF'
+                }
+              }
+            }}
+          >
+            <ToggleButton value="grid" aria-label="Xem ô lưới">
+              <LayoutGrid size={14} style={{ marginRight: 6 }} /> Ô lưới
+            </ToggleButton>
+            <ToggleButton value="table" aria-label="Xem danh sách">
+              <List size={14} style={{ marginRight: 6 }} /> Danh sách
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Box>
 
-              <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
-                {money(remaining)}
-              </Typography>
-
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                Còn lại từ {money(d.principal)}
-                {d.interestRate ? ` · Lãi suất tham khảo ${d.interestRate}%` : ''}
-              </Typography>
-
-              <Progress
-                value={((d.principal - remaining) / d.principal) * 100}
-                color={d.kind === 'owed' ? '#f59e0b' : '#10b981'}
-              />
-
-              {/* Action Buttons: 1 Nút chính + Nút More */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, pt: 1.5, borderTop: '1px solid var(--border-subtle)' }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  disabled={remaining === 0}
-                  startIcon={<Plus size={14} />}
-                  onClick={() => {
-                    setPay(d);
-                    setError('');
-                  }}
-                  sx={{ fontWeight: 600, fontSize: 11.5, borderRadius: 1.5 }}
-                >
-                  {d.kind === 'owed' ? 'Ghi trả nợ' : 'Ghi thu hồi'}
-                </Button>
-
-                <ItemActionMenu
-                  ariaLabel={`Tùy chọn khoản nợ ${d.name}`}
-                  items={[
-                    ...(d.kind === 'lent' && remaining > 0 ? [{
-                      label: 'Soạn tin nhắc nợ lịch sự',
-                      icon: <Send size={15} />,
-                      onClick: () => {
-                        setReminderDebt(d);
-                        setCopiedReminder(false);
+      {viewMode === 'grid' ? (
+        /* ========================================== */
+        /* BENTO GRID VIEW OF DEBTS                   */
+        /* ========================================== */
+        <Box>
+          <div className="tiles">
+            {data.debts
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map(d => {
+                const remaining = debtRemaining(d);
+                const overdue = d.dueDate < todayKey() && remaining > 0;
+                return (
+                  <Card
+                    variant="outlined"
+                    className="card tile"
+                    key={d.id}
+                    sx={{
+                      borderRadius: '6px',
+                      p: 2.5,
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
                       }
-                    }] : []),
-                    {
-                      label: 'Lịch sử thanh toán',
-                      icon: <History size={15} />,
-                      onClick: () => setHistory(d)
-                    },
-                    {
-                      label: 'Chỉnh sửa khoản nợ',
-                      icon: <Pencil size={15} />,
-                      onClick: () => start(d)
-                    },
-                    {
-                      label: 'Xóa khoản nợ',
-                      icon: <Trash2 size={15} />,
-                      color: 'error' as const,
-                      onClick: () => setDeleting(d)
-                    }
-                  ]}
-                />
-              </Box>
-            </Card>
-          );
-        })}
-      </div>
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <DebtLogoBadge debtName={d.name} lenderName={d.name} size="large" />
+                      <StatusBadge
+                        label={
+                          remaining === 0
+                            ? 'Đã tất toán'
+                            : overdue
+                            ? 'Quá hạn'
+                            : d.kind === 'owed'
+                            ? 'Phải trả'
+                            : 'Cần thu'
+                        }
+                        status={remaining === 0 ? 'success' : overdue ? 'danger' : 'warning'}
+                        variant="soft"
+                        size="small"
+                      />
+                    </Box>
+
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.25 }}>
+                      {d.name}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
+                      Bắt đầu {dateLabel(d.startDate)} · Hạn {dateLabel(d.dueDate)}
+                    </Typography>
+
+                    <Typography variant="h5" sx={{ fontWeight: 900, mb: 1 }}>
+                      {money(remaining)}
+                    </Typography>
+
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
+                      Còn lại từ {money(d.principal)}
+                      {d.interestRate ? ` · Lãi suất tham khảo ${d.interestRate}%` : ''}
+                    </Typography>
+
+                    <Progress
+                      value={((d.principal - remaining) / d.principal) * 100}
+                      color={d.kind === 'owed' ? '#f59e0b' : '#10b981'}
+                    />
+
+                    {/* Action Buttons: 1 Nút chính có màu + Nút More */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, pt: 1.5, borderTop: '1px solid var(--border-subtle)' }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        disabled={remaining === 0}
+                        startIcon={<Plus size={14} />}
+                        onClick={() => {
+                          setPay(d);
+                          setError('');
+                        }}
+                        sx={{
+                          borderRadius: '4px',
+                          fontWeight: 750,
+                          fontSize: '0.78rem',
+                          bgcolor: d.kind === 'owed' ? '#F59E0B' : '#10B981',
+                          color: '#FFFFFF',
+                          boxShadow: d.kind === 'owed' ? '0 2px 6px rgba(245, 158, 11, 0.25)' : '0 2px 6px rgba(16, 185, 129, 0.25)',
+                          '&:hover': {
+                            bgcolor: d.kind === 'owed' ? '#D97706' : '#059669'
+                          }
+                        }}
+                      >
+                        {d.kind === 'owed' ? 'Ghi trả nợ' : 'Ghi thu hồi'}
+                      </Button>
+
+                      <ItemActionMenu
+                        ariaLabel={`Tùy chọn khoản nợ ${d.name}`}
+                        items={[
+                          ...(d.kind === 'lent' && remaining > 0 ? [{
+                            label: 'Soạn tin nhắc nợ lịch sự',
+                            icon: <Send size={15} />,
+                            onClick: () => {
+                              setReminderDebt(d);
+                              setCopiedReminder(false);
+                            }
+                          }] : []),
+                          {
+                            label: 'Lịch sử thanh toán',
+                            icon: <History size={15} />,
+                            onClick: () => setHistory(d)
+                          },
+                          {
+                            label: 'Chỉnh sửa khoản nợ',
+                            icon: <Pencil size={15} />,
+                            onClick: () => start(d)
+                          },
+                          {
+                            label: 'Xóa khoản nợ',
+                            icon: <Trash2 size={15} />,
+                            color: 'error' as const,
+                            onClick: () => setDeleting(d)
+                          }
+                        ]}
+                      />
+                    </Box>
+                  </Card>
+                );
+              })}
+          </div>
+
+          {/* Grid Pagination */}
+          {data.debts.length > 0 && (
+            <TablePagination
+              component="div"
+              count={data.debts.length}
+              page={page}
+              onPageChange={(_, p) => setPage(p)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={e => {
+                setRowsPerPage(parseInt(e.target.value, 10));
+                setPage(0);
+              }}
+              rowsPerPageOptions={[6, 12, 24]}
+              labelRowsPerPage="Số thẻ / trang:"
+              sx={{
+                mt: 2,
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                bgcolor: 'background.paper',
+                borderRadius: '4px'
+              }}
+            />
+          )}
+        </Box>
+      ) : (
+        /* ========================================== */
+        /* TABLE VIEW OF DEBTS                        */
+        /* ========================================== */
+        <Card sx={{ p: 0, overflow: 'hidden', borderRadius: '6px' }}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}>Khoản nợ & Đối tác</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Phân loại</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Số tiền gốc</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Còn lại</TableCell>
+                  <TableCell sx={{ fontWeight: 700, minWidth: 150 }}>Tiến độ thanh toán</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Hạn chót</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Trạng thái</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700 }}>Thao tác</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.debts
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map(d => {
+                    const remaining = debtRemaining(d);
+                    const overdue = d.dueDate < todayKey() && remaining > 0;
+                    const pct = ((d.principal - remaining) / d.principal) * 100;
+                    return (
+                      <TableRow key={d.id} hover>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            <DebtLogoBadge debtName={d.name} lenderName={d.name} size="small" />
+                            <Box>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                                {d.name}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                Bắt đầu: {d.startDate}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+
+                        <TableCell>
+                          <Chip
+                            label={d.kind === 'owed' ? 'Tôi nợ' : 'Cho vay'}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontSize: 11,
+                              fontWeight: 750,
+                              borderRadius: '4px',
+                              bgcolor: d.kind === 'owed' ? 'rgba(245, 158, 11, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                              color: d.kind === 'owed' ? '#F59E0B' : '#10B981'
+                            }}
+                          />
+                        </TableCell>
+
+                        <TableCell align="right" sx={{ fontWeight: 700 }}>
+                          {money(d.principal)}
+                        </TableCell>
+
+                        <TableCell align="right" sx={{ fontWeight: 800, color: d.kind === 'owed' ? '#F59E0B' : '#10B981' }}>
+                          {money(remaining)}
+                        </TableCell>
+
+                        <TableCell>
+                          <Box sx={{ width: '100%' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, fontSize: '0.725rem' }}>
+                              <span style={{ fontWeight: 700 }}>{Math.round(pct)}%</span>
+                            </Box>
+                            <Progress
+                              value={pct}
+                              color={d.kind === 'owed' ? '#f59e0b' : '#10b981'}
+                            />
+                          </Box>
+                        </TableCell>
+
+                        <TableCell sx={{ fontSize: '0.825rem' }}>
+                          {dateLabel(d.dueDate)}
+                        </TableCell>
+
+                        <TableCell>
+                          <StatusBadge
+                            label={
+                              remaining === 0
+                                ? 'Đã tất toán'
+                                : overdue
+                                ? 'Quá hạn'
+                                : d.kind === 'owed'
+                                ? 'Phải trả'
+                                : 'Cần thu'
+                            }
+                            status={remaining === 0 ? 'success' : overdue ? 'danger' : 'warning'}
+                            variant="soft"
+                            size="small"
+                          />
+                        </TableCell>
+
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, alignItems: 'center' }}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              disabled={remaining === 0}
+                              startIcon={<Plus size={13} />}
+                              onClick={() => {
+                                setPay(d);
+                                setError('');
+                              }}
+                              sx={{
+                                borderRadius: '4px',
+                                fontWeight: 750,
+                                fontSize: '0.75rem',
+                                bgcolor: d.kind === 'owed' ? '#F59E0B' : '#10B981',
+                                color: '#FFFFFF',
+                                '&:hover': {
+                                  bgcolor: d.kind === 'owed' ? '#D97706' : '#059669'
+                                }
+                              }}
+                            >
+                              {d.kind === 'owed' ? 'Trả' : 'Thu'}
+                            </Button>
+
+                            <ItemActionMenu
+                              ariaLabel={`Tùy chọn khoản nợ ${d.name}`}
+                              items={[
+                                ...(d.kind === 'lent' && remaining > 0 ? [{
+                                  label: 'Soạn tin nhắc nợ lịch sự',
+                                  icon: <Send size={15} />,
+                                  onClick: () => {
+                                    setReminderDebt(d);
+                                    setCopiedReminder(false);
+                                  }
+                                }] : []),
+                                {
+                                  label: 'Lịch sử thanh toán',
+                                  icon: <History size={15} />,
+                                  onClick: () => setHistory(d)
+                                },
+                                {
+                                  label: 'Chỉnh sửa khoản nợ',
+                                  icon: <Pencil size={15} />,
+                                  onClick: () => start(d)
+                                },
+                                {
+                                  label: 'Xóa khoản nợ',
+                                  icon: <Trash2 size={15} />,
+                                  color: 'error' as const,
+                                  onClick: () => setDeleting(d)
+                                }
+                              ]}
+                            />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            component="div"
+            count={data.debts.length}
+            page={page}
+            onPageChange={(_, p) => setPage(p)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={e => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[6, 12, 24]}
+            labelRowsPerPage="Số hàng / trang:"
+          />
+        </Card>
+      )}
 
       {/* Add / Edit Debt Modal */}
       <Dialog
@@ -340,7 +626,7 @@ export default function Debts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -413,7 +699,7 @@ export default function Debts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -463,7 +749,7 @@ export default function Debts() {
             sx: {
               m: { xs: 1.5, sm: 2 },
               width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -533,7 +819,7 @@ export default function Debts() {
                 <Box
                   sx={{
                     p: 2,
-                    borderRadius: 2.5,
+                    borderRadius: '6px',
                     bgcolor: 'action.hover',
                     border: '1px solid var(--border-subtle)',
                     fontFamily: 'inherit',

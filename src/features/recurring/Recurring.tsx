@@ -180,7 +180,7 @@ export default function Recurring() {
           sx={{
             mb: 2.5,
             p: 2,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'action.hover',
             border: '1.5px solid #059669'
           }}
@@ -222,14 +222,14 @@ export default function Recurring() {
               variant="outlined"
               className="card tile"
               key={r.id}
-              sx={{ borderRadius: 3, p: 2.5 }}
+              sx={{ borderRadius: '6px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
                 <Box
                   sx={{
                     width: 36,
                     height: 36,
-                    borderRadius: 2,
+                    borderRadius: '4px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -284,7 +284,7 @@ export default function Recurring() {
               </Typography>
 
               {/* Auto Execute Switch */}
-              <Box sx={{ mb: 1.5, p: 1, borderRadius: 2, bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ mb: 1.5, p: 1, borderRadius: '4px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   Tự động ghi nhận (Auto)
                 </Typography>

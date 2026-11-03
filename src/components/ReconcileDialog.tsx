@@ -76,7 +76,7 @@ export function ReconcileDialog({
           sx: {
             m: { xs: 1.5, sm: 2 },
             width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-            borderRadius: 3
+            borderRadius: '4px'
           }
         }
       }}
@@ -106,7 +106,7 @@ export function ReconcileDialog({
           Cứu cánh khi bạn quên ghi chép một vài giao dịch nhỏ. Chỉ cần nhập số dư hiện tại trong ví hoặc ứng dụng ngân hàng, Finora sẽ tự động bù đắp chênh lệch.
         </Typography>
 
-        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'action.hover' }}>
+        <Paper variant="outlined" sx={{ p: 2, borderRadius: '4px', bgcolor: 'action.hover' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, fontSize: 13 }}>
             <span style={{ color: 'var(--text-secondary)' }}>Tài khoản:</span>
             <strong>{account.name}</strong>
@@ -129,7 +129,7 @@ export function ReconcileDialog({
           <Alert
             severity={difference > 0 ? 'success' : 'warning'}
             icon={difference > 0 ? <ArrowDownLeft size={18} /> : <ArrowUpRight size={18} />}
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: '4px' }}
           >
             Chênh lệch: <strong>{difference > 0 ? '+' : ''}{money(difference)}</strong>.
             <br />
@@ -140,7 +140,7 @@ export function ReconcileDialog({
         )}
 
         {difference === 0 && (
-          <Alert severity="info" icon={<CheckCircle2 size={18} />} sx={{ borderRadius: 2 }}>
+          <Alert severity="info" icon={<CheckCircle2 size={18} />} sx={{ borderRadius: '4px' }}>
             Số dư thực tế đang trùng khớp với số dư trên ứng dụng.
           </Alert>
         )}

@@ -56,6 +56,8 @@ import {
   MuiTransactionTypeToggle
 } from '../../components/mui/MuiInputs';
 import { BankLogoBadge, CategoryAvatarBadge } from '../../lib/brandBadges';
+import { SmartQuickEntry } from '../../components/SmartQuickEntry';
+import { TransactionManagerCRUD } from '../../components/TransactionManagerCRUD';
 import type { Transaction, TxType } from '../../types';
 
 type FormValues = {
@@ -365,6 +367,16 @@ export default function Transactions() {
         }
       />
 
+      {/* Smart NLP Quick Entry Bar */}
+      <Box sx={{ mb: 3 }}>
+        <SmartQuickEntry />
+      </Box>
+
+      {/* Full CRUD Transaction Manager Table & Filters */}
+      <Box sx={{ mb: 3 }}>
+        <TransactionManagerCRUD />
+      </Box>
+
       {/* 3D Debossed Executive Flow Summary Bento */}
       <Box
         sx={{
@@ -380,7 +392,7 @@ export default function Transactions() {
             bgcolor: 'background.paper',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 3,
+            borderRadius: '6px',
             p: 2,
             display: 'flex',
             flexDirection: 'column',
@@ -435,7 +447,7 @@ export default function Transactions() {
             bgcolor: 'background.paper',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 3,
+            borderRadius: '6px',
             p: 2,
             display: 'flex',
             flexDirection: 'column',
@@ -490,7 +502,7 @@ export default function Transactions() {
             bgcolor: 'background.paper',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 3,
+            borderRadius: '6px',
             p: 2,
             display: 'flex',
             flexDirection: 'column',
@@ -546,7 +558,7 @@ export default function Transactions() {
             bgcolor: 'background.paper',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             border: '1px solid var(--border-subtle)',
-            borderRadius: 3,
+            borderRadius: '6px',
             p: 2,
             display: 'flex',
             flexDirection: 'column',
@@ -601,7 +613,7 @@ export default function Transactions() {
         sx={{
           p: { xs: 2, sm: 2.25 },
           mb: 3,
-          borderRadius: 3,
+          borderRadius: '6px',
           bgcolor: 'background.paper',
           borderColor: 'var(--border-subtle)',
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
@@ -671,7 +683,7 @@ export default function Transactions() {
               sx={{
                 bgcolor: 'action.hover',
                 p: 0.5,
-                borderRadius: 2.5,
+                borderRadius: '6px',
                 border: '1px solid var(--border-subtle)',
                 overflowX: 'auto',
                 maxWidth: '100%',
@@ -821,7 +833,7 @@ export default function Transactions() {
               size="small"
               sx={{
                 bgcolor: 'action.hover',
-                borderRadius: 2,
+                borderRadius: '4px',
                 p: 0.35,
                 border: '1px solid var(--border-subtle)',
                 '& .MuiToggleButtonGroup-grouped': {
@@ -1031,7 +1043,7 @@ export default function Transactions() {
           variant="outlined"
           sx={{
             p: 5,
-            borderRadius: 3,
+            borderRadius: '6px',
             textAlign: 'center',
             background: 'var(--card-inset-bg)',
             boxShadow: 'var(--card-inset-shadow)'
@@ -1137,7 +1149,7 @@ export default function Transactions() {
                         variant="outlined"
                         sx={{
                           p: { xs: 1.75, sm: 2 },
-                          borderRadius: 2.5,
+                          borderRadius: '6px',
                           background: 'var(--card-inset-bg)',
                           boxShadow: 'var(--card-inset-shadow)',
                           display: 'flex',
@@ -1321,7 +1333,7 @@ export default function Transactions() {
           component={Paper}
           variant="outlined"
           sx={{
-            borderRadius: 3,
+            borderRadius: '6px',
             overflow: 'hidden',
             background: 'var(--card-inset-bg)',
             boxShadow: 'var(--card-inset-shadow)'
@@ -1500,7 +1512,7 @@ export default function Transactions() {
                   key={t.id}
                   sx={{
                     p: 1.5,
-                    borderRadius: 2,
+                    borderRadius: '4px',
                     bgcolor: 'var(--bg-surface)',
                     border: '1px solid var(--border-subtle)',
                     display: 'flex',
@@ -1662,7 +1674,7 @@ export default function Transactions() {
             sx: {
               m: { xs: 1, sm: 2 },
               width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-              borderRadius: 3,
+              borderRadius: '6px',
               maxHeight: 'calc(100% - 32px)'
             }
           }
@@ -1865,7 +1877,7 @@ export default function Transactions() {
           />
 
           {/* Receipt / Bill Attachment */}
-          <Box sx={{ border: '1px dashed var(--border-subtle)', borderRadius: 2.5, p: 2, bgcolor: 'action.hover' }}>
+          <Box sx={{ border: '1px dashed var(--border-subtle)', borderRadius: '6px', p: 2, bgcolor: 'action.hover' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <ReceiptText size={18} color="#059669" />
@@ -1934,7 +1946,7 @@ export default function Transactions() {
                   alignItems: 'center',
                   gap: 1.5,
                   p: 1,
-                  borderRadius: 2,
+                  borderRadius: '4px',
                   bgcolor: 'background.paper',
                   border: '1px solid var(--border-subtle)'
                 }}
@@ -1983,7 +1995,7 @@ export default function Transactions() {
             sx: {
               m: { xs: 1, sm: 2 },
               width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-              borderRadius: 3
+              borderRadius: '4px'
             }
           }
         }}
@@ -2050,7 +2062,7 @@ export default function Transactions() {
             sx: {
               m: { xs: 1, sm: 2 },
               width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-              borderRadius: 3
+              borderRadius: '4px'
             }
           }
         }}
@@ -2066,7 +2078,7 @@ export default function Transactions() {
             <img
               src={viewingReceipt}
               alt="Hóa đơn phóng to"
-              style={{ maxWidth: '100%', maxHeight: '65vh', borderRadius: 8, background: '#fff' }}
+              style={{ maxWidth: '100%', maxHeight: '65vh', borderRadius: '4px', background: '#fff' }}
             />
           )}
         </DialogContent>

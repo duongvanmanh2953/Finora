@@ -96,7 +96,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
           sx: {
             m: { xs: 1.5, sm: 2 },
             width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-            borderRadius: 3,
+            borderRadius: '6px',
             maxHeight: 'calc(100% - 32px)'
           }
         }
@@ -123,14 +123,14 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1.5 }}>
-        <Alert severity="info" variant="outlined" sx={{ mb: 2.5, borderRadius: 2 }}>
+        <Alert severity="info" variant="outlined" sx={{ mb: 2.5, borderRadius: '4px' }}>
           Finora hoạt động theo nguyên lý <strong>Local-First (Ưu tiên ngoại tuyến)</strong>: Toàn bộ sổ thu chi được lưu trực tiếp trên thiết bị của bạn. Chỉ khi bạn bấm &ldquo;Đồng bộ lên Cloud&rdquo;, dữ liệu mới được đẩy lên máy chủ đám mây an toàn.
         </Alert>
 
         {syncing && <LinearProgress sx={{ mb: 2, borderRadius: 1 }} />}
 
         {statusMsg && (
-          <Alert severity="success" sx={{ mb: 2, borderRadius: 2 }}>
+          <Alert severity="success" sx={{ mb: 2, borderRadius: '4px' }}>
             {statusMsg}
           </Alert>
         )}
@@ -139,7 +139,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
         <Box
           sx={{
             p: 2,
-            borderRadius: 2.5,
+            borderRadius: '6px',
             bgcolor: 'var(--bg-subtle)',
             mb: 2.5,
             border: '1px solid var(--border-subtle)'
@@ -149,7 +149,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
             DỮ LIỆU ĐANG LƯU TRÊN MÁY BẠN
           </Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, textAlign: 'center' }}>
-            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: 2 }}>
+            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: '4px' }}>
               <Typography variant="h6" sx={{ fontWeight: 900 }}>
                 {txCount}
               </Typography>
@@ -157,7 +157,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
                 Giao dịch
               </Typography>
             </Box>
-            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: 2 }}>
+            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: '4px' }}>
               <Typography variant="h6" sx={{ fontWeight: 900 }}>
                 {accCount}
               </Typography>
@@ -165,7 +165,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
                 Tài khoản
               </Typography>
             </Box>
-            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: 2 }}>
+            <Box sx={{ p: 1, bgcolor: 'var(--bg-surface)', borderRadius: '4px' }}>
               <Typography variant="h6" sx={{ fontWeight: 900 }}>
                 ~{approxSizeKb} KB
               </Typography>

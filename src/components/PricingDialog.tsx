@@ -95,7 +95,7 @@ export function PricingDialog({
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 3.5,
+            borderRadius: '6px',
             p: 1,
             overflow: 'hidden'
           }
@@ -116,7 +116,7 @@ export function PricingDialog({
             sx={{
               width: 38,
               height: 38,
-              borderRadius: 2,
+              borderRadius: '4px',
               bgcolor: 'warning.main',
               color: '#fff',
               display: 'flex',
@@ -142,7 +142,7 @@ export function PricingDialog({
 
       <DialogContent dividers sx={{ p: 2.5 }}>
         {initialFeatureHighlight && (
-          <Alert severity="info" sx={{ mb: 2.5, borderRadius: 2 }}>
+          <Alert severity="info" sx={{ mb: 2.5, borderRadius: '4px' }}>
             <strong>Tính năng Pro:</strong> {initialFeatureHighlight}. Hãy nâng cấp gói cước để tiếp tục sử dụng!
           </Alert>
         )}
@@ -165,7 +165,7 @@ export function PricingDialog({
                     key={plan.id}
                     variant="outlined"
                     sx={{
-                      borderRadius: 3,
+                      borderRadius: '6px',
                       position: 'relative',
                       borderWidth: isSelected ? 2 : 1,
                       borderColor: isSelected ? 'primary.main' : 'divider',
@@ -224,7 +224,7 @@ export function PricingDialog({
             <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Sparkles size={16} color="#20705B" /> So sánh đặc quyền gói Free vs Pro
             </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2.5, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
               <Table size="small" sx={{ minWidth: { xs: 460, sm: '100%' } }}>
                 <TableHead sx={{ bgcolor: 'action.hover' }}>
                   <TableRow>
@@ -275,7 +275,7 @@ export function PricingDialog({
                   p: 2,
                   bgcolor: '#ffffff',
                   color: '#0f172a',
-                  borderRadius: 3,
+                  borderRadius: '6px',
                   boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                   border: '1px solid #e2e8f0',
                   textAlign: 'center'
@@ -289,7 +289,7 @@ export function PricingDialog({
                     width: 220,
                     height: 220,
                     objectFit: 'contain',
-                    borderRadius: 2
+                    borderRadius: '4px'
                   }}
                   onError={e => {
                     // Fallback visual if offline
@@ -310,7 +310,7 @@ export function PricingDialog({
                   Chuyển khoản chính xác số tiền và nội dung để hệ thống tự động kích hoạt tức thì.
                 </Typography>
 
-                <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: 'action.hover', mb: 2 }}>
+                <Paper variant="outlined" sx={{ p: 2, borderRadius: '6px', bgcolor: 'action.hover', mb: 2 }}>
                   <Box sx={{ display: 'grid', gap: 1.25, fontSize: 13 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--text-secondary)' }}>Ngân hàng:</span>
@@ -345,7 +345,7 @@ export function PricingDialog({
                   </Box>
                 </Paper>
 
-                <Alert severity="success" icon={<ShieldCheck size={18} />} sx={{ borderRadius: 2, mb: 2 }}>
+                <Alert severity="success" icon={<ShieldCheck size={18} />} sx={{ borderRadius: '4px', mb: 2 }}>
                   Đây là màn hình demo giả lập giao dịch. Bạn có thể bấm nút bên dưới để trải nghiệm ngay quyền lợi Finora Pro!
                 </Alert>
               </Box>

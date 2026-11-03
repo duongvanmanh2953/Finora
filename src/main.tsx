@@ -19,7 +19,19 @@ import Recurring from './features/recurring/Recurring';
 import Settings from './features/settings/Settings';
 import Assets from './features/assets/Assets';
 import Payroll from './features/payroll/Payroll';
-import Admin from './features/admin/Admin';
+import LegalPublicView from './features/legal/LegalPublicView';
+import { AdminLegalView } from './features/admin/AdminLegalView';
+import {
+  AdminLayout,
+  AdminDashboardView,
+  AdminUsersView,
+  AdminSubscriptionsView,
+  AdminFinanceView,
+  AdminReportsView,
+  AdminSystemHealthView,
+  AdminAuditLogsView,
+  AdminSettingsView
+} from './features/admin/Admin';
 import Auth from './features/auth/Auth';
 import { useFinance } from './store';
 import { registerFinanceTools } from './lib/webmcp';
@@ -29,23 +41,101 @@ import './styles.css';
 
 function Loading() {
   return (
-    <div className="app" style={{ display: 'flex', minHeight: '100vh' }}>
-      <div className="sidebar" />
-      <div className="main" style={{ width: '100%' }}>
-        <div className="topbar" />
-        <main className="content">
-          <div className="skeleton" style={{ height: 32, width: 260, marginBottom: 26 }} />
-          <div className="grid-stats">
-            {Array.from({length: 4}, (_, i) => (
-              <div className="card stat" key={i}>
-                <div className="skeleton" style={{ height: 17, width: '48%' }} />
-                <div className="skeleton" style={{ height: 29, width: '78%', marginTop: 23 }} />
+    <div className="app" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-app)' }}>
+      <div
+        className="sidebar"
+        style={{
+          width: 'var(--sidebar-w)',
+          borderRight: '1px solid var(--border-subtle)',
+          padding: '24px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16
+        }}
+      >
+        <div className="skeleton" style={{ height: 36, width: '70%', borderRadius: 4, marginBottom: 12 }} />
+        <div className="skeleton" style={{ height: 28, width: '100%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 28, width: '85%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 28, width: '90%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 28, width: '80%', borderRadius: 4 }} />
+        <div className="skeleton" style={{ height: 28, width: '75%', borderRadius: 4 }} />
+      </div>
+
+      <div className="main" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div
+          className="topbar"
+          style={{
+            height: 'var(--topbar-h)',
+            borderBottom: '1px solid var(--border-subtle)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 24px'
+          }}
+        >
+          <div className="skeleton" style={{ height: 24, width: 180, borderRadius: 4 }} />
+          <div style={{ display: 'flex', gap: 12 }}>
+            <div className="skeleton" style={{ height: 32, width: 32, borderRadius: 4 }} />
+            <div className="skeleton" style={{ height: 32, width: 120, borderRadius: 4 }} />
+          </div>
+        </div>
+
+        <main className="content" style={{ padding: '24px', flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <div>
+              <div className="skeleton" style={{ height: 16, width: 90, borderRadius: 4, marginBottom: 8 }} />
+              <div className="skeleton" style={{ height: 30, width: 220, borderRadius: 4 }} />
+            </div>
+            <div className="skeleton" style={{ height: 36, width: 140, borderRadius: 4 }} />
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '16px',
+              marginBottom: '24px'
+            }}
+          >
+            {Array.from({ length: 4 }, (_, i) => (
+              <div
+                key={i}
+                style={{
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: '6px',
+                  padding: '20px'
+                }}
+              >
+                <div className="skeleton" style={{ height: 14, width: '50%', borderRadius: 4, marginBottom: 16 }} />
+                <div className="skeleton" style={{ height: 28, width: '75%', borderRadius: 4 }} />
               </div>
             ))}
           </div>
-          <div className="rowcharts">
-            <div className="card pad"><div className="skeleton" style={{ height: 240 }} /></div>
-            <div className="card pad"><div className="skeleton" style={{ height: 240 }} /></div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.45fr 1fr', gap: '20px' }}>
+            <div
+              style={{
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '6px',
+                padding: '20px'
+              }}
+            >
+              <div className="skeleton" style={{ height: 20, width: 160, borderRadius: 4, marginBottom: 20 }} />
+              <div className="skeleton" style={{ height: 240, width: '100%', borderRadius: 4 }} />
+            </div>
+            <div
+              style={{
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '6px',
+                padding: '20px'
+              }}
+            >
+              <div className="skeleton" style={{ height: 20, width: 140, borderRadius: 4, marginBottom: 20 }} />
+              <div className="skeleton" style={{ height: 240, width: '100%', borderRadius: 4 }} />
+            </div>
           </div>
         </main>
       </div>
@@ -94,6 +184,24 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="auth/:mode" element={<Auth />} />
+            <Route path="legal" element={<LegalPublicView />} />
+
+            {/* SEPARATE INDEPENDENT ADMIN CONSOLE ENVIRONMENT */}
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardView />} />
+              <Route path="dashboard" element={<AdminDashboardView />} />
+              <Route path="users" element={<AdminUsersView />} />
+              <Route path="subscriptions" element={<AdminSubscriptionsView />} />
+              <Route path="finance" element={<AdminFinanceView />} />
+              <Route path="revenue" element={<AdminFinanceView />} />
+              <Route path="reports" element={<AdminReportsView />} />
+              <Route path="system" element={<AdminSystemHealthView />} />
+              <Route path="audit-logs" element={<AdminAuditLogsView />} />
+              <Route path="legal" element={<AdminLegalView />} />
+              <Route path="settings" element={<AdminSettingsView />} />
+            </Route>
+
+            {/* CONSUMER PERSONAL FINANCE APPLICATION SHELL */}
             <Route element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="transactions" element={<Transactions />} />
@@ -106,8 +214,6 @@ function App() {
               <Route path="debts" element={<Debts />} />
               <Route path="reports" element={<Reports />} />
               <Route path="recurring" element={<Recurring />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="admin/*" element={<Admin />} />
               <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

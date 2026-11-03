@@ -199,7 +199,7 @@ export const SixJarsView: React.FC = () => {
         variant="outlined"
         sx={{
           p: 2.5,
-          borderRadius: 3,
+          borderRadius: '6px',
           mb: 3,
           bgcolor: 'action.hover',
           display: 'grid',
@@ -266,7 +266,7 @@ export const SixJarsView: React.FC = () => {
               variant="outlined"
               className="card tile"
               key={jar.key}
-              sx={{ borderRadius: 3, p: 2.5 }}
+              sx={{ borderRadius: '6px', p: 2.5 }}
             >
               {/* Top info */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -358,7 +358,7 @@ export const SixJarsView: React.FC = () => {
             </Box>
           ))}
 
-          <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: totalAllocated === 100 ? '#e9f9f2' : '#fef0ef', textAlign: 'center' }}>
+          <Box sx={{ p: 1.5, borderRadius: '4px', bgcolor: totalAllocated === 100 ? '#e9f9f2' : '#fef0ef', textAlign: 'center' }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 800, color: totalAllocated === 100 ? '#059669' : '#dc2626' }}>
               Tổng tỷ lệ: {totalAllocated}% {totalAllocated === 100 ? '(Hợp lệ)' : '(Cần điều chỉnh về đúng 100%)'}
             </Typography>

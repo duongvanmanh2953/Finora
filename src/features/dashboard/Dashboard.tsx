@@ -28,7 +28,6 @@ import {
 } from 'lucide-react';
 import {
   Box,
-  Button,
   Paper,
   Chip,
   Typography,
@@ -70,9 +69,12 @@ import {
   shortMoney,
   totals
 } from '../../lib/finance';
-import { Empty } from '../../components/ui';
+import { calculateComprehensiveNetWorth, getSampleWealthInvestmentNotes } from '../../lib/investmentProjectionEngine';
+import { Empty, IconContainer, StatusBadge, FinoraButton } from '../../components/ui';
 import { MagicQuickBar } from '../../components/MagicQuickBar';
 import { BankLogoBadge, CategoryAvatarBadge, FundLogoBadge } from '../../lib/brandBadges';
+import { FinancialHealthGaugeCluster } from '../../components/gauges/FinancialHealthGaugeCluster';
+import { HelpButton } from '../../components/HelpButton';
 
 type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
@@ -140,12 +142,36 @@ export default function Dashboard() {
     ? Math.round(((expense - prevTotals.expense) / prevTotals.expense) * 100)
     : 0;
 
-  // Total Assets across all active accounts
-  const totalAssets = useMemo(() => {
+  // Total Cash Assets across all active liquid accounts
+  const liquidCashBalance = useMemo(() => {
     return data.accounts
-      .filter(a => a.active)
+      .filter(a => a.active && a.type !== 'credit_card')
       .reduce((sum, a) => sum + balance(a, data.transactions), 0);
   }, [data.accounts, data.transactions]);
+
+  // Total Liabilities
+  const totalLiabilities = useMemo(() => {
+    const debtOwed = (data.debts || [])
+      .filter(d => d.kind === 'owed')
+      .reduce((sum, d) => sum + d.principal, 0);
+    const ccDebt = (data.accounts || [])
+      .filter(a => a.active && a.type === 'credit_card')
+      .reduce((sum, a) => sum + Math.max(0, -balance(a, data.transactions)), 0);
+    return debtOwed + ccDebt;
+  }, [data.debts, data.accounts, data.transactions]);
+
+  // Comprehensive Net Worth (incorporating investment notes & safe mode)
+  const netWorthSummary = useMemo(() => {
+    const notes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
+      ? data.smartInvestmentNotes
+      : getSampleWealthInvestmentNotes();
+    return calculateComprehensiveNetWorth(
+      liquidCashBalance,
+      notes,
+      totalLiabilities,
+      Boolean(data.hideRiskyAssetsGlobal)
+    );
+  }, [liquidCashBalance, data.smartInvestmentNotes, totalLiabilities, data.hideRiskyAssetsGlobal]);
 
   // Overall Monthly Budget Calculation
   const activeBudgets = useMemo(() => {
@@ -292,7 +318,7 @@ export default function Dashboard() {
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              borderRadius: 2.5,
+              borderRadius: '6px',
               p: 0.5,
               bgcolor: 'background.paper',
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
@@ -339,7 +365,7 @@ export default function Dashboard() {
               sx={{
                 width: 38,
                 height: 38,
-                borderRadius: 2.5,
+                borderRadius: '8px',
                 border: '1px solid var(--border-subtle)',
                 bgcolor: 'background.paper'
               }}
@@ -348,22 +374,18 @@ export default function Dashboard() {
             </IconButton>
           </Tooltip>
 
+          {/* Guided Tour Help Button */}
+          <HelpButton pageKey="dashboard" />
+
           {/* + Thêm giao dịch Button */}
           <Link to="/transactions?add=1" style={{ textDecoration: 'none' }}>
-            <Button
-              variant="contained"
-              color="primary"
+            <FinoraButton
+              variant="primary"
+              size="medium"
               startIcon={<Plus size={16} />}
-              sx={{
-                fontWeight: 750,
-                fontSize: 13,
-                height: 38,
-                px: 2,
-                borderRadius: 2.5
-              }}
             >
               Thêm giao dịch
-            </Button>
+            </FinoraButton>
           </Link>
         </Box>
       </Box>
@@ -377,14 +399,15 @@ export default function Dashboard() {
           mb: 3
         }}
       >
-        {/* Card 1: Tổng tài sản */}
+        {/* Card 1: Tổng tài sản ròng (Net Worth) */}
         <Paper
+          id="tour-net-worth-card"
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '12px',
             bgcolor: 'background.paper',
-            borderColor: 'var(--border-subtle)',
+            borderColor: data.hideRiskyAssetsGlobal ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             display: 'flex',
             flexDirection: 'column',
@@ -395,23 +418,19 @@ export default function Dashboard() {
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
-              TỔNG TÀI SẢN
-            </Typography>
-            <Box
-              sx={{
-                width: 30,
-                height: 30,
-                borderRadius: 2,
-                bgcolor: 'rgba(23, 107, 82, 0.1)',
-                color: 'var(--brand-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Landmark size={16} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
+                TỔNG TÀI SẢN RÒNG
+              </Typography>
+              {data.hideRiskyAssetsGlobal && (
+                <Chip
+                  size="small"
+                  label="Thận trọng"
+                  sx={{ height: 18, fontSize: 9.5, fontWeight: 800, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#059669', borderRadius: '4px' }}
+                />
+              )}
             </Box>
+            <IconContainer icon={<Landmark size={16} />} module="accounts" size={32} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
@@ -422,14 +441,14 @@ export default function Dashboard() {
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: 'text.primary'
+                color: data.hideRiskyAssetsGlobal ? '#059669' : 'text.primary'
               }}
             >
-              {mask(money(totalAssets))}
+              {mask(money(netWorthSummary.headlineNetWorth))}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5 }}>
               <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
-                {data.accounts.filter(a => a.active).length} tài khoản đang quản lý
+                Tiền mặt: {shortMoney(netWorthSummary.cashBalance)} · Đầu tư: {shortMoney(netWorthSummary.totalInvestmentValue)}
               </Typography>
             </Box>
           </Box>
@@ -440,7 +459,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -456,20 +475,7 @@ export default function Dashboard() {
             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
               TỔNG THU NHẬP
             </Typography>
-            <Box
-              sx={{
-                width: 30,
-                height: 30,
-                borderRadius: 2,
-                bgcolor: 'rgba(22, 134, 91, 0.12)',
-                color: 'var(--accent-income)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingUp size={16} />
-            </Box>
+            <IconContainer icon={<TrendingUp size={16} />} module="income" size={32} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
@@ -487,17 +493,11 @@ export default function Dashboard() {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
               {incomeChange !== 0 ? (
-                <Chip
-                  icon={incomeChange > 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                <StatusBadge
                   label={`${incomeChange > 0 ? '+' : ''}${incomeChange}%`}
+                  status={incomeChange > 0 ? 'success' : 'danger'}
+                  icon={incomeChange > 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
                   size="small"
-                  sx={{
-                    height: 18,
-                    fontSize: 10,
-                    fontWeight: 800,
-                    bgcolor: incomeChange > 0 ? 'rgba(22, 134, 91, 0.1)' : 'rgba(214, 92, 89, 0.1)',
-                    color: incomeChange > 0 ? 'var(--accent-income)' : 'var(--accent-expense)'
-                  }}
                 />
               ) : null}
               <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
@@ -512,7 +512,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -528,20 +528,7 @@ export default function Dashboard() {
             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
               TỔNG CHI TIÊU
             </Typography>
-            <Box
-              sx={{
-                width: 30,
-                height: 30,
-                borderRadius: 2,
-                bgcolor: 'rgba(214, 92, 89, 0.12)',
-                color: 'var(--accent-expense)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingDown size={16} />
-            </Box>
+            <IconContainer icon={<TrendingDown size={16} />} module="expense" size={32} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
@@ -559,17 +546,11 @@ export default function Dashboard() {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5 }}>
               {expenseChange !== 0 ? (
-                <Chip
-                  icon={expenseChange > 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+                <StatusBadge
                   label={`${expenseChange > 0 ? '+' : ''}${expenseChange}%`}
+                  status={expenseChange > 0 ? 'danger' : 'success'}
+                  icon={expenseChange > 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
                   size="small"
-                  sx={{
-                    height: 18,
-                    fontSize: 10,
-                    fontWeight: 800,
-                    bgcolor: expenseChange > 0 ? 'rgba(214, 92, 89, 0.1)' : 'rgba(22, 134, 91, 0.1)',
-                    color: expenseChange > 0 ? 'var(--accent-expense)' : 'var(--accent-income)'
-                  }}
                 />
               ) : null}
               <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
@@ -584,7 +565,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.25,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -600,20 +581,7 @@ export default function Dashboard() {
             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11.5, letterSpacing: '0.02em' }}>
               TIỀN TIẾT KIỆM
             </Typography>
-            <Box
-              sx={{
-                width: 30,
-                height: 30,
-                borderRadius: 2,
-                bgcolor: 'rgba(84, 121, 173, 0.12)',
-                color: 'var(--accent-info)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <PiggyBank size={16} />
-            </Box>
+            <IconContainer icon={<PiggyBank size={16} />} module="savings" size={32} />
           </Box>
           <Box sx={{ mt: 1 }}>
             <Typography
@@ -649,8 +617,15 @@ export default function Dashboard() {
         </Paper>
       </Box>
 
-      {/* 5.3. HABIT LOOP - MAGIC QUICK-BAR (1-TAP QUICK CHIPS & SMS PARSER) */}
-      <MagicQuickBar onOpenPricing={openPricing} />
+      {/* 5.3. FINANCIAL HEALTH SPEEDOMETER GAUGES CLUSTER */}
+      <Box id="tour-gauges-cluster" sx={{ mb: 3 }}>
+        <FinancialHealthGaugeCluster />
+      </Box>
+
+      {/* 5.4. HABIT LOOP - MAGIC QUICK-BAR (1-TAP QUICK CHIPS & SMS PARSER) */}
+      <Box id="tour-quick-bar">
+        <MagicQuickBar onOpenPricing={openPricing} />
+      </Box>
 
       {/* 6 & 7. CASH FLOW ANALYTICS & EXPENSE DONUT */}
       <Box
@@ -667,7 +642,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.5,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -754,7 +729,7 @@ export default function Dashboard() {
                           sx={{
                             bgcolor: 'background.paper',
                             border: '1px solid var(--border-subtle)',
-                            borderRadius: 2,
+                            borderRadius: '4px',
                             p: 1.5,
                             boxShadow: '0 8px 20px rgba(0,0,0,0.22)',
                             minWidth: 190
@@ -808,7 +783,7 @@ export default function Dashboard() {
             sx={{
               mt: 2,
               p: 1.25,
-              borderRadius: 2,
+              borderRadius: '4px',
               bgcolor: 'action.hover',
               border: '1px solid var(--border-subtle)',
               display: 'flex',
@@ -828,7 +803,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.5,
-            borderRadius: 3,
+            borderRadius: '6px',
             bgcolor: 'background.paper',
             borderColor: 'var(--border-subtle)',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
@@ -876,7 +851,7 @@ export default function Dashboard() {
                       contentStyle={{
                         backgroundColor: 'var(--bg-surface)',
                         borderColor: 'var(--border-subtle)',
-                        borderRadius: 8,
+                        borderRadius: '4px',
                         fontSize: 12,
                         fontWeight: 650
                       }}
@@ -906,11 +881,11 @@ export default function Dashboard() {
                       value={c.pct}
                       sx={{
                         height: 5,
-                        borderRadius: 3,
+                        borderRadius: '6px',
                         bgcolor: 'action.hover',
                         '& .MuiLinearProgress-bar': {
                           bgcolor: c.color || 'primary.main',
-                          borderRadius: 3
+                          borderRadius: '4px'
                         }
                       }}
                     />
@@ -937,7 +912,7 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: 2.5,
-            borderRadius: 3,
+            borderRadius: '6px',
             background: 'var(--card-inset-bg)',
             boxShadow: 'var(--card-inset-shadow)'
           }}
@@ -1096,7 +1071,7 @@ export default function Dashboard() {
                   key={t.id}
                   sx={{
                     p: 1.25,
-                    borderRadius: 2,
+                    borderRadius: '4px',
                     bgcolor: 'action.hover',
                     border: '1px solid var(--border-subtle)',
                     display: 'flex',
@@ -1150,7 +1125,7 @@ export default function Dashboard() {
             variant="outlined"
             sx={{
               p: 2.25,
-              borderRadius: 3,
+              borderRadius: '6px',
               background: 'var(--card-inset-bg)',
               boxShadow: 'var(--card-inset-shadow)'
             }}
@@ -1190,11 +1165,11 @@ export default function Dashboard() {
                 value={Math.min(100, budgetUsagePct)}
                 sx={{
                   height: 7,
-                  borderRadius: 3,
+                  borderRadius: '6px',
                   bgcolor: 'action.hover',
                   '& .MuiLinearProgress-bar': {
                     bgcolor: budgetUsagePct >= 100 ? '#ef4444' : budgetUsagePct >= 80 ? '#f59e0b' : '#16865B',
-                    borderRadius: 3
+                    borderRadius: '4px'
                   }
                 }}
               />
@@ -1230,11 +1205,11 @@ export default function Dashboard() {
                         value={Math.min(100, pct)}
                         sx={{
                           height: 5,
-                          borderRadius: 3,
+                          borderRadius: '6px',
                           bgcolor: 'action.hover',
                           '& .MuiLinearProgress-bar': {
                             bgcolor: isExceeded ? '#ef4444' : isWarning ? '#f59e0b' : '#16865B',
-                            borderRadius: 3
+                            borderRadius: '4px'
                           }
                         }}
                       />
@@ -1250,7 +1225,7 @@ export default function Dashboard() {
             variant="outlined"
             sx={{
               p: 2.25,
-              borderRadius: 3,
+              borderRadius: '6px',
               background: 'var(--card-inset-bg)',
               boxShadow: 'var(--card-inset-shadow)'
             }}
@@ -1273,7 +1248,7 @@ export default function Dashboard() {
                     key={a.id}
                     sx={{
                       p: 1,
-                      borderRadius: 2,
+                      borderRadius: '4px',
                       bgcolor: 'action.hover',
                       border: '1px solid var(--border-subtle)',
                       display: 'flex',
@@ -1336,11 +1311,11 @@ export default function Dashboard() {
                         value={pct}
                         sx={{
                           height: 4,
-                          borderRadius: 2,
+                          borderRadius: '4px',
                           bgcolor: 'action.hover',
                           '& .MuiLinearProgress-bar': {
                             bgcolor: pct >= 100 ? '#16865B' : '#5479AD',
-                            borderRadius: 2
+                            borderRadius: '4px'
                           }
                         }}
                       />

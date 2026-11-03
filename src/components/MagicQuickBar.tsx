@@ -6,6 +6,7 @@ import {
   Chip,
   Typography,
   Button,
+  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -537,7 +538,7 @@ export function MagicQuickBar({
         onSubmit={handleSubmit}
         sx={{
           p: { xs: 1.5, sm: 2 },
-          borderRadius: 3.5,
+          borderRadius: '6px',
           border: '1.5px solid',
           borderColor: commandResult ? 'primary.main' : 'var(--border-subtle)',
           bgcolor: 'var(--bg-glass)',
@@ -561,7 +562,7 @@ export function MagicQuickBar({
                 justifyContent: 'center',
                 width: 28,
                 height: 28,
-                borderRadius: 2,
+                borderRadius: '4px',
                 bgcolor: commandResult ? 'rgba(32, 112, 91, 0.15)' : 'rgba(32, 112, 91, 0.08)',
                 color: 'primary.main',
                 flexShrink: 0
@@ -611,7 +612,7 @@ export function MagicQuickBar({
                 fontWeight: 700,
                 height: 28,
                 px: 1.25,
-                borderRadius: 2,
+                borderRadius: '4px',
                 borderColor: 'rgba(21, 150, 107, 0.35)',
                 color: '#15966B',
                 bgcolor: 'rgba(21, 150, 107, 0.06)',
@@ -661,27 +662,30 @@ export function MagicQuickBar({
             }}
           />
 
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={!text.trim()}
-            startIcon={<CornerDownLeft size={16} />}
-            sx={{
-              height: 48,
-              minWidth: { xs: 44, sm: 110 },
-              px: { xs: 1.5, sm: 2 },
-              borderRadius: 2.5,
-              fontWeight: 700,
-              fontSize: 13,
-              boxShadow: text.trim() ? '0 4px 14px rgba(32, 112, 91, 0.3)' : 'none',
-              flexShrink: 0
-            }}
-          >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-              Ghi nhận
-            </Box>
-          </Button>
+          <Tooltip title="Gửi giao dịch (Enter)">
+            <span>
+              <IconButton
+                type="submit"
+                disabled={!text.trim()}
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '4px',
+                  bgcolor: text.trim() ? 'primary.main' : 'action.disabledBackground',
+                  color: text.trim() ? '#ffffff' : 'text.disabled',
+                  boxShadow: text.trim() ? '0 4px 12px rgba(16, 185, 129, 0.3)' : 'none',
+                  flexShrink: 0,
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: text.trim() ? 'primary.dark' : 'action.disabledBackground',
+                    transform: text.trim() ? 'scale(1.05)' : 'none'
+                  }
+                }}
+              >
+                <CornerDownLeft size={18} />
+              </IconButton>
+            </span>
+          </Tooltip>
         </Box>
 
         {/* Realtime Parsed Intent & Extracted Data Bar */}
@@ -880,7 +884,7 @@ export function MagicQuickBar({
           sx={{
             mt: 1.25,
             p: 1.75,
-            borderRadius: 2.5,
+            borderRadius: '6px',
             bgcolor: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
             display: 'flex',

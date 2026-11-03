@@ -107,7 +107,7 @@ export const BankSmsModal: React.FC<Props> = ({ open, onClose }) => {
           sx: {
             m: { xs: 1.5, sm: 2 },
             width: { xs: 'calc(100% - 24px)', sm: 'auto' },
-            borderRadius: 3,
+            borderRadius: '6px',
             maxHeight: 'calc(100% - 32px)'
           }
         }
@@ -118,7 +118,7 @@ export const BankSmsModal: React.FC<Props> = ({ open, onClose }) => {
           sx={{
             width: 36,
             height: 36,
-            borderRadius: 2,
+            borderRadius: '4px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -176,7 +176,7 @@ export const BankSmsModal: React.FC<Props> = ({ open, onClose }) => {
             variant="outlined"
             sx={{
               p: 2,
-              borderRadius: 2.5,
+              borderRadius: '6px',
               bgcolor: 'action.hover',
               border: '1.5px solid',
               borderColor: parsed.type === 'income' ? '#059669' : '#e11d48'

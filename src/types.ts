@@ -181,6 +181,17 @@ export interface InvestmentAsset {
   riskRewardRatio?: number;
   freshness?: DataFreshness;
   notes?: string;
+
+  // Unified Vietnam Investment Extensions
+  strategy_type?: 'DCA' | 'TRADE';
+  quick_note?: string;
+  trade_note?: string;
+  termMonths?: number;
+  startDate?: string;
+  maturityDate?: string;
+  accruedInterest?: Money;
+  bankOrIssuer?: string;
+  unit?: string;
 }
 
 export interface PayrollRecord {
@@ -286,4 +297,7 @@ export interface FinanceData {
   investmentTransactions?: InvestmentTransaction[];
   payrolls?: PayrollRecord[];
   sixJarsConfig?: SixJarsConfig;
+  userMcpConfig?: import('./types/unifiedInvestment').UserMcpConfig;
+  smartInvestmentNotes?: import('./types/smartLedger').InvestmentNote[];
+  hideRiskyAssetsGlobal?: boolean;
 }

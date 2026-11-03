@@ -80,7 +80,7 @@ export default function Settings() {
 
       <div className="rowcharts">
         {/* Personal Info */}
-        <Card variant="outlined" className="card pad" sx={{ borderRadius: 3 }}>
+        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
           <div className="section-head">
             <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
               <UserRound size={18} /> Thông tin cá nhân
@@ -128,14 +128,14 @@ export default function Settings() {
         </Card>
 
         {/* Plan / Subscription / Dev Mode */}
-        <Card variant="outlined" className="card pad" sx={{ borderRadius: 3 }}>
+        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
           <div className="section-head">
             <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Crown size={18} color="#f59e0b" /> Gói cước & Đăng ký
             </Typography>
           </div>
 
-          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: isPro ? 'rgba(245, 158, 11, 0.08)' : 'action.hover', mb: 2 }}>
+          <Paper variant="outlined" sx={{ p: 2, borderRadius: '6px', bgcolor: isPro ? 'rgba(245, 158, 11, 0.08)' : 'action.hover', mb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -174,7 +174,7 @@ export default function Settings() {
           </Paper>
 
           {/* Dev Mode Switch */}
-          <Box sx={{ p: 1.5, borderRadius: 2, border: '1px dashed', borderColor: 'divider', mb: 2 }}>
+          <Box sx={{ p: 1.5, borderRadius: '4px', border: '1px dashed', borderColor: 'divider', mb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>

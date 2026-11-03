@@ -148,7 +148,7 @@ export default function Categories() {
                 className="card tile"
                 key={c.id}
                 sx={{
-                  borderRadius: 3,
+                  borderRadius: '6px',
                   p: 2.5,
                   opacity: c.hidden ? 0.6 : 1
                 }}
@@ -158,7 +158,7 @@ export default function Categories() {
                     sx={{
                       width: 36,
                       height: 36,
-                      borderRadius: 2,
+                      borderRadius: '4px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -261,7 +261,7 @@ export default function Categories() {
                 width: 44,
                 height: 36,
                 border: 'none',
-                borderRadius: 2,
+                borderRadius: '4px',
                 cursor: 'pointer',
                 p: 0
               }}

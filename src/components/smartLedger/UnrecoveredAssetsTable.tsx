@@ -25,7 +25,8 @@ import {
   MenuItem,
   Select,
   FormControl,
-  InputLabel
+  InputLabel,
+  useTheme
 } from '@mui/material';
 import VisibilityRounded from '@mui/icons-material/VisibilityRounded';
 import VisibilityOffRounded from '@mui/icons-material/VisibilityOffRounded';
@@ -65,6 +66,8 @@ interface UnrecoveredAssetsTableProps {
 }
 
 export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAssetsTableProps) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { data, update, notify } = useFinance();
 
   const [activeTab, setActiveTab] = useState<'ALL' | 'SAFE' | 'RISKY' | 'RECOVERED'>('ALL');
@@ -243,15 +246,20 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                 minHeight: 36,
                 py: 0,
                 px: { xs: 1.25, sm: 1.75 },
-                fontWeight: 600,
-                fontSize: { xs: '0.75rem', sm: '0.80rem' },
-                textTransform: 'none'
+                fontWeight: 650,
+                fontSize: '0.80rem',
+                textTransform: 'none',
+                color: 'text.secondary',
+                '&.Mui-selected': {
+                  color: isDark ? '#F8FAFC' : '#0F172A',
+                  fontWeight: 750
+                }
               }
             }}
           >
             <Tab value="ALL" label={`Tất cả (${notes.length})`} />
-            <Tab value="SAFE" label="An toàn / Cố định" />
-            <Tab value="RISKY" label="Rủi ro / Biến động" />
+            <Tab value="SAFE" label="An toàn" />
+            <Tab value="RISKY" label="Rủi ro" />
             <Tab value="RECOVERED" label="Đã thu hồi" />
           </Tabs>
         </Box>
@@ -297,18 +305,18 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
       {/* 2. Table */}
       <TableContainer sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
         <Table size="small">
-          <TableHead sx={{ bgcolor: 'action.hover' }}>
-            <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <TableCell sx={{ width: 44, py: 1, px: 1.25 }} align="center" />
-              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>KHOẢN ĐẦU TƯ / TÀI SẢN</TableCell>
-              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LOẠI TÀI SẢN</TableCell>
-              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MỨC RỦI RO</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>VỐN GỐC</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>ĐÃ THU HỒI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: '#D97706', py: 1, px: 1.25 }}>VỐN CHƯA THU HỒI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ TRỊ HIỆN TẠI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LÃI / LỖ TẠM TÍNH</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THAO TÁC</TableCell>
+          <TableHead sx={{ bgcolor: isDark ? '#1A222D' : '#F1F5F9' }}>
+            <TableRow sx={{ borderBottom: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#CBD5E1' }}>
+              <TableCell sx={{ width: 40, py: 1, px: 1 }} align="center" />
+              <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>TÀI SẢN</TableCell>
+              <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>LOẠI</TableCell>
+              <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>RỦI RO</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>VỐN GỐC</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>ĐÃ THU HỒI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#FBBF24' : '#D97706', py: 1.1, px: 1.25 }}>CHƯA THU HỒI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GIÁ TRỊ</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>LÃI / LỖ</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>THAO TÁC</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -325,14 +333,14 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                   const catMeta = ASSET_CATEGORY_METADATA[note.category] || { label: note.category };
 
                   return (
-                    <TableRow key={note.id} hover sx={{ opacity: isIncluded ? 1 : 0.55, '& td': { py: 1, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
+                    <TableRow key={note.id} hover sx={{ opacity: isIncluded ? 1 : 0.82, '& td': { py: 1, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
                       {/* Toggle Net Worth Eye */}
                       <TableCell align="center">
                         <Tooltip title={isIncluded ? 'Đang tính vào Tổng tài sản (Bấm để tạm ẩn)' : 'Đang tạm ẩn (Bấm để tính vào Tổng tài sản)'}>
                           <IconButton
                             size="small"
                             onClick={() => handleToggleIncludeInNetWorth(note)}
-                            sx={{ color: isIncluded ? '#10B981' : 'text.disabled', p: 0.5 }}
+                            sx={{ color: isIncluded ? (isDark ? '#34D399' : '#059669') : 'text.disabled', p: 0.5 }}
                           >
                             {isIncluded ? <VisibilityRounded sx={{ fontSize: 16 }} /> : <VisibilityOffRounded sx={{ fontSize: 16 }} />}
                           </IconButton>
@@ -343,39 +351,39 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                       <TableCell>
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.78rem' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.80rem', color: isIncluded ? 'text.primary' : 'text.secondary' }}>
                               {note.title}
                             </Typography>
                             {!isIncluded && (
                               <Chip
                                 label="Đã ẩn"
                                 size="small"
-                                sx={{ height: 17, fontSize: '0.60rem', fontWeight: 700, bgcolor: 'action.hover', color: 'text.secondary' }}
+                                sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, bgcolor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0', color: 'text.secondary' }}
                               />
                             )}
                             {note.status === 'AT_RISK_LOSS' && (
                               <Chip
                                 label="Nguy cơ mất vốn"
                                 size="small"
-                                sx={{ height: 17, fontSize: '0.62rem', fontWeight: 750, bgcolor: 'rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
+                                sx={{ height: 18, fontSize: '0.62rem', fontWeight: 750, bgcolor: isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2', color: isDark ? '#F87171' : '#B91C1C' }}
                               />
                             )}
                             {note.status === 'RECOVERED' && (
                               <Chip
                                 label="Đã thu hồi đủ"
                                 size="small"
-                                sx={{ height: 17, fontSize: '0.62rem', fontWeight: 750, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#059669' }}
+                                sx={{ height: 18, fontSize: '0.62rem', fontWeight: 750, bgcolor: isDark ? 'rgba(16, 185, 129, 0.2)' : '#DCFCE7', color: isDark ? '#34D399' : '#15803D' }}
                               />
                             )}
                           </Box>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.68rem' }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.70rem' }}>
                             {note.quickNote || '—'}
                           </Typography>
                         </Box>
                       </TableCell>
 
                       {/* Category */}
-                      <TableCell sx={{ fontSize: '0.74rem', fontWeight: 600 }}>
+                      <TableCell sx={{ fontSize: '0.76rem', fontWeight: 600, color: 'text.primary' }}>
                         {catMeta.label}
                       </TableCell>
 
@@ -387,50 +395,50 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                           sx={{
                             borderRadius: '4px',
                             fontWeight: 700,
-                            fontSize: '0.64rem',
+                            fontSize: '0.66rem',
                             height: 18,
                             bgcolor:
                               note.risk_level === 'SAFE'
-                                ? 'rgba(16, 185, 129, 0.12)'
+                                ? (isDark ? 'rgba(16, 185, 129, 0.16)' : '#DCFCE7')
                                 : note.risk_level === 'LOW'
-                                ? 'rgba(59, 130, 246, 0.12)'
+                                ? (isDark ? 'rgba(59, 130, 246, 0.16)' : '#DBEAFE')
                                 : note.risk_level === 'MEDIUM'
-                                ? 'rgba(245, 158, 11, 0.12)'
-                                : 'rgba(239, 68, 68, 0.12)',
+                                ? (isDark ? 'rgba(245, 158, 11, 0.16)' : '#FEF3C7')
+                                : (isDark ? 'rgba(239, 68, 68, 0.16)' : '#FEE2E2'),
                             color:
                               note.risk_level === 'SAFE'
-                                ? '#059669'
+                                ? (isDark ? '#34D399' : '#15803D')
                                 : note.risk_level === 'LOW'
-                                ? '#2563EB'
+                                ? (isDark ? '#60A5FA' : '#1D4ED8')
                                 : note.risk_level === 'MEDIUM'
-                                ? '#D97706'
-                                : '#EF4444'
+                                ? (isDark ? '#FBBF24' : '#B45309')
+                                : (isDark ? '#F87171' : '#B91C1C')
                           }}
                         />
                       </TableCell>
 
                       {/* Initial Capital */}
-                      <TableCell align="right" sx={{ fontWeight: 650, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.78rem', color: isIncluded ? 'text.primary' : 'text.disabled', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                         {isIncluded ? money(totalContributed) : '****'}
                       </TableCell>
 
                       {/* Recovered */}
-                      <TableCell align="right" sx={{ color: isIncluded ? '#059669' : 'text.disabled', fontWeight: 700, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      <TableCell align="right" sx={{ color: isIncluded ? (isDark ? '#34D399' : '#15803D') : 'text.disabled', fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                         {isIncluded ? (recovered > 0 ? money(recovered) : '—') : '****'}
                       </TableCell>
 
                       {/* Unrecovered */}
-                      <TableCell align="right" sx={{ fontWeight: 800, color: isIncluded ? '#D97706' : 'text.disabled', fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      <TableCell align="right" sx={{ fontWeight: 700, color: isIncluded ? (isDark ? '#FBBF24' : '#D97706') : 'text.disabled', fontSize: '0.78rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                         {isIncluded ? money(unrecovered) : '****'}
                       </TableCell>
 
                       {/* Current Value */}
-                      <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      <TableCell align="right" sx={{ fontWeight: 600, color: isIncluded ? 'text.primary' : 'text.disabled', fontSize: '0.78rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                         {isIncluded ? money(currentValue) : '****'}
                       </TableCell>
 
                       {/* PnL */}
-                      <TableCell align="right" sx={{ fontWeight: 750, fontSize: '0.75rem', color: isIncluded ? (pnl >= 0 ? '#10B981' : '#EF4444') : 'text.disabled', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      <TableCell align="right" sx={{ fontWeight: 700, fontSize: '0.78rem', color: isIncluded ? (pnl >= 0 ? (isDark ? '#34D399' : '#15803D') : (isDark ? '#F87171' : '#DC2626')) : 'text.disabled', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                         {isIncluded ? `${pnl >= 0 ? '+' : ''}${money(pnl)}` : '****'}
                       </TableCell>
 

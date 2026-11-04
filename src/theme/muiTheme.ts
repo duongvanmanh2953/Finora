@@ -89,10 +89,10 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         paper: isDark ? '#161B22' : '#FFFFFF'
       },
       text: {
-        primary: isDark ? '#F0F6FC' : '#17211E',
-        secondary: isDark ? '#8B949E' : '#65736C'
+        primary: isDark ? '#F8FAFC' : '#0F172A',
+        secondary: isDark ? '#CBD5E1' : '#475569'
       },
-      divider: isDark ? 'rgba(255, 255, 255, 0.12)' : '#E4E9E5'
+      divider: isDark ? 'rgba(255, 255, 255, 0.16)' : '#E2E8F0'
     },
     shape: {
       borderRadius: 8

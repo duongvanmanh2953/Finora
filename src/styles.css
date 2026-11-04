@@ -40,13 +40,13 @@ body {
   --bg-subtle: #F1F4F2;
   --bg-hover: #EBF0ED;
 
-  --border-subtle: #E4E9E5;
-  --border-strong: #D4DDD7;
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
 
-  --text-primary: #17211E;
-  --text-secondary: #65736C;
-  --text-muted: #89948E;
-  --text-disabled: #B5BDB8;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-disabled: #94A3B8;
 
   /* Semantic Colors */
   --accent-income: #15803D;
@@ -107,8 +107,8 @@ body {
   --card-inset-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 
   --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
 
   --brand-primary: #4E9B7C;
   --brand-primary-light: #6BB599;
@@ -362,7 +362,7 @@ td,
 
 .content {
   padding: 24px 32px 56px;
-  max-width: 1440px;
+  /* max-width: 1440px; */
   width: 100%;
   margin: 0 auto;
   flex: 1;

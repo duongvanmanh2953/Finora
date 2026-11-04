@@ -13,7 +13,8 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 import {
   RefreshCw,
@@ -41,11 +42,14 @@ import { VIETNAMESE_ASSET_CATALOG } from '../../lib/investmentEngine';
 import type { InvestmentAsset } from '../../types';
 
 export default function Assets() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { data, update } = useFinance();
   const [openDataSourceModal, setOpenDataSourceModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'ledger' | 'positions' | 'transactions'>('overview');
+  const [showQuickForm, setShowQuickForm] = useState(false);
   const [txPage, setTxPage] = useState(0);
   const [txRowsPerPage, setTxRowsPerPage] = useState(10);
   const [deleting, setDeleting] = useState<InvestmentAsset | null>(null);
@@ -147,7 +151,7 @@ export default function Assets() {
       {/* 1. Page Header */}
       <PageHead
         title="Quản Lý Tài Sản & Vốn Đầu Tư"
-        subtitle="Hệ thống Personal Wealth Management: Phân biệt Tiền thực có, Vốn chưa thu hồi, Cơ cấu 4 cấp độ rủi ro & Dự phóng tài chính"
+        subtitle="Theo dõi tổng tài sản, vốn chưa thu hồi và cơ cấu rủi ro danh mục"
         actions={
           <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
             <HelpButton pageKey="assets" />
@@ -205,14 +209,14 @@ export default function Assets() {
               minHeight: 40,
               py: 0.5,
               px: 2,
-              fontWeight: 800,
+              fontWeight: 750,
               fontSize: '0.85rem',
               textTransform: 'none'
             }
           }}
         >
-          <Tab value="overview" label="Tổng quan & Dự phóng tương lai" />
-          <Tab value="ledger" label={`Sổ theo dõi Vốn & Thu hồi (${notes.length})`} />
+          <Tab value="overview" label="Tổng quan & Dự phóng" />
+          <Tab value="ledger" label={`Sổ vốn & Thu hồi (${notes.length})`} />
           <Tab value="positions" label={`Vị thế danh mục (${investments.length})`} />
           <Tab value="transactions" label={`Sổ cái giao dịch (${investmentTransactions.length})`} />
         </Tabs>
@@ -248,9 +252,20 @@ export default function Assets() {
 
       {/* TAB 2: SỔ THEO DÕI VỐN & THU HỒI */}
       {activeTab === 'ledger' && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <UnrecoveredAssetsTable notes={notes} onOpenAddModal={() => setOpenAddModal(true)} />
-          <QuickInvestmentNoteForm />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+            <Button
+              variant="text"
+              size="small"
+              startIcon={<Plus size={15} />}
+              onClick={() => setShowQuickForm(prev => !prev)}
+              sx={{ fontWeight: 650, fontSize: '0.82rem', textTransform: 'none', color: 'primary.main' }}
+            >
+              {showQuickForm ? 'Đóng biểu mẫu ghi nhanh' : '+ Ghi nhanh khoản đầu tư mới vào sổ'}
+            </Button>
+          </Box>
+          {showQuickForm && <QuickInvestmentNoteForm />}
         </Box>
       )}
 
@@ -288,19 +303,19 @@ export default function Assets() {
 
       {/* TAB 4: SỔ CÁI GIAO DỊCH KẾ TOÁN */}
       {activeTab === 'transactions' && (
-        <Card sx={{ p: 0, overflow: 'hidden', borderRadius: '6px', border: '1px solid', borderColor: 'divider' }}>
+        <Card sx={{ p: 0, overflow: 'hidden', borderRadius: '6px', border: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#E2E8F0' }}>
           <TableContainer sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
             <Table size="small">
-              <TableHead sx={{ bgcolor: 'action.hover' }}>
-                <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>NGÀY</TableCell>
-                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LOẠI LỆNH</TableCell>
-                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MÃ TÀI SẢN</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>ĐƠN GIÁ</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>TỔNG TIỀN</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THUẾ & PHÍ</TableCell>
-                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GHI CHÚ / LÃI LỖ</TableCell>
+              <TableHead sx={{ bgcolor: isDark ? '#1A222D' : '#F1F5F9' }}>
+                <TableRow sx={{ borderBottom: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#CBD5E1' }}>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>NGÀY</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>LOẠI LỆNH</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>MÃ TÀI SẢN</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>ĐƠN GIÁ</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>TỔNG TIỀN</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>THUẾ & PHÍ</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GHI CHÚ / LÃI LỖ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -308,22 +323,22 @@ export default function Assets() {
                   investmentTransactions
                     .slice(txPage * txRowsPerPage, txPage * txRowsPerPage + txRowsPerPage)
                     .map(tx => (
-                      <TableRow key={tx.id} hover sx={{ '& td': { py: 0.85, px: 1.25 } }}>
-                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>{tx.date}</TableCell>
+                      <TableRow key={tx.id} hover sx={{ '& td': { py: 0.85, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem', fontFeatureSettings: '"tnum"' }}>{tx.date}</TableCell>
                         <TableCell>
                           <Chip
                             size="small"
                             label={tx.type}
                             color={tx.type.includes('BUY') || tx.type.includes('DEPOSIT') ? 'primary' : tx.type.includes('SELL') ? 'warning' : 'success'}
                             variant="outlined"
-                            sx={{ fontWeight: 700, fontSize: '0.66rem', height: 18, borderRadius: '4px' }}
+                            sx={{ fontWeight: 700, fontSize: '0.68rem', height: 18, borderRadius: '4px' }}
                           />
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 800, fontSize: '0.76rem' }}>{tx.symbol}</TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{new Intl.NumberFormat('vi-VN').format(tx.quantity)}</TableCell>
-                        <TableCell align="right" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{money(tx.unitPrice)}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 750, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{money(tx.totalAmount)}</TableCell>
-                        <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>
+                        <TableCell sx={{ fontWeight: 750, fontSize: '0.80rem', color: 'text.primary' }}>{tx.symbol}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>{new Intl.NumberFormat('vi-VN').format(tx.quantity)}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>{money(tx.unitPrice)}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, fontSize: '0.80rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>{money(tx.totalAmount)}</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.78rem', fontFeatureSettings: '"tnum"' }}>
                           {money((tx.fee || 0) + (tx.tax || 0))}
                         </TableCell>
                         <TableCell sx={{ fontSize: '0.74rem' }}>

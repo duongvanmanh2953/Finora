@@ -26,6 +26,9 @@ interface State {
   clearToast: () => void;
   openPricing: (feature?: string) => void;
   closePricing: () => void;
+  register: (name: string, email: string) => Promise<void>;
+  login: (email: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 export const useFinance = create<State>((set, get) => ({
@@ -118,5 +121,30 @@ export const useFinance = create<State>((set, get) => ({
 
   clearToast: () => set({ toast: null }),
   openPricing: feature => set({ pricingOpen: true, pricingFeature: feature }),
-  closePricing: () => set({ pricingOpen: false, pricingFeature: undefined })
+  closePricing: () => set({ pricingOpen: false, pricingFeature: undefined }),
+
+  register: async (name: string, email: string) => {
+    try {
+      set({ loading: true, error: null });
+      const nextData = await mockFinanceService.registerUser(name, email);
+      set({ data: nextData, loading: false });
+    } catch {
+      set({ error: 'Không thể đăng ký tài khoản. Vui lòng thử lại.', loading: false });
+    }
+  },
+
+  login: async (email: string) => {
+    try {
+      set({ loading: true, error: null });
+      const nextData = await mockFinanceService.loginUser(email);
+      set({ data: nextData, loading: false });
+    } catch {
+      set({ error: 'Không thể đăng nhập. Vui lòng thử lại.', loading: false });
+    }
+  },
+
+  logout: async () => {
+    mockFinanceService.logoutUser();
+    await get().load();
+  }
 }));

@@ -20,6 +20,8 @@ import Settings from './features/settings/Settings';
 import Assets from './features/assets/Assets';
 import Payroll from './features/payroll/Payroll';
 import LegalPublicView from './features/legal/LegalPublicView';
+import PricingPage from './features/subscription/PricingPage';
+import LandingPage from './features/landing/LandingPage';
 import { AdminLegalView } from './features/admin/AdminLegalView';
 import {
   AdminLayout,
@@ -183,6 +185,7 @@ function App() {
         <CssBaseline />
         <BrowserRouter>
           <Routes>
+            <Route path="landing" element={<LandingPage />} />
             <Route path="auth/:mode" element={<Auth />} />
             <Route path="legal" element={<LegalPublicView />} />
 
@@ -214,6 +217,7 @@ function App() {
               <Route path="debts" element={<Debts />} />
               <Route path="reports" element={<Reports />} />
               <Route path="recurring" element={<Recurring />} />
+              <Route path="pricing" element={<PricingPage />} />
               <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

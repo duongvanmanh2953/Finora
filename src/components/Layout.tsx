@@ -42,7 +42,13 @@ import {
   InputBase
 } from '@mui/material';
 import { useFinance } from '../store';
-import { isProUser } from '../lib/subscription';
+import {
+  isProUser,
+  isGoldUser,
+  isTrialActive,
+  getTrialDaysRemaining,
+  GOLD_COLOR_TOKENS
+} from '../lib/subscription';
 import { updateStreak, autoExecuteRecurring } from '../lib/habit';
 import { todayKey, uid } from '../lib/finance';
 import { PricingDialog } from './PricingDialog';
@@ -78,6 +84,7 @@ const navWealth: NavItemConfig[] = [
 const navSystem: NavItemConfig[] = [
   { url: '/reports', label: 'Báo cáo & Phân tích', icon: ChartNoAxesCombined, isPro: true },
   { url: '/recurring', label: 'Giao dịch định kỳ', icon: CalendarClock, isPro: true },
+  { url: '/pricing', label: 'Bảng giá & Gói cước', icon: Crown },
   { url: '/settings', label: 'Cài đặt hệ thống', icon: Settings }
 ];
 
@@ -114,6 +121,9 @@ export function Layout() {
 
   const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Finora';
   const isPro = data ? isProUser(data) : false;
+  const isGold = data ? isGoldUser(data) : false;
+  const trialActive = data ? isTrialActive(data.user) : false;
+  const daysRemaining = data ? getTrialDaysRemaining(data.user) : 0;
 
   // Favorite / Pinned Menu Items in Sidebar
   const DEFAULT_FAVORITES = ['/', '/transactions', '/budgets', '/reports'];
@@ -260,7 +270,7 @@ export function Layout() {
 
             {/* Lock Icon for Advanced/PRO features */}
             {isLocked && (
-              <Tooltip title="Tính năng nâng cao (Gói Pro) - Bấm để nạp tiền/nâng cấp">
+              <Tooltip title="Tính năng nâng cao (Gói Pro) - Bấm để xem gói cước">
                 <Box
                   component="span"
                   onClick={(e) => {
@@ -536,8 +546,14 @@ export function Layout() {
                   {data?.user.name}
                   {isPro && <Crown size={12} color="#D99A36" />}
                 </div>
-                <div style={{ fontSize: 10.5, color: 'var(--text-muted)' }}>
-                  {isPro ? 'Gói Pro Cao Cấp' : 'Gói Cơ Bản (Free)'}
+                <div style={{ fontSize: 10.5, color: trialActive || isGold ? GOLD_COLOR_TOKENS.goldMetallic : 'var(--text-muted)', fontWeight: trialActive || isGold ? 700 : 400 }}>
+                  {trialActive
+                    ? `VIP Gold Trial (${daysRemaining} ngày)`
+                    : isGold
+                      ? 'Gói VIP Gold Cao Cấp'
+                      : isPro
+                        ? 'Gói Pro Cao Cấp'
+                        : 'Gói Cơ Bản (Free)'}
                 </div>
               </div>
             </div>
@@ -660,6 +676,47 @@ export function Layout() {
               >
                 Hôm nay 0đ
               </Button>
+
+              {/* VIP Gold / Trial Badge */}
+              {trialActive ? (
+                <Tooltip title={`Đang trải nghiệm VIP Gold 30 ngày (Còn ${daysRemaining} ngày). Bấm để xem bảng giá & quyền lợi.`}>
+                  <Chip
+                    icon={<Crown size={13} color={GOLD_COLOR_TOKENS.goldMetallic} />}
+                    label={`VIP Gold Trial: ${daysRemaining} ngày`}
+                    size="small"
+                    onClick={() => navigate('/pricing')}
+                    clickable
+                    sx={{
+                      bgcolor: 'rgba(197, 160, 89, 0.15)',
+                      color: GOLD_COLOR_TOKENS.goldMetallic,
+                      border: `1px solid ${GOLD_COLOR_TOKENS.goldBorder}`,
+                      fontWeight: 800,
+                      fontSize: 11.5,
+                      height: 28,
+                      cursor: 'pointer'
+                    }}
+                  />
+                </Tooltip>
+              ) : isGold ? (
+                <Tooltip title="Thành viên VIP Gold cao cấp. Bấm để xem gói cước.">
+                  <Chip
+                    icon={<Crown size={13} color={GOLD_COLOR_TOKENS.goldMetallic} />}
+                    label="VIP GOLD"
+                    size="small"
+                    onClick={() => navigate('/pricing')}
+                    clickable
+                    sx={{
+                      bgcolor: 'rgba(197, 160, 89, 0.15)',
+                      color: GOLD_COLOR_TOKENS.goldMetallic,
+                      border: `1px solid ${GOLD_COLOR_TOKENS.goldBorder}`,
+                      fontWeight: 800,
+                      fontSize: 11.5,
+                      height: 28,
+                      cursor: 'pointer'
+                    }}
+                  />
+                </Tooltip>
+              ) : null}
 
               {/* Quick Pro Mode Switch */}
               <Tooltip title="Chuyển nhanh Free <-> Pro để kiểm thử tính năng (Demo)">

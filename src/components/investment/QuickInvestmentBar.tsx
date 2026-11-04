@@ -144,18 +144,14 @@ export function QuickInvestmentBar({ onSuccess }: QuickInvestmentBarProps) {
     <Paper
       elevation={0}
       sx={{
-        p: { xs: 2, sm: 2.5 },
-        borderRadius: '6px',
+        p: { xs: 1.5, sm: 2 },
+        borderRadius: '8px',
         border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
+        borderColor: theme => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.16)' : '#E2E8F0',
+        bgcolor: theme => theme.palette.mode === 'dark' ? '#1E2633' : '#FFFFFF',
         display: 'flex',
         flexDirection: 'column',
-        gap: 1.5,
-        boxShadow: theme =>
-          theme.palette.mode === 'dark'
-            ? '0 2px 10px rgba(0, 0, 0, 0.45)'
-            : '0 1px 4px rgba(0, 0, 0, 0.05)'
+        gap: 1.5
       }}
     >
       {/* 1. Header Row: Title, Strategy Selector & Zero-Effort Badge */}
@@ -175,8 +171,8 @@ export function QuickInvestmentBar({ onSuccess }: QuickInvestmentBarProps) {
           >
             <AutoGraphRounded sx={{ fontSize: 18 }} />
           </Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 750, color: 'text.primary', fontSize: '0.92rem' }}>
-            Nhập lệnh nhanh 1 dòng (Zero-effort)
+          <Typography variant="subtitle2" sx={{ fontWeight: 750, color: 'text.primary', fontSize: '0.90rem' }}>
+            Nhập lệnh nhanh 1 dòng
           </Typography>
         </Box>
 
@@ -196,8 +192,8 @@ export function QuickInvestmentBar({ onSuccess }: QuickInvestmentBarProps) {
                 borderRadius: '4px',
                 px: 1.25,
                 py: 0.25,
-                fontSize: '0.78rem',
-                fontWeight: 750,
+                fontSize: '0.75rem',
+                fontWeight: 700,
                 border: '1px solid',
                 borderColor: 'divider',
                 textTransform: 'none',
@@ -209,8 +205,8 @@ export function QuickInvestmentBar({ onSuccess }: QuickInvestmentBarProps) {
               }
             }}
           >
-            <ToggleButton value="DCA">🌱 Tích sản DCA</ToggleButton>
-            <ToggleButton value="TRADE">⚡ Lướt sóng Trade</ToggleButton>
+            <ToggleButton value="DCA">Tích sản DCA</ToggleButton>
+            <ToggleButton value="TRADE">Lướt sóng Trade</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>

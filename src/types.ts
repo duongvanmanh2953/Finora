@@ -1,7 +1,8 @@
 export type Money = number; // integer VND
 export type TxType = 'income' | 'expense' | 'transfer';
 export type Status = 'completed' | 'pending';
-export type PlanTier = 'free' | 'pro';
+export type PlanTier = 'free' | 'pro' | 'gold';
+export type SubscriptionStatus = 'free' | 'trialing' | 'active' | 'expired' | 'canceled';
 
 export interface User {
   id: string;
@@ -10,6 +11,11 @@ export interface User {
   currency: 'VND';
   financialMonthStart: number;
   plan: PlanTier;
+  subscription_status?: SubscriptionStatus;
+  trial_started_at?: string;
+  trial_ends_at?: string;
+  trial_used_at?: string;
+  current_plan_id?: string;
   proExpiresAt?: string;
   streakCount: number;
   lastCheckInDate?: string;

@@ -12,17 +12,11 @@ import {
 } from 'date-fns';
 import {
   Plus,
-  TrendingUp,
-  TrendingDown,
   Eye,
   EyeOff,
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Landmark,
-  PiggyBank,
-  ArrowUpRight,
-  ArrowDownRight,
   Search,
   Sparkles
 } from 'lucide-react';
@@ -40,8 +34,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  useTheme
+  TableRow
 } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -72,17 +65,16 @@ import {
 } from '../../lib/finance';
 import { calculateComprehensiveNetWorth, getSampleWealthInvestmentNotes } from '../../lib/investmentProjectionEngine';
 import { getHiddenAssetIds } from '../../components/smartLedger/UnrecoveredAssetsTable';
-import { Empty, IconContainer, StatusBadge, FinoraButton } from '../../components/ui';
+import { Empty, FinoraButton } from '../../components/ui';
 import { MagicQuickBar } from '../../components/MagicQuickBar';
 import { BankLogoBadge, CategoryAvatarBadge, FundLogoBadge } from '../../lib/brandBadges';
 import { FinancialHealthGaugeCluster } from '../../components/gauges/FinancialHealthGaugeCluster';
+import { FinancialOverviewCards } from '../../components/dashboard/FinancialOverviewCards';
 import { HelpButton } from '../../components/HelpButton';
 
 type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
 export default function Dashboard() {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
   const data = useFinance(s => s.data)!;
   const openPricing = useFinance(s => s.openPricing);
 
@@ -410,253 +402,31 @@ export default function Dashboard() {
         </Box>
       </Box>
 
-      {/* 5.2. MAIN FINANCIAL SUMMARY (4 Key Financial Cards) */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-          gap: { xs: 1.5, sm: 2 },
-          mb: 3
-        }}
-      >
-        {/* Card 1: Tổng tài sản ròng */}
-        <Paper
-          id="tour-net-worth-card"
-          variant="outlined"
-          sx={{
-            p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '12px',
-            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
-            borderColor: isDark
-              ? (data.hideRiskyAssetsGlobal ? 'rgba(78, 155, 124, 0.45)' : 'rgba(255, 255, 255, 0.14)')
-              : (data.hideRiskyAssetsGlobal ? 'rgba(53, 94, 82, 0.35)' : 'var(--border-subtle)'),
-            boxShadow: isDark
-              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
-              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: { xs: 110, sm: 124 },
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: isDark ? '#4E9B7C' : '#355E52' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
-                TỔNG TÀI SẢN RÒNG
-              </Typography>
-              {data.hideRiskyAssetsGlobal && (
-                <Chip
-                  size="small"
-                  label="Thận trọng"
-                  sx={{ height: 18, fontSize: 9.5, fontWeight: 800, bgcolor: isDark ? 'rgba(78, 155, 124, 0.16)' : 'rgba(53, 94, 82, 0.12)', color: isDark ? '#4E9B7C' : '#355E52', borderRadius: '4px' }}
-                />
-              )}
-            </Box>
-            <IconContainer icon={<Landmark size={16} />} module="accounts" size={30} />
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
-                letterSpacing: '-0.03em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums',
-                color: data.hideRiskyAssetsGlobal ? (isDark ? '#4E9B7C' : '#355E52') : (isDark ? '#F8FAFC' : '#0F172A'),
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {mask(money(netWorthSummary.headlineNetWorth))}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 0.5, flexWrap: 'wrap', gap: 0.5 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
-                Tiền mặt: {shortMoney(netWorthSummary.cashBalance)} · Đầu tư: {shortMoney(netWorthSummary.totalInvestmentValue)}
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Card 2: Tổng thu nhập */}
-        <Paper
-          variant="outlined"
-          sx={{
-            p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '12px',
-            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.14)' : 'var(--border-subtle)',
-            boxShadow: isDark
-              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
-              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: { xs: 110, sm: 124 },
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: '#16A34A' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
-              TỔNG THU NHẬP
-            </Typography>
-            <IconContainer icon={<TrendingUp size={16} />} module="income" size={30} />
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
-                letterSpacing: '-0.03em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums',
-                color: 'var(--accent-income)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {mask(`+${money(income)}`)}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
-              {incomeChange !== 0 ? (
-                <StatusBadge
-                  label={`${incomeChange > 0 ? '+' : ''}${incomeChange}%`}
-                  status={incomeChange > 0 ? 'success' : 'danger'}
-                  icon={incomeChange > 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                  size="small"
-                />
-              ) : null}
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
-                so với tháng trước
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Card 3: Tổng chi tiêu */}
-        <Paper
-          variant="outlined"
-          sx={{
-            p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '12px',
-            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-subtle)',
-            boxShadow: isDark
-              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
-              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: { xs: 110, sm: 124 },
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: '#D97706' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
-              TỔNG CHI TIÊU
-            </Typography>
-            <IconContainer icon={<TrendingDown size={16} />} module="expense" size={30} />
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
-                letterSpacing: '-0.03em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums',
-                color: 'var(--accent-expense)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {mask(`-${money(expense)}`)}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
-              {expenseChange !== 0 ? (
-                <StatusBadge
-                  label={`${expenseChange > 0 ? '+' : ''}${expenseChange}%`}
-                  status={expenseChange > 0 ? 'danger' : 'success'}
-                  icon={expenseChange > 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                  size="small"
-                />
-              ) : null}
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
-                Đã dùng {budgetUsagePct}% ngân sách
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
-
-        {/* Card 4: Tiền tiết kiệm */}
-        <Paper
-          variant="outlined"
-          sx={{
-            p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '12px',
-            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'var(--border-subtle)',
-            boxShadow: isDark
-              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
-              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: { xs: 110, sm: 124 },
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: '#4F46E5' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, letterSpacing: '0.02em' }}>
-              TIỀN TIẾT KIỆM
-            </Typography>
-            <IconContainer icon={<PiggyBank size={16} />} module="savings" size={30} />
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: '1.25rem', sm: '1.45rem', md: '1.5rem' },
-                letterSpacing: '-0.03em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums',
-                color: netSavings >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {mask(`${netSavings >= 0 ? '+' : ''}${money(netSavings)}`)}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
-              <Chip
-                label={`Tiết kiệm ${savingsRate}%`}
-                size="small"
-                sx={{
-                  height: 18,
-                  fontSize: 10,
-                  fontWeight: 800,
-                  bgcolor: savingsRate >= 20 ? 'rgba(22, 134, 91, 0.1)' : 'rgba(215, 155, 61, 0.1)',
-                  color: savingsRate >= 20 ? 'var(--accent-income)' : 'var(--accent-warning)'
-                }}
-              />
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: { xs: 10.5, sm: 11.5 } }}>
-                thu nhập tháng
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
+      {/* 5.2. MAIN FINANCIAL SUMMARY (7 Key Financial Overview Cards) */}
+      <Box id="tour-net-worth-card">
+        <FinancialOverviewCards
+          netWorthSummary={netWorthSummary}
+          accountCount={data.accounts.length}
+          income={income}
+          incomeChange={incomeChange}
+          expense={expense}
+          expenseChange={expenseChange}
+          avgDailyExpense={Math.round(expense / Math.max(1, new Date().getDate()))}
+          topExpenseCategoryName={expenseCategories[0]?.name}
+          netCashflow={income - expense}
+          savingsRate={savingsRate}
+          totalSavings={netSavings}
+          budgetTotal={totalBudgetLimit}
+          budgetSpent={totalBudgetSpent}
+          budgetRemaining={remainingBudget}
+          budgetUsagePct={budgetUsagePct}
+          overBudgetCount={activeBudgets.filter(b => budgetSpent(b, data.transactions) > b.limit).length}
+          totalDebtOwed={(data.debts || []).filter(d => d.kind === 'owed').reduce((s, d) => s + (d.principal || 0), 0)}
+          upcomingDebtPayment={(data.debts || []).find(d => d.kind === 'owed')?.principal || 0}
+          nextDueDebtDate={(data.debts || []).find(d => d.kind === 'owed')?.dueDate}
+          showBalance={showBalance}
+          hideRiskyAssets={Boolean(data.hideRiskyAssetsGlobal)}
+        />
       </Box>
 
       {/* 5.3. FINANCIAL HEALTH SPEEDOMETER GAUGES CLUSTER */}

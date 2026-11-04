@@ -13,7 +13,8 @@ import {
   TableHead,
   TableRow,
   Pagination,
-  Tooltip
+  Tooltip,
+  useTheme
 } from '@mui/material';
 import LayoutGridRounded from '@mui/icons-material/GridViewRounded';
 import ListRounded from '@mui/icons-material/FormatListBulletedRounded';
@@ -45,6 +46,8 @@ export function UnifiedPortfolioDashboard({
   onOpenSettings,
   onOpenOrderModal
 }: UnifiedPortfolioDashboardProps) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { data, update } = useFinance();
 
   // View state: 'grid' vs 'table'
@@ -353,7 +356,7 @@ export function UnifiedPortfolioDashboard({
               }}
             />
             <Chip
-              label="🌱 Tích sản DCA"
+              label="Tích sản DCA"
               clickable
               size="small"
               onClick={() => {
@@ -362,16 +365,16 @@ export function UnifiedPortfolioDashboard({
               }}
               sx={{
                 borderRadius: '4px',
-                fontWeight: 750,
+                fontWeight: 700,
                 fontSize: '0.78rem',
-                bgcolor: strategyFilter === 'DCA' ? 'rgba(16, 185, 129, 0.2)' : 'action.hover',
-                color: strategyFilter === 'DCA' ? '#059669' : 'text.primary',
-                border: strategyFilter === 'DCA' ? '1px solid #059669' : '1px solid transparent',
-                '&:hover': { bgcolor: 'rgba(16, 185, 129, 0.25)' }
+                bgcolor: strategyFilter === 'DCA' ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#DCFCE7') : 'action.hover',
+                color: strategyFilter === 'DCA' ? (isDark ? '#34D399' : '#15803D') : 'text.primary',
+                border: strategyFilter === 'DCA' ? '1px solid currentColor' : '1px solid transparent',
+                '&:hover': { bgcolor: strategyFilter === 'DCA' ? (isDark ? 'rgba(16, 185, 129, 0.25)' : '#BBF7D0') : 'action.selected' }
               }}
             />
             <Chip
-              label="⚡ Danh mục Trade"
+              label="Danh mục Trade"
               clickable
               size="small"
               onClick={() => {
@@ -380,17 +383,17 @@ export function UnifiedPortfolioDashboard({
               }}
               sx={{
                 borderRadius: '4px',
-                fontWeight: 750,
+                fontWeight: 700,
                 fontSize: '0.78rem',
-                bgcolor: strategyFilter === 'TRADE' ? 'rgba(239, 68, 68, 0.2)' : 'action.hover',
-                color: strategyFilter === 'TRADE' ? '#DC2626' : 'text.primary',
-                border: strategyFilter === 'TRADE' ? '1px solid #DC2626' : '1px solid transparent',
-                '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.25)' }
+                bgcolor: strategyFilter === 'TRADE' ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2') : 'action.hover',
+                color: strategyFilter === 'TRADE' ? (isDark ? '#F87171' : '#B91C1C') : 'text.primary',
+                border: strategyFilter === 'TRADE' ? '1px solid currentColor' : '1px solid transparent',
+                '&:hover': { bgcolor: strategyFilter === 'TRADE' ? (isDark ? 'rgba(239, 68, 68, 0.25)' : '#FECACA') : 'action.selected' }
               }}
             />
             <Chip
               icon={<ShieldRounded style={{ fontSize: 15 }} />}
-              label="🛡️ Tài sản An toàn"
+              label="Tài sản An toàn"
               clickable
               size="small"
               onClick={() => {
@@ -399,12 +402,12 @@ export function UnifiedPortfolioDashboard({
               }}
               sx={{
                 borderRadius: '4px',
-                fontWeight: 750,
+                fontWeight: 700,
                 fontSize: '0.78rem',
-                bgcolor: strategyFilter === 'SAFE' ? 'rgba(217, 119, 6, 0.2)' : 'action.hover',
-                color: strategyFilter === 'SAFE' ? '#D97706' : 'text.primary',
-                border: strategyFilter === 'SAFE' ? '1px solid #D97706' : '1px solid transparent',
-                '&:hover': { bgcolor: 'rgba(217, 119, 6, 0.25)' }
+                bgcolor: strategyFilter === 'SAFE' ? (isDark ? 'rgba(217, 119, 6, 0.2)' : '#FEF3C7') : 'action.hover',
+                color: strategyFilter === 'SAFE' ? (isDark ? '#FBBF24' : '#B45309') : 'text.primary',
+                border: strategyFilter === 'SAFE' ? '1px solid currentColor' : '1px solid transparent',
+                '&:hover': { bgcolor: strategyFilter === 'SAFE' ? (isDark ? 'rgba(217, 119, 6, 0.25)' : '#FDE68A') : 'action.selected' }
               }}
             />
           </Box>
@@ -547,10 +550,10 @@ export function UnifiedPortfolioDashboard({
                 sx={{
                   p: 2,
                   height: '100%',
-                  borderRadius: '6px',
+                  borderRadius: '8px',
                   border: '1px solid',
-                  borderColor: 'divider',
-                  bgcolor: 'background.paper',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#E2E8F0',
+                  bgcolor: isDark ? '#1E2633' : '#FFFFFF',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -558,7 +561,7 @@ export function UnifiedPortfolioDashboard({
                   transition: 'all 0.15s ease',
                   '&:hover': {
                     borderColor: 'primary.main',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                    boxShadow: isDark ? '0 4px 16px rgba(0, 0, 0, 0.4)' : '0 4px 12px rgba(0, 0, 0, 0.08)',
                     transform: 'translateY(-2px)'
                   }
                 }}
@@ -740,29 +743,29 @@ export function UnifiedPortfolioDashboard({
           }}
         >
           <Table size="small">
-            <TableHead sx={{ bgcolor: 'action.hover' }}>
-              <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MÃ / TÀI SẢN</TableCell>
-                <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>CHIẾN LƯỢC</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ VỐN</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ THỊ TRƯỜNG</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ TRỊ HIỆN TẠI</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LÃI / LỖ (P&L)</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THAO TÁC</TableCell>
+            <TableHead sx={{ bgcolor: isDark ? '#1A222D' : '#F1F5F9' }}>
+              <TableRow sx={{ borderBottom: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#CBD5E1' }}>
+                <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>MÃ / TÀI SẢN</TableCell>
+                <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>CHIẾN LƯỢC</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GIÁ VỐN</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GIÁ THỊ TRƯỜNG</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GIÁ TRỊ HIỆN TẠI</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>LÃI / LỖ (P&L)</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>THAO TÁC</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedAssets.map(asset => {
                 const isProfit = (asset.calculatedPnL || 0) >= 0;
                 return (
-                  <TableRow key={asset.id} hover sx={{ '& td': { py: 0.85, px: 1.25 } }}>
+                  <TableRow key={asset.id} hover sx={{ '& td': { py: 0.85, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 750, fontSize: '0.78rem' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 750, fontSize: '0.80rem', color: 'text.primary' }}>
                           {asset.symbol}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.70rem' }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
                           ({asset.name || asset.symbol})
                         </Typography>
                       </Box>
@@ -771,54 +774,54 @@ export function UnifiedPortfolioDashboard({
                     <TableCell>
                       <Chip
                         size="small"
-                        label={asset.strategy_type === 'DCA' ? '🌱 DCA' : '⚡ TRADE'}
+                        label={asset.strategy_type === 'DCA' ? 'DCA' : 'Trade'}
                         sx={{
                           borderRadius: '4px',
-                          fontWeight: 750,
-                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          fontSize: '0.66rem',
                           height: 18,
-                          bgcolor: asset.strategy_type === 'DCA' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                          color: asset.strategy_type === 'DCA' ? '#059669' : '#DC2626'
+                          bgcolor: asset.strategy_type === 'DCA' ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#DCFCE7') : (isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2'),
+                          color: asset.strategy_type === 'DCA' ? (isDark ? '#34D399' : '#15803D') : (isDark ? '#F87171' : '#B91C1C')
                         }}
                       />
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontWeight: 650, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>
                         {asset.quantity.toLocaleString('vi-VN')} {asset.unit || ''}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>
                         {money(asset.totalCostBasis || 0)}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.78rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>
                         {money(asset.currentUnitPrice || 0)}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.80rem', fontFeatureSettings: '"tnum"', color: 'text.primary' }}>
                         {money(asset.calculatedCurrentValue)}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
                       {asset.annualYieldRate ? (
-                        <Typography variant="caption" sx={{ color: '#D97706', fontWeight: 800, fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>
-                          +{money(asset.calculatedAccruedInterest)} (Lãi)
+                        <Typography variant="caption" sx={{ color: isDark ? '#FBBF24' : '#B45309', fontWeight: 800, fontSize: '0.76rem', fontFeatureSettings: '"tnum"' }}>
+                          +{money(asset.calculatedAccruedInterest)}
                         </Typography>
                       ) : (
                         <Typography
                           variant="caption"
                           sx={{
-                            color: isProfit ? '#059669' : '#DC2626',
-                            fontWeight: 800,
-                            fontSize: '0.74rem',
+                            color: isProfit ? (isDark ? '#34D399' : '#15803D') : (isDark ? '#F87171' : '#B91C1C'),
+                            fontWeight: 750,
+                            fontSize: '0.76rem',
                             fontFeatureSettings: '"tnum"'
                           }}
                         >

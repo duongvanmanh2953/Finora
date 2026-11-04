@@ -1,14 +1,14 @@
 import type { Plugin } from 'vite';
 import './envLoader';
-import { handleMarketApiRequest } from './marketApiHandler';
+import { handleUnifiedApiRequest } from './unifiedApiHandler';
 
 export function viteMarketApiPlugin(): Plugin {
   return {
-    name: 'finora-market-api-plugin',
+    name: 'finora-unified-api-plugin',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         try {
-          const handled = await handleMarketApiRequest(req, res);
+          const handled = await handleUnifiedApiRequest(req, res);
           if (!handled) {
             next();
           }
@@ -20,7 +20,7 @@ export function viteMarketApiPlugin(): Plugin {
     configurePreviewServer(server) {
       server.middlewares.use(async (req, res, next) => {
         try {
-          const handled = await handleMarketApiRequest(req, res);
+          const handled = await handleUnifiedApiRequest(req, res);
           if (!handled) {
             next();
           }

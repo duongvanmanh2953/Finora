@@ -1,5 +1,7 @@
-import { Box, Typography, Tooltip, Paper } from '@mui/material';
+import { useEffect, useRef, useState, useId } from 'react';
+import { Box, Typography, Tooltip, Paper, useTheme } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import gsap from 'gsap';
 
 export interface GaugeZone {
   min: number;
@@ -10,34 +12,37 @@ export interface GaugeZone {
 
 export interface SemiCircleGaugeProps {
   score: number; // 0 to 100
+  targetScore?: number; // target benchmark, e.g. 80
   title: string;
   subtitle?: string;
   formulaExplanation?: string;
   factors?: { label: string; impact: string; isPositive?: boolean }[];
   recommendation?: string;
   size?: number; // default width 220
-  inverted?: boolean; // if true, 0 is best (green) and 100 is worst (red). Default: 100 is best (green), 0 is worst (red)
+  inverted?: boolean;
   unitLabel?: string; // default '/100'
 }
 
-// 4 equal contiguous zones (25% each): Đỏ -> Vàng -> Xanh dương -> Xanh lá (Bright & High-Contrast)
+// 5 crisp status zones (Critical -> Poor -> Average -> Good -> Excellent)
 const HEALTH_ZONES: GaugeZone[] = [
-  { min: 0, max: 25, color: '#FF5252', label: 'Báo động' },
-  { min: 25, max: 50, color: '#FBBF24', label: 'Cần chú ý' },
-  { min: 50, max: 75, color: '#38BDF8', label: 'An toàn' },
-  { min: 75, max: 100, color: '#34D399', label: 'Rất tốt' }
+  { min: 0, max: 20, color: '#EF4444', label: 'Nguy cấp' },
+  { min: 20, max: 40, color: '#F97316', label: 'Cần chú ý' },
+  { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
+  { min: 60, max: 80, color: '#10B981', label: 'Tốt' },
+  { min: 80, max: 100, color: '#06B6D4', label: 'Xuất sắc' }
 ];
 
-// Inverted risk zones: Xanh lá -> Xanh dương -> Vàng -> Đỏ
 const RISK_ZONES: GaugeZone[] = [
-  { min: 0, max: 25, color: '#34D399', label: 'An toàn' },
-  { min: 25, max: 50, color: '#38BDF8', label: 'Thấp' },
-  { min: 50, max: 75, color: '#FBBF24', label: 'Cảnh báo' },
-  { min: 75, max: 100, color: '#FF5252', label: 'Nguy cấp' }
+  { min: 0, max: 20, color: '#06B6D4', label: 'Rất an toàn' },
+  { min: 20, max: 40, color: '#10B981', label: 'An toàn' },
+  { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
+  { min: 60, max: 80, color: '#F97316', label: 'Rủi ro cao' },
+  { min: 80, max: 100, color: '#EF4444', label: 'Báo động' }
 ];
 
 export function SemiCircleGauge({
   score,
+  targetScore = 80,
   title,
   subtitle,
   formulaExplanation,
@@ -47,21 +52,74 @@ export function SemiCircleGauge({
   inverted = false,
   unitLabel = '/100'
 }: SemiCircleGaugeProps) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const filterId = useId().replace(/:/g, '-');
+
   const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
   const zones = inverted ? RISK_ZONES : HEALTH_ZONES;
 
-  // Find active zone
-  const activeZone = zones.find(z => clampedScore >= z.min && clampedScore <= z.max) || zones[0];
-
-  // SVG Geometry Constants
+  // Geometry
   const strokeWidth = 14;
   const radius = (size - strokeWidth * 2) / 2;
   const centerX = size / 2;
   const centerY = size / 2;
 
-  // Needle Angle: Unrotated needle points straight UP (0deg = NORTH = 50 score)
-  // Score 0 = WEST (-90deg), Score 50 = NORTH (0deg), Score 100 = EAST (+90deg)
-  const needleAngle = -90 + (clampedScore / 100) * 180;
+  // Mathematical target angle:
+  // At score 0 -> -90deg from North (points West / 9 o'clock)
+  // At score 50 -> 0deg from North (points North / 12 o'clock)
+  // At score 100 -> +90deg from North (points East / 3 o'clock)
+  const targetAngle = -90 + (clampedScore / 100) * 180;
+
+  // Animated display score for count-up
+  const [displayScore, setDisplayScore] = useState(0);
+
+  // Refs for GSAP
+  const needleRef = useRef<SVGGElement | null>(null);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const animObj = useRef({ scoreVal: 0, angleVal: -90 });
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setDisplayScore(clampedScore);
+      if (needleRef.current) {
+        needleRef.current.setAttribute('transform', `rotate(${targetAngle}, ${centerX}, ${centerY})`);
+      }
+      return;
+    }
+
+    if (tweenRef.current) tweenRef.current.kill();
+
+    // GSAP Tween on SVG rotate attribute with mathematically locked (centerX, centerY) pivot
+    tweenRef.current = gsap.to(animObj.current, {
+      scoreVal: clampedScore,
+      angleVal: targetAngle,
+      duration: 1.15,
+      ease: 'power2.out',
+      onUpdate: () => {
+        const curAngle = animObj.current.angleVal;
+        const curScore = Math.round(animObj.current.scoreVal);
+        setDisplayScore(curScore);
+
+        if (needleRef.current) {
+          // Native SVG attribute: 100% immune to CSS transform-box/transform-origin browser deviations
+          needleRef.current.setAttribute('transform', `rotate(${curAngle}, ${centerX}, ${centerY})`);
+        }
+      }
+    });
+
+    return () => {
+      if (tweenRef.current) tweenRef.current.kill();
+    };
+  }, [clampedScore, targetAngle, centerX, centerY]);
+
+  // Determine active zone based on current animated displayScore
+  const activeIndex = zones.findIndex(
+    z => displayScore >= z.min && (displayScore < z.max || (displayScore === 100 && z.max === 100))
+  );
+  const currentActiveZone = zones[activeIndex >= 0 ? activeIndex : 0];
 
   const polarToCartesian = (cx: number, cy: number, r: number, angleInDegrees: number) => {
     const angleInRadians = (angleInDegrees * Math.PI) / 180;
@@ -78,10 +136,10 @@ export function SemiCircleGauge({
     return ['M', start.x, start.y, 'A', r, r, 0, largeArcFlag, 0, end.x, end.y].join(' ');
   };
 
-  // 4 equal contiguous segments (45 degrees each), perfectly meeting without gaps
+  // 5 equal contiguous segments (36 degrees each: -180deg to 0deg)
   const zoneArcs = zones.map((z, idx) => {
-    const startAngle = -180 + idx * 45;
-    const endAngle = -180 + (idx + 1) * 45;
+    const startAngle = -180 + idx * 36;
+    const endAngle = -180 + (idx + 1) * 36;
     return {
       ...z,
       d: describeArc(centerX, centerY, radius, startAngle, endAngle)
@@ -93,25 +151,25 @@ export function SemiCircleGauge({
       elevation={0}
       sx={{
         p: { xs: 1.75, sm: 2.25 },
-        borderRadius: '12px',
+        borderRadius: '10px',
         border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.14)' : '#E2E8F0',
+        bgcolor: isDark ? '#111822' : '#FFFFFF',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         gap: 1.5,
         transition: 'all 0.2s ease',
         '&:hover': {
-          borderColor: 'text.secondary',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.25)' : '#CBD5E1',
+          boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.5)' : '0 4px 16px rgba(0,0,0,0.06)'
         }
       }}
     >
-      {/* Header: Title & Info Tooltip */}
+      {/* Header: Title, Subtitle & Info Tooltip */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 750, color: 'text.primary', fontSize: '0.88rem' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary', fontSize: '0.88rem' }}>
             {title}
           </Typography>
           {subtitle && (
@@ -139,109 +197,178 @@ export function SemiCircleGauge({
         )}
       </Box>
 
-      {/* Speedometer Gauge Visual */}
+      {/* Speedometer Gauge Visual with Locked Axis and Vivid Active Zone Illumination */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%' }}>
         <svg
           width="100%"
-          height={size / 2 + 16}
-          viewBox={`0 0 ${size} ${size / 2 + 16}`}
+          height={size / 2 + 18}
+          viewBox={`0 0 ${size} ${size / 2 + 18}`}
           style={{ maxWidth: size, display: 'block', overflow: 'visible' }}
         >
-          {/* Background Arc: 4 equal seamless contiguous segments */}
+          {/* SVG Glow Filter for the Active Zone */}
+          <defs>
+            <filter id={`glow-${filterId}`} x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          {/* 1. LAYER 1: 5 Zones with Active Zone Highlighting */}
           {zoneArcs.map((arc, i) => {
-            const isActive = arc === activeZone;
+            const isActive = i === (activeIndex >= 0 ? activeIndex : 0);
             return (
-              <path
-                key={i}
-                d={arc.d}
-                fill="none"
-                stroke={arc.color}
-                strokeWidth={isActive ? strokeWidth + 1 : strokeWidth}
-                strokeLinecap={i === 0 || i === zoneArcs.length - 1 ? 'round' : 'butt'}
-                opacity={isActive ? 1 : 0.45}
-                style={{ transition: 'all 0.3s ease' }}
-              />
+              <g key={i}>
+                {/* Glowing halo for the zone that needle is pointing to */}
+                {isActive && (
+                  <path
+                    d={arc.d}
+                    fill="none"
+                    stroke={arc.color}
+                    strokeWidth={strokeWidth + 6}
+                    strokeLinecap="round"
+                    opacity={0.5}
+                    filter={`url(#glow-${filterId})`}
+                  />
+                )}
+                {/* Sharp arc segment */}
+                <path
+                  d={arc.d}
+                  fill="none"
+                  stroke={arc.color}
+                  strokeWidth={isActive ? strokeWidth + 3 : strokeWidth - 2}
+                  strokeLinecap={i === 0 || i === zoneArcs.length - 1 ? 'round' : 'butt'}
+                  opacity={isActive ? 1.0 : isDark ? 0.22 : 0.28}
+                  style={{
+                    transition: 'stroke-width 0.2s ease, opacity 0.2s ease',
+                    filter: isActive ? 'brightness(1.15)' : 'none'
+                  }}
+                />
+              </g>
             );
           })}
 
-          {/* Needle Center Pivot Base */}
-          <circle cx={centerX} cy={centerY} r={8} fill="var(--text-primary, #1e293b)" opacity={0.9} />
-          <circle cx={centerX} cy={centerY} r={4} fill="#FFFFFF" />
-
-          {/* Rotating Needle pointing accurately to current value */}
-          <g transform={`rotate(${needleAngle}, ${centerX}, ${centerY})`}>
+          {/* 2. LAYER 2: Rotating Needle (Strictly positioned UNDER pivot cap, locked on cx/cy) */}
+          <g ref={needleRef} transform={`rotate(${targetAngle}, ${centerX}, ${centerY})`}>
+            {/* Needle Body Shadow */}
+            <polygon
+              points={`${centerX - 3.5},${centerY} ${centerX + 3.5},${centerY} ${centerX},${centerY - radius + 4}`}
+              fill="rgba(0,0,0,0.3)"
+              transform="translate(1, 1)"
+            />
+            {/* Needle Body colored to match active zone */}
             <polygon
               points={`${centerX - 3},${centerY} ${centerX + 3},${centerY} ${centerX},${centerY - radius + 4}`}
-              fill={activeZone.color}
-              style={{ transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }}
+              fill={currentActiveZone.color}
             />
+            {/* Needle Center Anchor Extension */}
+            <circle cx={centerX} cy={centerY} r={6} fill={currentActiveZone.color} />
           </g>
+
+          {/* 3. LAYER 3: Center Pivot Cap (Rendered strictly on TOP of the needle) */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={8.5}
+            fill={isDark ? '#0F172A' : '#1E293B'}
+            stroke={currentActiveZone.color}
+            strokeWidth={1.5}
+          />
+          <circle cx={centerX} cy={centerY} r={4} fill={currentActiveZone.color} />
         </svg>
 
-        {/* Value and Zone Badge sitting cleanly UNDER the speedometer needle pivot */}
-        <Box sx={{ textAlign: 'center', mt: 1.5 }}>
+        {/* Value and Zone Badge sitting cleanly under the speedometer */}
+        <Box sx={{ textAlign: 'center', mt: 1.25 }}>
           <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 0.5 }}>
             <Typography
               variant="h4"
               sx={{
                 fontWeight: 900,
-                color: activeZone.color,
+                color: currentActiveZone.color,
                 letterSpacing: '-0.02em',
                 lineHeight: 1,
-                fontSize: { xs: '1.75rem', sm: '2rem' }
+                fontSize: { xs: '1.75rem', sm: '2rem' },
+                fontFeatureSettings: '"tnum"'
               }}
             >
-              {clampedScore}
+              {displayScore}
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: '0.85rem' }}>
               {unitLabel}
             </Typography>
           </Box>
 
-          <Typography
-            variant="caption"
-            sx={{
-              display: 'inline-block',
-              mt: 0.75,
-              px: 1.25,
-              py: 0.35,
-              borderRadius: '6px',
-              fontWeight: 750,
-              fontSize: '0.74rem',
-              bgcolor: `${activeZone.color}15`,
-              color: activeZone.color,
-              border: `1px solid ${activeZone.color}40`
-            }}
-          >
-            {activeZone.label}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75, mt: 0.75 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                px: 1.25,
+                py: 0.35,
+                borderRadius: '4px',
+                fontWeight: 800,
+                fontSize: '0.72rem',
+                bgcolor: `${currentActiveZone.color}1A`,
+                color: currentActiveZone.color,
+                border: `1px solid ${currentActiveZone.color}40`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.5
+              }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: currentActiveZone.color }} />
+              {currentActiveZone.label}
+            </Typography>
+
+            {targetScore && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.70rem' }}>
+                Mục tiêu: ≥{targetScore}
+              </Typography>
+            )}
+          </Box>
         </Box>
       </Box>
 
-      {/* Why this score? Contributing Factors */}
+      {/* Factors / Driver details if provided */}
       {factors.length > 0 && (
-        <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-          <Typography variant="caption" sx={{ fontWeight: 750, color: 'text.secondary', fontSize: '0.7rem', textTransform: 'uppercase' }}>
-            Yếu tố tác động chính:
-          </Typography>
-          {factors.map((f, i) => (
-            <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>{f.label}</span>
-              <strong style={{ color: f.isPositive ? '#10B981' : f.isPositive === false ? '#EF4444' : 'inherit' }}>
-                {f.impact}
-              </strong>
-            </Box>
-          ))}
+        <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            {factors.map((f, i) => (
+              <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 'inherit' }}>
+                  {f.label}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: 'inherit',
+                    color: f.isPositive ? '#10B981' : '#EF4444'
+                  }}
+                >
+                  {f.impact}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
         </Box>
       )}
 
-      {/* Actionable Recommendation */}
+      {/* Action Recommendation */}
       {recommendation && (
-        <Box sx={{ p: 1, borderRadius: '6px', bgcolor: 'action.hover', border: '1px dashed', borderColor: 'divider' }}>
-          <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary', display: 'block', lineHeight: 1.4 }}>
-            💡 <strong>Khuyến nghị:</strong> {recommendation}
-          </Typography>
-        </Box>
+        <Typography
+          variant="caption"
+          sx={{
+            display: 'block',
+            p: 1,
+            borderRadius: '6px',
+            bgcolor: isDark ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+            color: 'text.secondary',
+            fontSize: '0.70rem',
+            lineHeight: 1.4,
+            borderLeft: `3px solid ${currentActiveZone.color}`
+          }}
+        >
+          {recommendation}
+        </Typography>
       )}
     </Paper>
   );

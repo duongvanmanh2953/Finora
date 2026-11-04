@@ -127,7 +127,7 @@ export function AdminLegalView() {
                         variant="contained"
                         startIcon={<Edit3 size={13} />}
                         onClick={() => setEditingDoc({ ...doc })}
-                        sx={{ minHeight: 30, px: 1, fontSize: '0.72rem', borderRadius: '6px', bgcolor: '#315C50' }}
+                        sx={{ minHeight: 30, px: 1, fontSize: '0.72rem', borderRadius: '6px', bgcolor: 'var(--brand-primary, #355E52)' }}
                       >
                         Sửa
                       </Button>
@@ -210,7 +210,7 @@ export function AdminLegalView() {
             color="primary"
             startIcon={<CheckCircle2 size={16} />}
             onClick={() => handleSave(true)}
-            sx={{ fontWeight: 800, borderRadius: '6px', bgcolor: '#315C50' }}
+            sx={{ fontWeight: 800, borderRadius: '6px', bgcolor: 'var(--brand-primary, #355E52)' }}
           >
             Xuất Bản Chính Thức
           </Button>

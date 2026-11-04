@@ -31,7 +31,7 @@ import { DataSourceSettingsModal } from '../../components/investment/DataSourceS
 import { AddInvestmentModal } from '../../components/investment/AddInvestmentModal';
 import { NetWorthControlHeader } from '../../components/smartLedger/NetWorthControlHeader';
 import { QuickInvestmentNoteForm } from '../../components/smartLedger/QuickInvestmentNoteForm';
-import { UnrecoveredAssetsTable } from '../../components/smartLedger/UnrecoveredAssetsTable';
+import { UnrecoveredAssetsTable, getHiddenAssetIds } from '../../components/smartLedger/UnrecoveredAssetsTable';
 import { AssetProjectionSection } from '../../components/smartLedger/AssetProjectionSection';
 import {
   calculateComprehensiveNetWorth,
@@ -53,10 +53,14 @@ export default function Assets() {
   if (!data) return null;
 
   const notes = useMemo(() => {
-    if (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0) {
-      return data.smartInvestmentNotes;
-    }
-    return getSampleWealthInvestmentNotes();
+    const rawNotes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
+      ? data.smartInvestmentNotes
+      : getSampleWealthInvestmentNotes();
+    const hiddenSet = new Set(getHiddenAssetIds());
+    return rawNotes.map(n => ({
+      ...n,
+      include_in_net_worth: hiddenSet.has(n.id) ? false : (n.include_in_net_worth !== false)
+    }));
   }, [data.smartInvestmentNotes]);
 
   const hideRiskyAssets = Boolean(data.hideRiskyAssetsGlobal);
@@ -173,8 +177,8 @@ export default function Assets() {
                 borderRadius: '8px',
                 textTransform: 'none',
                 fontWeight: 750,
-                bgcolor: 'var(--brand-primary, #315C50)',
-                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+                bgcolor: 'var(--brand-primary, #355E52)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #2A4E44)' }
               }}
             >
               Thêm mục đầu tư
@@ -226,9 +230,9 @@ export default function Assets() {
               sx={{
                 borderRadius: '6px',
                 textTransform: 'none',
-                fontWeight: 750,
-                bgcolor: 'var(--brand-primary, #315C50)',
-                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+                fontWeight: 700,
+                bgcolor: 'var(--brand-primary, #355E52)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #2A4E44)' }
               }}
             >
               Thêm mục đầu tư mới
@@ -265,9 +269,9 @@ export default function Assets() {
               sx={{
                 borderRadius: '6px',
                 textTransform: 'none',
-                fontWeight: 750,
-                bgcolor: 'var(--brand-primary, #315C50)',
-                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+                fontWeight: 700,
+                bgcolor: 'var(--brand-primary, #355E52)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #2A4E44)' }
               }}
             >
               Thêm mục đầu tư
@@ -285,18 +289,18 @@ export default function Assets() {
       {/* TAB 4: SỔ CÁI GIAO DỊCH KẾ TOÁN */}
       {activeTab === 'transactions' && (
         <Card sx={{ p: 0, overflow: 'hidden', borderRadius: '6px', border: '1px solid', borderColor: 'divider' }}>
-          <TableContainer>
+          <TableContainer sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
             <Table size="small">
               <TableHead sx={{ bgcolor: 'action.hover' }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Ngày</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Loại lệnh</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Mã tài sản</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Số lượng</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Đơn giá</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Tổng tiền</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Thuế & Phí</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontSize: '0.75rem' }}>Ghi chú / Lãi lỗ</TableCell>
+                <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>NGÀY</TableCell>
+                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LOẠI LỆNH</TableCell>
+                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MÃ TÀI SẢN</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>ĐƠN GIÁ</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>TỔNG TIỀN</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THUẾ & PHÍ</TableCell>
+                  <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GHI CHÚ / LÃI LỖ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -304,27 +308,27 @@ export default function Assets() {
                   investmentTransactions
                     .slice(txPage * txRowsPerPage, txPage * txRowsPerPage + txRowsPerPage)
                     .map(tx => (
-                      <TableRow key={tx.id} hover>
-                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.82rem' }}>{tx.date}</TableCell>
+                      <TableRow key={tx.id} hover sx={{ '& td': { py: 0.85, px: 1.25 } }}>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>{tx.date}</TableCell>
                         <TableCell>
                           <Chip
                             size="small"
                             label={tx.type}
                             color={tx.type.includes('BUY') || tx.type.includes('DEPOSIT') ? 'primary' : tx.type.includes('SELL') ? 'warning' : 'success'}
                             variant="outlined"
-                            sx={{ fontWeight: 700, fontSize: '0.7rem' }}
+                            sx={{ fontWeight: 700, fontSize: '0.66rem', height: 18, borderRadius: '4px' }}
                           />
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 800 }}>{tx.symbol}</TableCell>
-                        <TableCell align="right">{new Intl.NumberFormat('vi-VN').format(tx.quantity)}</TableCell>
-                        <TableCell align="right">{money(tx.unitPrice)}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 700 }}>{money(tx.totalAmount)}</TableCell>
-                        <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+                        <TableCell sx={{ fontWeight: 800, fontSize: '0.76rem' }}>{tx.symbol}</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{new Intl.NumberFormat('vi-VN').format(tx.quantity)}</TableCell>
+                        <TableCell align="right" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{money(tx.unitPrice)}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 750, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>{money(tx.totalAmount)}</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary', fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>
                           {money((tx.fee || 0) + (tx.tax || 0))}
                         </TableCell>
-                        <TableCell sx={{ fontSize: '0.82rem' }}>
+                        <TableCell sx={{ fontSize: '0.74rem' }}>
                           {tx.realizedPnL !== undefined && (
-                            <span style={{ fontWeight: 700, color: tx.realizedPnL >= 0 ? '#10b981' : '#ef4444' }}>
+                            <span style={{ fontWeight: 750, color: tx.realizedPnL >= 0 ? '#10b981' : '#ef4444' }}>
                               [{tx.realizedPnL >= 0 ? '+' : ''}{money(tx.realizedPnL)}] ·{' '}
                             </span>
                           )}

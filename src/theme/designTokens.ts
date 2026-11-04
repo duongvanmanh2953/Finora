@@ -12,13 +12,13 @@ export interface SemanticColorToken {
 }
 
 export const FINORA_TOKENS = {
-  // Brand Palette: Deep Calm Emerald & Editorial Indigo Accent
+  // Brand Palette: Soothing Calm Sage & Editorial Indigo Accent
   brand: {
-    primary: '#315C50',
-    primaryHover: '#274A40',
-    primaryActive: '#1E3D34',
-    primarySoft: '#EAF2EE',
-    primarySubtle: 'rgba(49, 92, 80, 0.08)',
+    primary: '#355E52',
+    primaryHover: '#2A4E44',
+    primaryActive: '#203D35',
+    primarySoft: '#EDF4F1',
+    primarySubtle: 'rgba(53, 94, 82, 0.08)',
     accent: '#6C63B5',
     accentSoft: '#F0EFFA',
     accentHover: '#5B52A3'
@@ -127,10 +127,10 @@ export const FINORA_TOKENS = {
 
   // Backward-compat aliases for older components
   primary: {
-    main: '#315C50',
-    hover: '#274A40',
-    darkMain: '#34D399',
-    darkHover: '#10B981'
+    main: '#355E52',
+    hover: '#2A4E44',
+    darkMain: '#4E9B7C',
+    darkHover: '#3B7E63'
   },
 
   moduleIdentity: {

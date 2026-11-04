@@ -39,7 +39,7 @@ export default function LegalPublicView() {
                 width: 28,
                 height: 28,
                 borderRadius: '6px',
-                bgcolor: '#315C50',
+                bgcolor: 'var(--brand-primary, #355E52)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

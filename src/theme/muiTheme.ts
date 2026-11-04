@@ -56,9 +56,9 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
     palette: {
       mode,
       primary: {
-        main: isDark ? '#34D399' : '#315C50',
-        light: isDark ? '#6EE7B7' : '#3D7465',
-        dark: isDark ? '#10B981' : '#274A40',
+        main: isDark ? '#4E9B7C' : '#355E52',
+        light: isDark ? '#6BB599' : '#457265',
+        dark: isDark ? '#3B7E63' : '#2A4E44',
         contrastText: '#ffffff'
       },
       secondary: {
@@ -227,7 +227,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
             fontSize: 14.5
           },
           contained: {
-            backgroundColor: isDark ? '#34D399' : '#315C50',
+            backgroundColor: isDark ? '#4E9B7C' : '#355E52',
             color: '#ffffff',
             '&:hover': {
               backgroundColor: isDark ? '#10B981' : '#274A40'
@@ -259,7 +259,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
               borderColor: isDark ? 'rgba(255, 255, 255, 0.30)' : '#D4DDD7'
             },
             '&.Mui-focused fieldset': {
-              borderColor: isDark ? '#34D399' : '#315C50',
+              borderColor: isDark ? '#4E9B7C' : '#355E52',
               borderWidth: 1.5
             }
           }

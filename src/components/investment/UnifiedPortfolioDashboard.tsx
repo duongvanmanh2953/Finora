@@ -741,28 +741,28 @@ export function UnifiedPortfolioDashboard({
         >
           <Table size="small">
             <TableHead sx={{ bgcolor: 'action.hover' }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 800, fontSize: '0.78rem' }}>MÃ / TÀI SẢN</TableCell>
-                <TableCell sx={{ fontWeight: 800, fontSize: '0.78rem' }}>CHIẾN LƯỢC</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>SỐ LƯỢNG</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>GIÁ VỐN</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>GIÁ THỊ TRƯỜNG</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>GIÁ TRỊ HIỆN TẠI</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>LÃI / LỖ (P&L)</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 800, fontSize: '0.78rem' }}>THAO TÁC</TableCell>
+              <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MÃ / TÀI SẢN</TableCell>
+                <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>CHIẾN LƯỢC</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>SỐ LƯỢNG</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ VỐN</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ THỊ TRƯỜNG</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ TRỊ HIỆN TẠI</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LÃI / LỖ (P&L)</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THAO TÁC</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedAssets.map(asset => {
                 const isProfit = (asset.calculatedPnL || 0) >= 0;
                 return (
-                  <TableRow key={asset.id} hover>
+                  <TableRow key={asset.id} hover sx={{ '& td': { py: 0.85, px: 1.25 } }}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 800 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 750, fontSize: '0.78rem' }}>
                           {asset.symbol}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.70rem' }}>
                           ({asset.name || asset.symbol})
                         </Typography>
                       </Box>
@@ -775,8 +775,8 @@ export function UnifiedPortfolioDashboard({
                         sx={{
                           borderRadius: '4px',
                           fontWeight: 750,
-                          fontSize: '0.72rem',
-                          height: 22,
+                          fontSize: '0.65rem',
+                          height: 18,
                           bgcolor: asset.strategy_type === 'DCA' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                           color: asset.strategy_type === 'DCA' ? '#059669' : '#DC2626'
                         }}
@@ -784,28 +784,32 @@ export function UnifiedPortfolioDashboard({
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontWeight: 650 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 650, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
                         {asset.quantity.toLocaleString('vi-VN')} {asset.unit || ''}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2">{money(asset.totalCostBasis || 0)}</Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                        {money(asset.totalCostBasis || 0)}
+                      </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2">{money(asset.currentUnitPrice || 0)}</Typography>
+                      <Typography variant="body2" sx={{ fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
+                        {money(asset.currentUnitPrice || 0)}
+                      </Typography>
                     </TableCell>
 
                     <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontWeight: 800 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 800, fontSize: '0.75rem', fontFeatureSettings: '"tnum"' }}>
                         {money(asset.calculatedCurrentValue)}
                       </Typography>
                     </TableCell>
 
                     <TableCell align="right">
                       {asset.annualYieldRate ? (
-                        <Typography variant="caption" sx={{ color: '#D97706', fontWeight: 800 }}>
+                        <Typography variant="caption" sx={{ color: '#D97706', fontWeight: 800, fontSize: '0.74rem', fontFeatureSettings: '"tnum"' }}>
                           +{money(asset.calculatedAccruedInterest)} (Lãi)
                         </Typography>
                       ) : (
@@ -813,7 +817,9 @@ export function UnifiedPortfolioDashboard({
                           variant="caption"
                           sx={{
                             color: isProfit ? '#059669' : '#DC2626',
-                            fontWeight: 800
+                            fontWeight: 800,
+                            fontSize: '0.74rem',
+                            fontFeatureSettings: '"tnum"'
                           }}
                         >
                           {isProfit ? '+' : ''}
@@ -830,7 +836,7 @@ export function UnifiedPortfolioDashboard({
                             size="small"
                             variant="outlined"
                             onClick={() => onOpenOrderModal(asset)}
-                            sx={{ borderRadius: '4px', fontSize: '0.72rem', py: 0.25, px: 1, textTransform: 'none', fontWeight: 700 }}
+                            sx={{ borderRadius: '4px', fontSize: '0.68rem', py: 0.25, px: 0.75, textTransform: 'none', fontWeight: 750 }}
                           >
                             Lệnh
                           </Button>
@@ -839,9 +845,9 @@ export function UnifiedPortfolioDashboard({
                           size="small"
                           color="error"
                           onClick={() => handleDeleteAsset(asset.id, asset.symbol)}
-                          sx={{ borderRadius: '4px', p: 0.5 }}
+                          sx={{ borderRadius: '4px', p: 0.4 }}
                         >
-                          <DeleteOutlineRounded sx={{ fontSize: 16 }} />
+                          <DeleteOutlineRounded sx={{ fontSize: 15 }} />
                         </IconButton>
                       </Box>
                     </TableCell>

@@ -25,11 +25,11 @@ body {
 :root {
   --font-sans: 'Inter', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Brand Palette - Calm Deep Emerald & Editorial Accent */
-  --brand-primary: #315C50;
-  --brand-primary-hover: #274A40;
-  --brand-primary-active: #1E3D34;
-  --brand-primary-soft: #EAF2EE;
+  /* Brand Palette - Calm Soothing Sage & Editorial Accent */
+  --brand-primary: #355E52;
+  --brand-primary-hover: #2A4E44;
+  --brand-primary-active: #203D35;
+  --brand-primary-soft: #EDF4F1;
   --brand-accent: #6C63B5;
   --brand-accent-soft: #F0EFFA;
 
@@ -110,10 +110,10 @@ body {
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
 
-  --brand-primary: #10B981;
-  --brand-primary-light: #34D399;
-  --brand-primary-dark: #059669;
-  --brand-primary-tint: rgba(16, 185, 129, 0.15);
+  --brand-primary: #4E9B7C;
+  --brand-primary-light: #6BB599;
+  --brand-primary-dark: #3B7E63;
+  --brand-primary-tint: rgba(78, 155, 124, 0.14);
 
   --accent-income: #10B981;
   --accent-expense: #EF4444;

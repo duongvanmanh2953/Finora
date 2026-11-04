@@ -303,7 +303,7 @@ export function Layout() {
               }}
               aria-label={isFav ? 'Bỏ ghim yêu thích' : 'Ghim tính năng yêu thích'}
             >
-              <Star size={13} fill={isFav ? '#F59E0B' : 'none'} />
+              <Star size={13} fill={isFav ? '#F59E0B' : 'currentColor'} stroke="none" strokeWidth={0} />
             </IconButton>
           </NavLink>
         </Box>
@@ -378,8 +378,8 @@ export function Layout() {
             {favoriteNavItems.length > 0 && (
               <Box sx={{ mb: 1.5, pb: 1, borderBottom: '1px solid var(--border-subtle)' }}>
                 <div className="navlabel" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#F59E0B', paddingBottom: 4 }}>
-                  <Star size={12} fill="#F59E0B" color="#F59E0B" />
-                  <span>MỤC YÊU THÍCH ({favoriteNavItems.length})</span>
+                  <Star size={12} fill="#F59E0B" stroke="none" strokeWidth={0} />
+                  <span>MỤC YÊU THÍCH</span>
                 </div>
                 {favoriteNavItems.map(item => renderNavItem(item, true))}
               </Box>

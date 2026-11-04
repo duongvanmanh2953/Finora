@@ -308,7 +308,7 @@ export default function Settings() {
         <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
           <div className="section-head">
             <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Star size={18} fill="#F59E0B" color="#F59E0B" /> Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
+              <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} /> Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.25 }}>
               Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại <strong>Mục Yêu Thích</strong> và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu.
@@ -358,8 +358,10 @@ export default function Settings() {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Star
                       size={17}
-                      fill={isFav ? '#F59E0B' : 'none'}
-                      color={isFav ? '#F59E0B' : 'var(--text-secondary)'}
+                      fill={isFav ? '#F59E0B' : 'var(--text-secondary)'}
+                      stroke="none"
+                      strokeWidth={0}
+                      style={{ opacity: isFav ? 1 : 0.35 }}
                     />
                   </Box>
                 </Paper>

@@ -40,7 +40,8 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  useTheme
 } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -70,6 +71,7 @@ import {
   totals
 } from '../../lib/finance';
 import { calculateComprehensiveNetWorth, getSampleWealthInvestmentNotes } from '../../lib/investmentProjectionEngine';
+import { getHiddenAssetIds } from '../../components/smartLedger/UnrecoveredAssetsTable';
 import { Empty, IconContainer, StatusBadge, FinoraButton } from '../../components/ui';
 import { MagicQuickBar } from '../../components/MagicQuickBar';
 import { BankLogoBadge, CategoryAvatarBadge, FundLogoBadge } from '../../lib/brandBadges';
@@ -79,6 +81,8 @@ import { HelpButton } from '../../components/HelpButton';
 type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
 export default function Dashboard() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const data = useFinance(s => s.data)!;
   const openPricing = useFinance(s => s.openPricing);
 
@@ -160,11 +164,16 @@ export default function Dashboard() {
     return debtOwed + ccDebt;
   }, [data.debts, data.accounts, data.transactions]);
 
-  // Comprehensive Net Worth (incorporating investment notes & safe mode)
+  // Comprehensive Net Worth (incorporating investment notes & safe mode & hidden assets sync)
   const netWorthSummary = useMemo(() => {
-    const notes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
+    const rawNotes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
       ? data.smartInvestmentNotes
       : getSampleWealthInvestmentNotes();
+    const hiddenSet = new Set(getHiddenAssetIds());
+    const notes = rawNotes.map(n => ({
+      ...n,
+      include_in_net_worth: hiddenSet.has(n.id) ? false : (n.include_in_net_worth !== false)
+    }));
     return calculateComprehensiveNetWorth(
       liquidCashBalance,
       notes,
@@ -410,22 +419,26 @@ export default function Dashboard() {
           mb: 3
         }}
       >
-        {/* Card 1: Tổng tài sản ròng (Net Worth) */}
+        {/* Card 1: Tổng tài sản ròng */}
         <Paper
           id="tour-net-worth-card"
           variant="outlined"
           sx={{
             p: { xs: 1.75, sm: 2.25 },
             borderRadius: '12px',
-            bgcolor: 'background.paper',
-            borderColor: data.hideRiskyAssetsGlobal ? 'rgba(16, 185, 129, 0.4)' : 'var(--border-subtle)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
+            borderColor: isDark
+              ? (data.hideRiskyAssetsGlobal ? 'rgba(78, 155, 124, 0.45)' : 'rgba(255, 255, 255, 0.14)')
+              : (data.hideRiskyAssetsGlobal ? 'rgba(53, 94, 82, 0.35)' : 'var(--border-subtle)'),
+            boxShadow: isDark
+              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
+              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
+            '&:hover': { borderColor: isDark ? '#4E9B7C' : '#355E52' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -437,7 +450,7 @@ export default function Dashboard() {
                 <Chip
                   size="small"
                   label="Thận trọng"
-                  sx={{ height: 18, fontSize: 9.5, fontWeight: 800, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#059669', borderRadius: '4px' }}
+                  sx={{ height: 18, fontSize: 9.5, fontWeight: 800, bgcolor: isDark ? 'rgba(78, 155, 124, 0.16)' : 'rgba(53, 94, 82, 0.12)', color: isDark ? '#4E9B7C' : '#355E52', borderRadius: '4px' }}
                 />
               )}
             </Box>
@@ -452,7 +465,7 @@ export default function Dashboard() {
                 letterSpacing: '-0.03em',
                 fontFeatureSettings: '"tnum"',
                 fontVariantNumeric: 'tabular-nums',
-                color: data.hideRiskyAssetsGlobal ? '#059669' : 'text.primary',
+                color: data.hideRiskyAssetsGlobal ? (isDark ? '#4E9B7C' : '#355E52') : (isDark ? '#F8FAFC' : '#0F172A'),
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap'
@@ -473,16 +486,18 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '6px',
-            bgcolor: 'background.paper',
-            borderColor: 'var(--border-subtle)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            borderRadius: '12px',
+            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.14)' : 'var(--border-subtle)',
+            boxShadow: isDark
+              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
+              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
+            '&:hover': { borderColor: '#16A34A' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -529,16 +544,18 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '6px',
-            bgcolor: 'background.paper',
-            borderColor: 'var(--border-subtle)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            borderRadius: '12px',
+            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-subtle)',
+            boxShadow: isDark
+              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
+              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
+            '&:hover': { borderColor: '#D97706' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -585,16 +602,18 @@ export default function Dashboard() {
           variant="outlined"
           sx={{
             p: { xs: 1.75, sm: 2.25 },
-            borderRadius: '6px',
-            bgcolor: 'background.paper',
-            borderColor: 'var(--border-subtle)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            borderRadius: '12px',
+            bgcolor: isDark ? '#1E2633' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'var(--border-subtle)',
+            boxShadow: isDark
+              ? '0 2px 8px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)'
+              : '0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: { xs: 110, sm: 124 },
             transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
+            '&:hover': { borderColor: '#4F46E5' }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

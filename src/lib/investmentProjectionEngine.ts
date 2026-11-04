@@ -67,6 +67,13 @@ export function calculateComprehensiveNetWorth(
     const currentUnrecovered = Math.max(0, totalContributed - recovered);
     const currentValue = n.currentEstimatedValue ?? currentUnrecovered;
 
+    // Check include_in_net_worth: Nếu bị ẩn thì không tính vào bất kỳ thống kê nào
+    const isIncluded = n.include_in_net_worth !== false;
+    if (!isIncluded) {
+      hiddenCount++;
+      continue;
+    }
+
     totalInvestedCapital += totalContributed;
     totalRecoveredCapital += recovered;
 
@@ -80,14 +87,6 @@ export function calculateComprehensiveNetWorth(
     }
 
     unrecoveredCapital += currentUnrecovered;
-
-    // Check include_in_net_worth
-    const isIncluded = n.include_in_net_worth !== false;
-    if (!isIncluded) {
-      hiddenCount++;
-      continue;
-    }
-
     activeCount++;
     fullInvestmentValue += currentValue;
 

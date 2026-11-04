@@ -273,7 +273,7 @@ export function AddInvestmentModal({ open, onClose, onSuccess }: AddInvestmentMo
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Sparkles size={20} color="var(--brand-primary, #315C50)" />
+          <Sparkles size={20} color="var(--brand-primary, #355E52)" />
           <span>Thêm Mục Đầu Tư Mới</span>
         </Box>
         <IconButton size="small" onClick={onClose} sx={{ color: 'text.secondary' }}>
@@ -509,8 +509,8 @@ export function AddInvestmentModal({ open, onClose, onSuccess }: AddInvestmentMo
             sx={{
               textTransform: 'none',
               fontWeight: 800,
-              bgcolor: 'var(--brand-primary, #315C50)',
-              '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' },
+              bgcolor: 'var(--brand-primary, #355E52)',
+              '&:hover': { bgcolor: 'var(--brand-primary-hover, #2A4E44)' },
               px: 2.5
             }}
           >

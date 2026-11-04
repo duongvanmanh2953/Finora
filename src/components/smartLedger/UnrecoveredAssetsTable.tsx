@@ -40,6 +40,25 @@ import { money, todayKey, uid } from '../../lib/finance';
 import { ASSET_CATEGORY_METADATA } from '../../lib/investmentProjectionEngine';
 import type { InvestmentNote } from '../../types/smartLedger';
 
+export const HIDDEN_ASSETS_KEY = 'finora:hidden_unrecovered_assets';
+
+export const getHiddenAssetIds = (): string[] => {
+  try {
+    const raw = localStorage.getItem(HIDDEN_ASSETS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveHiddenAssetIds = (ids: string[]) => {
+  try {
+    localStorage.setItem(HIDDEN_ASSETS_KEY, JSON.stringify(ids));
+  } catch {
+    // Ignore storage write error
+  }
+};
+
 interface UnrecoveredAssetsTableProps {
   notes: InvestmentNote[];
   onOpenAddModal?: () => void;
@@ -59,9 +78,20 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
   const [recoveryNote, setRecoveryNote] = useState('');
   const [targetAccountId, setTargetAccountId] = useState(data?.user?.defaultAccountId || (data?.accounts?.[0]?.id ?? 'cash'));
 
-  // Toggle include_in_net_worth
+  // Toggle include_in_net_worth and sync with localStorage
   const handleToggleIncludeInNetWorth = async (note: InvestmentNote) => {
-    const nextVal = note.include_in_net_worth === false;
+    const isCurrentlyIncluded = note.include_in_net_worth !== false;
+    const nextVal = !isCurrentlyIncluded;
+
+    // Cập nhật danh sách ẩn trong localStorage
+    const currentHidden = new Set(getHiddenAssetIds());
+    if (nextVal) {
+      currentHidden.delete(note.id);
+    } else {
+      currentHidden.add(note.id);
+    }
+    saveHiddenAssetIds(Array.from(currentHidden));
+
     await update(d => {
       const currentNotes = d.smartInvestmentNotes || [];
       return {
@@ -190,29 +220,31 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
       {/* 1. Header Toolbar */}
       <Box
         sx={{
-          p: 2,
+          p: { xs: 1.5, sm: 2 },
           display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
+          alignItems: { xs: 'stretch', md: 'center' },
           gap: 1.5,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
+          borderBottom: '1px solid var(--border-subtle)',
           bgcolor: 'background.paper'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
           <Tabs
             value={activeTab}
             onChange={(_, v) => { setActiveTab(v); setPage(0); }}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
             sx={{
               minHeight: 36,
               '& .MuiTab-root': {
                 minHeight: 36,
                 py: 0,
-                px: 1.5,
-                fontWeight: 750,
-                fontSize: '0.82rem',
+                px: { xs: 1.25, sm: 1.75 },
+                fontWeight: 600,
+                fontSize: { xs: '0.75rem', sm: '0.80rem' },
                 textTransform: 'none'
               }
             }}
@@ -224,16 +256,17 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
           </Tabs>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
           <TextField
             size="small"
             placeholder="Tìm kiếm tài sản, mã..."
             value={searchTerm}
             onChange={e => { setSearchTerm(e.target.value); setPage(0); }}
+            sx={{ flex: { xs: 1, sm: 'none' }, width: { sm: 200 } }}
             slotProps={{
               input: {
                 startAdornment: <SearchRounded sx={{ fontSize: 18, color: 'text.secondary', mr: 0.5 }} />,
-                sx: { borderRadius: '4px', fontSize: '0.82rem', height: 34 }
+                sx: { borderRadius: '6px', fontSize: '0.80rem', height: 34 }
               }
             }}
           />
@@ -246,11 +279,13 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
               sx={{
                 height: 34,
                 px: 1.5,
-                fontWeight: 750,
-                fontSize: '0.82rem',
+                fontWeight: 650,
+                fontSize: '0.80rem',
                 textTransform: 'none',
-                bgcolor: 'var(--brand-primary, #315C50)',
-                '&:hover': { bgcolor: 'var(--brand-primary-hover, #274A40)' }
+                whiteSpace: 'nowrap',
+                borderRadius: '6px',
+                bgcolor: 'var(--brand-primary, #355E52)',
+                '&:hover': { bgcolor: 'var(--brand-primary-hover, #2A4E44)' }
               }}
             >
               Thêm mục đầu tư
@@ -260,20 +295,20 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
       </Box>
 
       {/* 2. Table */}
-      <TableContainer>
+      <TableContainer sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
         <Table size="small">
           <TableHead sx={{ bgcolor: 'action.hover' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 500, fontSize: '0.75rem', width: 40 }} align="center">NET WORTH</TableCell>
-              <TableCell sx={{ fontWeight: 500, fontSize: '0.75rem' }}>KHOẢN ĐẦU TƯ / TÀI SẢN</TableCell>
-              <TableCell sx={{ fontWeight: 500, fontSize: '0.75rem' }}>LOẠI TÀI SẢN</TableCell>
-              <TableCell sx={{ fontWeight: 500, fontSize: '0.75rem' }}>MỨC RỦI RO</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>VỐN GỐC</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>ĐÃ THU HỒI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.75rem', color: '#D97706' }}>VỐN CHƯA THU HỒI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>GIÁ TRỊ HIỆN TẠI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>LÃI / LỖ TẠM TÍNH</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 500, fontSize: '0.75rem' }}>THAO TÁC</TableCell>
+            <TableRow sx={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              <TableCell sx={{ width: 44, py: 1, px: 1.25 }} align="center" />
+              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>KHOẢN ĐẦU TƯ / TÀI SẢN</TableCell>
+              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LOẠI TÀI SẢN</TableCell>
+              <TableCell sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>MỨC RỦI RO</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>VỐN GỐC</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>ĐÃ THU HỒI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: '#D97706', py: 1, px: 1.25 }}>VỐN CHƯA THU HỒI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>GIÁ TRỊ HIỆN TẠI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>LÃI / LỖ TẠM TÍNH</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 500, fontSize: '9px', color: 'text.secondary', py: 1, px: 1.25 }}>THAO TÁC</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -290,16 +325,16 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                   const catMeta = ASSET_CATEGORY_METADATA[note.category] || { label: note.category };
 
                   return (
-                    <TableRow key={note.id} hover sx={{ opacity: isIncluded ? 1 : 0.6 }}>
+                    <TableRow key={note.id} hover sx={{ opacity: isIncluded ? 1 : 0.55, '& td': { py: 1, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
                       {/* Toggle Net Worth Eye */}
                       <TableCell align="center">
-                        <Tooltip title={isIncluded ? 'Đang tính vào Tổng tài sản (Bấm để tạm ẩn)' : 'Đang tạm ẩn khỏi Tổng tài sản (Bấm để tính vào)'}>
+                        <Tooltip title={isIncluded ? 'Đang tính vào Tổng tài sản (Bấm để tạm ẩn)' : 'Đang tạm ẩn (Bấm để tính vào Tổng tài sản)'}>
                           <IconButton
                             size="small"
                             onClick={() => handleToggleIncludeInNetWorth(note)}
-                            sx={{ color: isIncluded ? '#10B981' : 'text.disabled' }}
+                            sx={{ color: isIncluded ? '#10B981' : 'text.disabled', p: 0.5 }}
                           >
-                            {isIncluded ? <VisibilityRounded fontSize="small" /> : <VisibilityOffRounded fontSize="small" />}
+                            {isIncluded ? <VisibilityRounded sx={{ fontSize: 16 }} /> : <VisibilityOffRounded sx={{ fontSize: 16 }} />}
                           </IconButton>
                         </Tooltip>
                       </TableCell>
@@ -308,32 +343,39 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                       <TableCell>
                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 800 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.78rem' }}>
                               {note.title}
                             </Typography>
+                            {!isIncluded && (
+                              <Chip
+                                label="Đã ẩn"
+                                size="small"
+                                sx={{ height: 17, fontSize: '0.60rem', fontWeight: 700, bgcolor: 'action.hover', color: 'text.secondary' }}
+                              />
+                            )}
                             {note.status === 'AT_RISK_LOSS' && (
                               <Chip
                                 label="Nguy cơ mất vốn"
                                 size="small"
-                                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 750, bgcolor: 'rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
+                                sx={{ height: 17, fontSize: '0.62rem', fontWeight: 750, bgcolor: 'rgba(239, 68, 68, 0.15)', color: '#EF4444' }}
                               />
                             )}
                             {note.status === 'RECOVERED' && (
                               <Chip
                                 label="Đã thu hồi đủ"
                                 size="small"
-                                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 750, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#059669' }}
+                                sx={{ height: 17, fontSize: '0.62rem', fontWeight: 750, bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#059669' }}
                               />
                             )}
                           </Box>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.68rem' }}>
                             {note.quickNote || '—'}
                           </Typography>
                         </Box>
                       </TableCell>
 
                       {/* Category */}
-                      <TableCell sx={{ fontSize: '0.8rem', fontWeight: 650 }}>
+                      <TableCell sx={{ fontSize: '0.74rem', fontWeight: 600 }}>
                         {catMeta.label}
                       </TableCell>
 
@@ -344,9 +386,9 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                           label={note.risk_level === 'SAFE' ? 'An toàn' : note.risk_level === 'LOW' ? 'Thấp' : note.risk_level === 'MEDIUM' ? 'Trung bình' : 'Cao'}
                           sx={{
                             borderRadius: '4px',
-                            fontWeight: 750,
-                            fontSize: '0.68rem',
-                            height: 20,
+                            fontWeight: 700,
+                            fontSize: '0.64rem',
+                            height: 18,
                             bgcolor:
                               note.risk_level === 'SAFE'
                                 ? 'rgba(16, 185, 129, 0.12)'
@@ -368,49 +410,51 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                       </TableCell>
 
                       {/* Initial Capital */}
-                      <TableCell align="right" sx={{ fontWeight: 650, fontSize: '0.82rem' }}>
-                        {money(totalContributed)}
+                      <TableCell align="right" sx={{ fontWeight: 650, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {isIncluded ? money(totalContributed) : '****'}
                       </TableCell>
 
                       {/* Recovered */}
-                      <TableCell align="right" sx={{ color: '#059669', fontWeight: 700, fontSize: '0.82rem' }}>
-                        {recovered > 0 ? money(recovered) : '—'}
+                      <TableCell align="right" sx={{ color: isIncluded ? '#059669' : 'text.disabled', fontWeight: 700, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {isIncluded ? (recovered > 0 ? money(recovered) : '—') : '****'}
                       </TableCell>
 
                       {/* Unrecovered */}
-                      <TableCell align="right" sx={{ fontWeight: 800, color: '#D97706', fontSize: '0.82rem' }}>
-                        {money(unrecovered)}
+                      <TableCell align="right" sx={{ fontWeight: 800, color: isIncluded ? '#D97706' : 'text.disabled', fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {isIncluded ? money(unrecovered) : '****'}
                       </TableCell>
 
                       {/* Current Value */}
-                      <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.82rem' }}>
-                        {money(currentValue)}
+                      <TableCell align="right" sx={{ fontWeight: 800, fontSize: '0.75rem', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {isIncluded ? money(currentValue) : '****'}
                       </TableCell>
 
                       {/* PnL */}
-                      <TableCell align="right" sx={{ fontWeight: 750, fontSize: '0.82rem', color: pnl >= 0 ? '#10B981' : '#EF4444' }}>
-                        {pnl >= 0 ? '+' : ''}{money(pnl)}
+                      <TableCell align="right" sx={{ fontWeight: 750, fontSize: '0.75rem', color: isIncluded ? (pnl >= 0 ? '#10B981' : '#EF4444') : 'text.disabled', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        {isIncluded ? `${pnl >= 0 ? '+' : ''}${money(pnl)}` : '****'}
                       </TableCell>
 
                       {/* Action Buttons */}
                       <TableCell align="center">
-                        <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                        <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', alignItems: 'center' }}>
                           <Tooltip title="Thu hồi vốn về ví tiền mặt">
                             <Button
                               size="small"
                               variant="outlined"
                               color="primary"
-                              startIcon={<ArrowCircleDownRounded sx={{ fontSize: 15 }} />}
+                              startIcon={<ArrowCircleDownRounded sx={{ fontSize: 13 }} />}
                               onClick={() => handleOpenRecoveryModal(note)}
                               sx={{
                                 py: 0.25,
-                                px: 1,
-                                fontSize: '0.72rem',
+                                px: 0.75,
+                                fontSize: '0.68rem',
                                 fontWeight: 700,
                                 borderRadius: '4px',
-                                textTransform: 'none'
+                                textTransform: 'none',
+                                whiteSpace: 'nowrap'
                               }}
                             >
+                              Thu hồi
                             </Button>
                           </Tooltip>
 
@@ -418,9 +462,9 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                             <IconButton
                               size="small"
                               onClick={() => handleToggleRiskOfLoss(note)}
-                              sx={{ color: note.status === 'AT_RISK_LOSS' ? '#EF4444' : 'text.disabled' }}
+                              sx={{ color: note.status === 'AT_RISK_LOSS' ? '#EF4444' : 'text.disabled', p: 0.4 }}
                             >
-                              <WarningAmberRounded fontSize="small" />
+                              <WarningAmberRounded sx={{ fontSize: 15 }} />
                             </IconButton>
                           </Tooltip>
 
@@ -428,9 +472,9 @@ export function UnrecoveredAssetsTable({ notes, onOpenAddModal }: UnrecoveredAss
                             <IconButton
                               size="small"
                               onClick={() => handleDeleteNote(note.id)}
-                              sx={{ color: 'text.disabled', '&:hover': { color: '#EF4444' } }}
+                              sx={{ color: 'text.disabled', '&:hover': { color: '#EF4444' }, p: 0.4 }}
                             >
-                              <DeleteOutlineRounded fontSize="small" />
+                              <DeleteOutlineRounded sx={{ fontSize: 15 }} />
                             </IconButton>
                           </Tooltip>
                         </Box>

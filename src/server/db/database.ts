@@ -713,10 +713,13 @@ class TichSanDatabase {
 
   // --- ADMIN & BOOTSTRAP CLI OPERATIONS ---
 
-  public getOrCreateBootstrapAdmin(adminEmail = 'admin@tichsan.vn'): { admin: DbUser; isNew: boolean } {
+  public getOrCreateBootstrapAdmin(adminEmail = 'admin@tichsan.ai'): { admin: DbUser; isNew: boolean } {
     let admin = Object.values(this.schema.users).find(u => u.email === adminEmail);
-    if (!admin && adminEmail === 'admin@tichsan.vn') {
-      admin = Object.values(this.schema.users).find(u => u.role === 'admin');
+    if (!admin && (adminEmail === 'admin@tichsan.ai' || adminEmail === 'admin@tichsan.vn')) {
+      admin = Object.values(this.schema.users).find(u => u.role === 'admin' || u.email === 'admin@tichsan.vn');
+      if (admin) {
+        admin.email = adminEmail;
+      }
     }
     if (!admin) {
       admin = {
@@ -743,25 +746,25 @@ class TichSanDatabase {
     return { admin, isNew: false };
   }
 
-  public rotateAdminPassword(newPasswordPlain: string, adminEmail = 'admin@tichsan.vn'): { admin: DbUser; cooldownDays: number } {
+  public rotateAdminPassword(newPasswordPlain: string, adminEmail = 'admin@tichsan.ai', force = false): { admin: DbUser; cooldownDays: number } {
     const { admin } = this.getOrCreateBootstrapAdmin(adminEmail);
 
     const now = Date.now();
     const SEVEN_DAYS_MS = 7 * 86400 * 1000;
 
-    // Check 7-day cooldown
-    if (admin.lastAdminResetTimestamp && now - admin.lastAdminResetTimestamp < SEVEN_DAYS_MS) {
+    // Check 7-day cooldown unless forced by authenticated master key
+    if (!force && admin.lastAdminResetTimestamp && now - admin.lastAdminResetTimestamp < SEVEN_DAYS_MS) {
       const remainingMs = SEVEN_DAYS_MS - (now - admin.lastAdminResetTimestamp);
       const remainingDays = Math.ceil(remainingMs / (86400 * 1000));
       throw new Error(`Chỉ được phép reset mật khẩu Admin tối đa 1 lần mỗi 7 ngày. Bạn cần đợi thêm ${remainingDays} ngày nữa.`);
     }
 
     admin.passwordHash = hashPassword(newPasswordPlain);
-    admin.mustChangePassword = true;
+    admin.mustChangePassword = false;
     admin.lastAdminResetTimestamp = now;
     admin.role = 'admin';
 
-    // Revoke all existing sessions for Admin
+    // Revoke all existing sessions for Admin (Forces full logout on all devices)
     this.revokeAllUserSessions(admin.id);
 
     this.addAuditLog('server_cli', 'ADMIN_PASSWORD_ROTATED_VIA_SERVER_CLI', `/admin/bootstrap`, 'SUCCESS');

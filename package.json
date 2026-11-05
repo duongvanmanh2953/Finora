@@ -9,7 +9,9 @@
     "dev:landing": "vite --host 0.0.0.0 --port 3001 --open /landing",
     "build": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "vitest run --no-file-parallelism"
+    "test": "vitest run --no-file-parallelism",
+    "admin:reset": "tsx src/server/admin/adminResetCli.ts",
+    "admin:update": "tsx src/server/admin/adminResetCli.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -42,6 +44,7 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^7.1.9",
     "vitest": "^3.2.4"

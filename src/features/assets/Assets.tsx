@@ -207,15 +207,23 @@ export default function Assets() {
         <Tabs
           value={activeTab}
           onChange={(_, v) => { setActiveTab(v); setTxPage(0); }}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           sx={{
             minHeight: 40,
+            '& .MuiTabs-scroller': {
+              overflowX: 'auto !important'
+            },
             '& .MuiTab-root': {
               minHeight: 40,
               py: 0.5,
-              px: 2,
+              px: { xs: 1.5, sm: 2 },
               fontWeight: 750,
-              fontSize: '0.85rem',
-              textTransform: 'none'
+              fontSize: { xs: '0.8rem', sm: '0.85rem' },
+              textTransform: 'none',
+              whiteSpace: 'nowrap',
+              flexShrink: 0
             }
           }}
         >

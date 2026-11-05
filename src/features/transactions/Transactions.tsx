@@ -368,14 +368,22 @@ export default function Transactions() {
             <Button
               id="tour-tx-add-btn"
               variant="contained"
-              color="primary"
-              startIcon={<Plus size={15} />}
+              startIcon={<Plus size={15} style={{ color: '#fff' }} />}
               onClick={() => {
                 reset(defaults);
                 setEditing(null);
                 setOpen(true);
               }}
-              sx={{ fontWeight: 700, fontSize: 13 }}
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '0.82rem', sm: '0.88rem' },
+                bgcolor: '#10B981',
+                '&:hover': { bgcolor: '#059669' },
+                color: '#ffffff',
+                boxShadow: '0 2px 6px rgba(16, 185, 129, 0.25)',
+                textTransform: 'none',
+                minHeight: { xs: 36, sm: 34 }
+              }}
             >
               Thêm giao dịch
             </Button>
@@ -388,10 +396,18 @@ export default function Transactions() {
         <Tabs
           value={activeSubTab}
           onChange={(_, v) => handleSubTabChange(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           sx={{
             minHeight: 42,
+            '& .MuiTabs-scroller': {
+              overflowX: 'auto !important'
+            },
             '& .MuiTab-root': {
               minHeight: 42,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
               py: 0.5,
               px: { xs: 1.5, sm: 2.5 },
               fontWeight: 800,

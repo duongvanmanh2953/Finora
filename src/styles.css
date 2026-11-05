@@ -1025,6 +1025,19 @@ td,
     max-width: 100%;
   }
 
+  .MuiTableCell-root,
+  table td,
+  table th {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  .MuiTableCell-head,
+  table th {
+    font-size: 10px !important;
+    padding: 5px 8px !important;
+  }
+
   .MuiTableContainer-root {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
@@ -1042,6 +1055,42 @@ td,
     width: calc(100% - 24px) !important;
     max-width: 100% !important;
   }
+}
+
+/* Universal compact table styling */
+.MuiTableCell-root,
+table td,
+table th {
+  font-size: 12px !important;
+  padding: 8px 10px !important;
+  line-height: 1.35 !important;
+}
+
+.MuiTableCell-head,
+table th {
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.03em !important;
+  padding: 7px 10px !important;
+}
+
+/* Horizontal scrollable tabs & chips across mobile */
+.MuiTabs-root {
+  max-width: 100%;
+}
+
+.MuiTabs-scroller {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none;
+}
+
+.MuiTabs-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.MuiTabs-flexContainer {
+  min-width: max-content;
 }
 
 

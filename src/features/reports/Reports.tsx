@@ -57,6 +57,7 @@ import {
 } from '../../lib/finance';
 import { Empty, PageHead } from '../../components/ui';
 import { HelpButton } from '../../components/HelpButton';
+import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
 import { canUsePeriodInReport, isProUser } from '../../lib/subscription';
 import { MuiSelect, MuiDatePicker } from '../../components/mui/MuiInputs';
 import { CategoryAvatarBadge } from '../../lib/brandBadges';
@@ -79,6 +80,7 @@ export default function Reports() {
   const [showExpense, setShowExpense] = useState(true);
   const [showNet, setShowNet] = useState(true);
   const [showNetWorth, setShowNetWorth] = useState(false);
+  const [fullscreenChartOpen, setFullscreenChartOpen] = useState(false);
 
   const isPro = isProUser(data);
 
@@ -321,6 +323,102 @@ export default function Reports() {
     );
   };
 
+  const renderHeroComposedChart = (chartHeight: number | string = 380) => (
+    <Box sx={{ width: '100%', height: chartHeight, minHeight: typeof chartHeight === 'number' ? chartHeight : 300, flex: 1 }}>
+      {unifiedTrend.length ? (
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            data={unifiedTrend}
+            margin={{ top: 15, right: showNetWorth ? 35 : 15, left: 5, bottom: 20 }}
+          >
+            <defs>
+              <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#27866A" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#27866A" stopOpacity={0.0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
+            <XAxis
+              dataKey="date"
+              stroke="var(--text-secondary)"
+              fontSize={11.5}
+              tickLine={false}
+              axisLine={{ stroke: 'var(--border-subtle)' }}
+            />
+            <YAxis
+              yAxisId="cashflow"
+              stroke="var(--text-secondary)"
+              fontSize={11.5}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={val => shortMoney(val)}
+            />
+            {showNetWorth && (
+              <YAxis
+                yAxisId="wealth"
+                orientation="right"
+                stroke="#27866A"
+                fontSize={11.5}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={val => shortMoney(val)}
+              />
+            )}
+            <ReferenceLine yAxisId="cashflow" y={0} stroke="var(--border-subtle)" strokeWidth={1.5} />
+            <RechartsTooltip content={<CustomComposedTooltip />} />
+
+            {showIncome && (
+              <Bar
+                yAxisId="cashflow"
+                dataKey="income"
+                name="Thu nhập"
+                fill="#15966B"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={32}
+              />
+            )}
+            {showExpense && (
+              <Bar
+                yAxisId="cashflow"
+                dataKey="expense"
+                name="Chi tiêu"
+                fill="#D65B58"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={32}
+              />
+            )}
+            {showNet && (
+              <Line
+                yAxisId="cashflow"
+                type="monotone"
+                dataKey="net"
+                name="Dòng tiền ròng"
+                stroke="#4E7BC5"
+                strokeWidth={2.75}
+                dot={{ r: 3, fill: '#4E7BC5', strokeWidth: 1.5, stroke: 'var(--bg-surface)' }}
+                activeDot={{ r: 6, fill: '#4E7BC5', stroke: '#fff', strokeWidth: 2 }}
+              />
+            )}
+            {showNetWorth && (
+              <Area
+                yAxisId="wealth"
+                type="monotone"
+                dataKey="netWorth"
+                name="Tài sản ròng"
+                stroke="#27866A"
+                strokeWidth={2}
+                fill="url(#netWorthGradient)"
+                dot={false}
+              />
+            )}
+          </ComposedChart>
+        </ResponsiveContainer>
+      ) : (
+        <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
+      )}
+    </Box>
+  );
+
   return (
     <>
       <PageHead
@@ -357,8 +455,21 @@ export default function Reports() {
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
-          {/* Quick Period Buttons */}
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Quick Period Buttons: Scrollable on mobile */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              overflowX: 'auto',
+              flexWrap: 'nowrap',
+              WebkitOverflowScrolling: 'touch',
+              alignItems: 'center',
+              py: 0.5,
+              maxWidth: '100%',
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' }
+            }}
+          >
             <Calendar size={15} style={{ color: 'var(--brand-primary)', marginRight: 4 }} />
             {[
               { id: '7days', label: '7 ngày qua' },
@@ -621,20 +732,36 @@ export default function Reports() {
             mb: 2.5
           }}
         >
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Layers size={18} color="var(--brand-primary)" />
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
-                Biểu đồ Dòng tiền & Tài sản Hợp nhất
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: { xs: '100%', lg: 'auto' } }}>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Layers size={18} color="var(--brand-primary)" />
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                  Biểu đồ Dòng tiền & Tài sản Hợp nhất
+                </Typography>
+                <FullscreenButton onClick={() => setFullscreenChartOpen(true)} title="Xem biểu đồ toàn màn hình (Xoay ngang 90°)" />
+              </Box>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                Tích hợp trực quan: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản trên một khung nhìn thống nhất
               </Typography>
             </Box>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
-              Tích hợp trực quan: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản trên một khung nhìn thống nhất
-            </Typography>
           </Box>
 
-          {/* Metric Toggle Chips */}
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Metric Toggle Chips: Scrollable on mobile */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              overflowX: 'auto',
+              flexWrap: 'nowrap',
+              WebkitOverflowScrolling: 'touch',
+              alignItems: 'center',
+              py: 0.5,
+              maxWidth: '100%',
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' }
+            }}
+          >
             <Chip
               label="Thu nhập (+)"
               size="small"
@@ -647,7 +774,8 @@ export default function Reports() {
                 height: 28,
                 bgcolor: showIncome ? 'rgba(21, 150, 107, 0.15)' : 'transparent',
                 color: showIncome ? '#15966B' : 'text.secondary',
-                borderColor: showIncome ? '#15966B' : 'var(--border-subtle)'
+                borderColor: showIncome ? '#15966B' : 'var(--border-subtle)',
+                flexShrink: 0
               }}
             />
             <Chip
@@ -662,7 +790,8 @@ export default function Reports() {
                 height: 28,
                 bgcolor: showExpense ? 'rgba(214, 91, 88, 0.15)' : 'transparent',
                 color: showExpense ? '#D65B58' : 'text.secondary',
-                borderColor: showExpense ? '#D65B58' : 'var(--border-subtle)'
+                borderColor: showExpense ? '#D65B58' : 'var(--border-subtle)',
+                flexShrink: 0
               }}
             />
             <Chip
@@ -677,7 +806,8 @@ export default function Reports() {
                 height: 28,
                 bgcolor: showNet ? 'rgba(78, 123, 197, 0.15)' : 'transparent',
                 color: showNet ? '#4E7BC5' : 'text.secondary',
-                borderColor: showNet ? '#4E7BC5' : 'var(--border-subtle)'
+                borderColor: showNet ? '#4E7BC5' : 'var(--border-subtle)',
+                flexShrink: 0
               }}
             />
             <Chip
@@ -692,106 +822,15 @@ export default function Reports() {
                 height: 28,
                 bgcolor: showNetWorth ? 'rgba(39, 134, 106, 0.15)' : 'transparent',
                 color: showNetWorth ? 'var(--brand-primary)' : 'text.secondary',
-                borderColor: showNetWorth ? 'var(--brand-primary)' : 'var(--border-subtle)'
+                borderColor: showNetWorth ? 'var(--brand-primary)' : 'var(--border-subtle)',
+                flexShrink: 0
               }}
             />
           </Box>
         </Box>
 
         {/* The Recharts Composed Canvas */}
-        <Box sx={{ width: '100%', height: 380, minHeight: 380 }}>
-          {unifiedTrend.length ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart
-                data={unifiedTrend}
-                margin={{ top: 15, right: showNetWorth ? 35 : 15, left: 5, bottom: 20 }}
-              >
-                <defs>
-                  <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#27866A" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#27866A" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                <XAxis
-                  dataKey="date"
-                  stroke="var(--text-secondary)"
-                  fontSize={11.5}
-                  tickLine={false}
-                  axisLine={{ stroke: 'var(--border-subtle)' }}
-                />
-                <YAxis
-                  yAxisId="cashflow"
-                  stroke="var(--text-secondary)"
-                  fontSize={11.5}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={val => shortMoney(val)}
-                />
-                {showNetWorth && (
-                  <YAxis
-                    yAxisId="wealth"
-                    orientation="right"
-                    stroke="#27866A"
-                    fontSize={11.5}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={val => shortMoney(val)}
-                  />
-                )}
-                <ReferenceLine yAxisId="cashflow" y={0} stroke="var(--border-subtle)" strokeWidth={1.5} />
-                <RechartsTooltip content={<CustomComposedTooltip />} />
-
-                {showIncome && (
-                  <Bar
-                    yAxisId="cashflow"
-                    dataKey="income"
-                    name="Thu nhập"
-                    fill="#15966B"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={32}
-                  />
-                )}
-                {showExpense && (
-                  <Bar
-                    yAxisId="cashflow"
-                    dataKey="expense"
-                    name="Chi tiêu"
-                    fill="#D65B58"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={32}
-                  />
-                )}
-                {showNet && (
-                  <Line
-                    yAxisId="cashflow"
-                    type="monotone"
-                    dataKey="net"
-                    name="Dòng tiền ròng"
-                    stroke="#4E7BC5"
-                    strokeWidth={2.75}
-                    dot={{ r: 3, fill: '#4E7BC5', strokeWidth: 1.5, stroke: 'var(--bg-surface)' }}
-                    activeDot={{ r: 6, fill: '#4E7BC5', stroke: '#fff', strokeWidth: 2 }}
-                  />
-                )}
-                {showNetWorth && (
-                  <Area
-                    yAxisId="wealth"
-                    type="monotone"
-                    dataKey="netWorth"
-                    name="Tài sản ròng"
-                    stroke="#27866A"
-                    strokeWidth={2}
-                    fill="url(#netWorthGradient)"
-                    dot={false}
-                  />
-                )}
-              </ComposedChart>
-            </ResponsiveContainer>
-          ) : (
-            <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
-          )}
-        </Box>
+        {renderHeroComposedChart(380)}
 
         {/* CASHFLOW WATERFALL RECONCILIATION BRIDGE */}
         <Box
@@ -1049,6 +1088,18 @@ export default function Reports() {
           </TableContainer>
         </Paper>
       </Box>
+
+      {/* Fullscreen Chart Modal with 90deg Landscape Rotation */}
+      <FullscreenModal
+        open={fullscreenChartOpen}
+        onClose={() => setFullscreenChartOpen(false)}
+        title="Biểu đồ Dòng tiền & Tài sản Hợp nhất"
+        subtitle="Khung nhìn toàn cảnh: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản (Hỗ trợ xoay ngang 90°)"
+      >
+        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          {renderHeroComposedChart('100%')}
+        </Box>
+      </FullscreenModal>
     </>
   );
 }

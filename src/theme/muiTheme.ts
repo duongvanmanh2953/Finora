@@ -329,12 +329,12 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
             backgroundColor: isDark ? '#10161F' : '#F8FAF8',
             '& .MuiTableCell-head': {
               color: isDark ? '#CBD5E1' : '#68756F',
-              fontWeight: 700,
-              fontSize: 12,
+              fontWeight: 750,
+              fontSize: 11,
               textTransform: 'uppercase',
               letterSpacing: '0.04em',
               borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.14)' : '1px solid #D0DDD5',
-              padding: '10px 16px'
+              padding: '7px 10px'
             }
           }
         }
@@ -343,8 +343,9 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         styleOverrides: {
           root: {
             borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : '#D0DDD5',
-            padding: '12px 16px',
-            fontSize: 13,
+            padding: '8px 10px',
+            fontSize: 12,
+            lineHeight: 1.35,
             color: isDark ? '#F8FAFC' : '#17211F'
           }
         }

@@ -201,26 +201,55 @@ export function TransactionManagerCRUD() {
         p: 2.5
       }}
     >
-      {/* 0. Section Header with Breathing Room */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+      {/* 0. Section Header with Breathing Room & Responsive Actions */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 1.5,
+          mb: 2.5
+        }}
+      >
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, fontSize: 16 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: 15, sm: 16 } }}>
             Lịch sử & Quản lý Giao dịch
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
             Toàn quyền đối soát, thêm mới, sửa sai và quản lý dữ liệu chi tiêu
           </Typography>
         </Box>
 
-        {/* Manual Add Button */}
-        <FinoraButton
-          variant="primary"
-          size="small"
-          icon={<AddRounded />}
-          onClick={handleOpenAdd}
-        >
-          Thêm giao dịch
-        </FinoraButton>
+        {/* Action Controls: Fullscreen + Add Transaction */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, alignSelf: { xs: 'stretch', sm: 'auto' } }}>
+          <FullscreenButton
+            onClick={() => setFullscreenTableOpen(true)}
+            title="Xem toàn màn hình (Xoay ngang 90°)"
+            size={17}
+          />
+          <Button
+            variant="contained"
+            startIcon={<AddRounded sx={{ color: '#fff' }} />}
+            onClick={handleOpenAdd}
+            sx={{
+              flex: { xs: 1, sm: 'none' },
+              bgcolor: '#10B981',
+              '&:hover': { bgcolor: '#059669' },
+              color: '#ffffff',
+              fontWeight: 800,
+              fontSize: '0.82rem',
+              py: 0.8,
+              px: 2,
+              borderRadius: '6px',
+              boxShadow: '0 2px 6px rgba(16, 185, 129, 0.25)',
+              textTransform: 'none',
+              minHeight: 38
+            }}
+          >
+            Thêm giao dịch
+          </Button>
+        </Box>
       </Box>
 
       {/* 1. Filter & Search Toolbar */}
@@ -249,11 +278,23 @@ export function TransactionManagerCRUD() {
                 )
               }
             }}
-            sx={{ minWidth: 240, '& .MuiOutlinedInput-root': { borderRadius: '4px' } }}
+            sx={{ minWidth: 240, flex: { xs: '1 1 100%', sm: 'none' }, '& .MuiOutlinedInput-root': { borderRadius: '4px' } }}
           />
 
-          {/* Type Filter Buttons */}
-          <Box sx={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {/* Type Filter Buttons: Horizontal scrollable on mobile */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '8px',
+              overflowX: 'auto',
+              flexWrap: 'nowrap',
+              WebkitOverflowScrolling: 'touch',
+              py: 0.5,
+              maxWidth: '100%',
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' }
+            }}
+          >
             {[
               { id: 'all', label: 'Tất cả' },
               { id: 'expense', label: 'Chi tiêu' },
@@ -271,14 +312,15 @@ export function TransactionManagerCRUD() {
                   borderRadius: '4px', // Strictly 4px
                   px: 1,
                   py: 0.5,
-                  fontWeight: 700
+                  fontWeight: 700,
+                  flexShrink: 0
                 }}
               />
             ))}
           </Box>
 
           {/* Category Filter */}
-          <Box sx={{ minWidth: 160 }}>
+          <Box sx={{ minWidth: 160, flex: { xs: '1 1 100%', sm: 'none' } }}>
             <MuiSelect
               label="Danh mục"
               value={filterCategory}
@@ -288,7 +330,6 @@ export function TransactionManagerCRUD() {
                 ...categories.map(c => ({ value: c.id, label: c.name }))
               ]}
             />
-            <FullscreenButton onClick={() => setFullscreenTableOpen(true)} title="Xem toàn màn hình bảng giao dịch" />
           </Box>
         </Box>
       </Box>
@@ -315,12 +356,12 @@ export function TransactionManagerCRUD() {
 
                 return (
                   <TableRow key={tx.id} hover>
-                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                       {tx.date}
                     </TableCell>
 
                     <TableCell>
-                      <BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={32} />
+                      <BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={26} />
                     </TableCell>
 
                     <TableCell>
@@ -329,11 +370,11 @@ export function TransactionManagerCRUD() {
                           <AssetLogoBadge symbol={assetSymbol} name={assetSymbol} size="small" />
                         )}
                         <Box>
-                          <Box sx={{ fontWeight: 700, fontSize: '0.9rem', color: 'text.primary' }}>
+                          <Box sx={{ fontWeight: 700, fontSize: '0.8rem', color: 'text.primary' }}>
                             {tx.name}
                           </Box>
                           {tx.note && (
-                            <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                            <Box sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
                               {tx.note}
                             </Box>
                           )}
@@ -354,7 +395,7 @@ export function TransactionManagerCRUD() {
                       <Box
                         sx={{
                           fontWeight: 800,
-                          fontSize: '0.95rem',
+                          fontSize: '0.82rem',
                           color: isIncome ? '#10B981' : isInvest ? '#2563EB' : '#EF4444'
                         }}
                       >
@@ -570,7 +611,7 @@ export function TransactionManagerCRUD() {
         subtitle="Xem và quản lý toàn bộ các giao dịch tài chính với đầy đủ cột dữ liệu và đối soát"
       >
         <TableContainer sx={{ width: '100%', overflowX: 'auto', flex: 1 }}>
-          <Table size="medium" sx={{ minWidth: 700 }}>
+          <Table size="small" sx={{ minWidth: 700 }}>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 800, width: 120 }}>Ngày</TableCell>

@@ -297,6 +297,25 @@ export default function LandingPage() {
           {/* Auth Actions */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Button
+              component="a"
+              href="/downloads/finora-latest.apk"
+              download="Finora.apk"
+              variant="outlined"
+              size="small"
+              startIcon={<Smartphone size={14} />}
+              sx={{
+                borderColor: 'rgba(52, 211, 153, 0.5)',
+                color: '#34D399',
+                fontSize: 12,
+                fontWeight: 700,
+                borderRadius: '8px',
+                display: { xs: 'none', sm: 'inline-flex' },
+                '&:hover': { borderColor: '#34D399', bgcolor: 'rgba(52, 211, 153, 0.1)' }
+              }}
+            >
+              Tải APK
+            </Button>
+            <Button
               variant="text"
               onClick={() => navigate('/auth/login')}
               sx={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}
@@ -409,6 +428,27 @@ export default function LandingPage() {
             }}
           >
             Nhận 30 Ngày VIP Gold Miễn Phí
+          </Button>
+          <Button
+            component="a"
+            href="/downloads/finora-latest.apk"
+            download="Finora.apk"
+            variant="contained"
+            size="large"
+            startIcon={<Smartphone size={18} />}
+            sx={{
+              backgroundColor: '#059669',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: 15,
+              px: 3.2,
+              py: 1.45,
+              borderRadius: 2.5,
+              boxShadow: '0 10px 25px rgba(5, 150, 105, 0.35)',
+              '&:hover': { backgroundColor: '#047857' }
+            }}
+          >
+            Tải App Android (.APK)
           </Button>
           <Button
             variant="outlined"
@@ -1226,7 +1266,21 @@ export default function LandingPage() {
             <Typography variant="caption" sx={{ color: '#64748B' }}>
               © {new Date().getFullYear()} Tích Sản Platform. Bản quyền thuộc về Tích Sản Team.
             </Typography>
-            <Box sx={{ display: 'flex', gap: 3, fontSize: 13 }}>
+            <Box sx={{ display: 'flex', gap: 3, fontSize: 13, alignItems: 'center', flexWrap: 'wrap' }}>
+              <a
+                href="/downloads/finora-latest.apk"
+                download="Finora.apk"
+                style={{
+                  color: '#34D399',
+                  textDecoration: 'none',
+                  fontWeight: 750,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                <Smartphone size={14} /> Tải App Android (APK)
+              </a>
               <Link to="/legal" style={{ color: '#94A3B8', textDecoration: 'none' }}>
                 Chính sách bảo mật & Pháp lý
               </Link>

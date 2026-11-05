@@ -9,6 +9,7 @@ import {
   Crown,
   Sparkles,
   Star,
+  Smartphone,
   Info
 } from 'lucide-react';
 import {
@@ -416,6 +417,43 @@ export default function Settings() {
                 </Paper>
               );
             })}
+          </Box>
+        </Card>
+
+        {/* Mobile App & APK Download Card */}
+        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ p: 1.25, borderRadius: '8px', bgcolor: 'rgba(16, 185, 129, 0.1)', color: '#10B981', display: 'flex' }}>
+                <Smartphone size={24} />
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                  Ứng dụng Android (Finora APK)
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: 13 }}>
+                  Cài đặt trực tiếp lên điện thoại Android, hoạt động mượt mà với WebView tối ưu hóa phần cứng và offline cache.
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              component="a"
+              href="/downloads/finora-latest.apk"
+              download="Finora.apk"
+              variant="contained"
+              startIcon={<Download size={16} />}
+              sx={{
+                bgcolor: '#059669',
+                color: '#FFFFFF',
+                fontWeight: 750,
+                px: 2.5,
+                py: 1,
+                borderRadius: '6px',
+                '&:hover': { bgcolor: '#047857' }
+              }}
+            >
+              Tải APK cài đặt
+            </Button>
           </Box>
         </Card>
       </div>

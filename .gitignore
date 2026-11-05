@@ -26,3 +26,11 @@ yarn-error.log*
 pnpm-debug.log*
 .sites-runtime
 .DS_Store
+
+# Android & Binaries
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+*.apk
+!public/downloads/*.apk

@@ -245,7 +245,7 @@ export function canAddQuickTemplate(data: FinanceData): boolean {
 
 export function checkNlpUsage(data: FinanceData): { allowed: boolean; remaining: number } {
   if (isProUser(data)) return { allowed: true, remaining: Infinity };
-  
+
   const today = todayKey();
   const usage = data.user.nlpUsageToday;
   const count = usage && usage.date === today ? usage.count : 0;

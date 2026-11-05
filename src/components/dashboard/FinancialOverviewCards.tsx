@@ -70,13 +70,16 @@ export function FinancialOverviewCards({
   const mask = (val: string) => (showBalance ? val : '••••••••');
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3, width: '100%', maxWidth: '100%', minWidth: 0 }}>
       {/* ROW 1: 4 Core Financial Metrics (Tài sản, Thu nhập, Chi tiêu, Dòng tiền) */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-          gap: { xs: 1.5, sm: 2 }
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
+          gap: { xs: 1.5, sm: 2 },
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0
         }}
       >
         {/* Card 1: Tổng tài sản / Số dư (Blue) */}
@@ -92,6 +95,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 122,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(37, 99, 235, 0.25)' : '0 4px 12px rgba(37, 99, 235, 0.15)'
@@ -151,6 +158,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 122,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(16, 185, 129, 0.2)' : '0 4px 12px rgba(16, 185, 129, 0.12)'
@@ -211,6 +222,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 122,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(239, 68, 68, 0.2)' : '0 4px 12px rgba(239, 68, 68, 0.12)'
@@ -277,6 +292,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 122,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(13, 148, 136, 0.2)' : '0 4px 12px rgba(13, 148, 136, 0.12)'
@@ -326,8 +345,11 @@ export function FinancialOverviewCards({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
-          gap: { xs: 1.5, sm: 2 }
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' },
+          gap: { xs: 1.5, sm: 2 },
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0
         }}
       >
         {/* Card 5: Tỷ lệ tiết kiệm (Purple) */}
@@ -343,6 +365,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 110,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(124, 58, 237, 0.2)' : '0 4px 12px rgba(124, 58, 237, 0.12)'
@@ -400,6 +426,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 110,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(217, 119, 6, 0.2)' : '0 4px 12px rgba(217, 119, 6, 0.12)'
@@ -468,6 +498,10 @@ export function FinancialOverviewCards({
             flexDirection: 'column',
             justifyContent: 'space-between',
             minHeight: 110,
+            minWidth: 0,
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
             transition: 'all 0.2s ease',
             '&:hover': {
               boxShadow: isDark ? '0 4px 16px rgba(225, 29, 72, 0.2)' : '0 4px 12px rgba(225, 29, 72, 0.12)'

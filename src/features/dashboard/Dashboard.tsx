@@ -273,7 +273,7 @@ export default function Dashboard() {
   const mask = (val: string) => (showBalance ? val : '••••••••');
 
   return (
-    <Box sx={{ pb: 6 }}>
+    <Box sx={{ pb: 6, width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* 5.1. PAGE HEADER (Compact, Executive Fintech Header) */}
       <Box
         sx={{
@@ -452,7 +452,7 @@ export default function Dashboard() {
       </Box>
 
       {/* 5.4. HABIT LOOP - MAGIC QUICK-BAR (1-TAP QUICK CHIPS & SMS PARSER) */}
-      <Box id="tour-quick-bar">
+      <Box id="tour-quick-bar" sx={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
         <MagicQuickBar onOpenPricing={openPricing} />
       </Box>
 
@@ -460,10 +460,13 @@ export default function Dashboard() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '1.45fr 1fr' },
+          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 1.45fr) minmax(0, 1fr)' },
           gap: 2.5,
           mt: 3,
-          mb: 3
+          mb: 3,
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0
         }}
       >
         {/* SECTION 6: DÒNG TIỀN (INCOME VS EXPENSE) */}
@@ -477,7 +480,10 @@ export default function Dashboard() {
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            minWidth: 0,
+            maxWidth: '100%',
+            overflow: 'hidden'
           }}
         >
           <Box
@@ -530,85 +536,110 @@ export default function Dashboard() {
             </Box>
           </Box>
 
-          {/* Composed Chart Visualization */}
-          <Box sx={{ width: '100%', height: { xs: 250, sm: 280 }, minHeight: { xs: 250, sm: 280 }, minWidth: 0, overflow: 'hidden' }}>
-            {cashflowDataset.length ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 10, left: -15, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                  <XAxis
-                    dataKey="date"
-                    stroke="var(--text-secondary)"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={{ stroke: 'var(--border-subtle)' }}
-                  />
-                  <YAxis
-                    stroke="var(--text-secondary)"
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={val => shortMoney(val)}
-                    width={45}
-                  />
-                  <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
-                  <RechartsTooltip
-                    content={({ active, payload, label }: any) => {
-                      if (!active || !payload || !payload.length) return null;
-                      const d = payload[0]?.payload;
-                      if (!d) return null;
-                      return (
-                        <Box
-                          sx={{
-                            bgcolor: 'background.paper',
-                            border: '1px solid var(--border-subtle)',
-                            borderRadius: '4px',
-                            p: 1.5,
-                            boxShadow: '0 8px 20px rgba(0,0,0,0.22)',
-                            minWidth: 190
-                          }}
-                        >
-                          <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.primary', display: 'block', mb: 0.75 }}>
-                            {label}
-                          </Typography>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>Thu nhập:</Typography>
-                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-income)' }}>
-                              +{money(d.income)}
+          {/* Composed Chart Visualization with Horizontal Scroll Support */}
+          <Box
+            sx={{
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              WebkitOverflowScrolling: 'touch',
+              pb: 0.5,
+              '&::-webkit-scrollbar': { height: 6 },
+              '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+              '&::-webkit-scrollbar-thumb': {
+                bgcolor: 'var(--border-subtle)',
+                borderRadius: 3,
+                '&:hover': { bgcolor: 'var(--text-muted)' }
+              }
+            }}
+          >
+            <Box
+              sx={{
+                width: '100%',
+                minWidth: cashflowDataset.length > 10 ? Math.max(500, cashflowDataset.length * 36) : '100%',
+                height: { xs: 250, sm: 280 }
+              }}
+            >
+              {cashflowDataset.length ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 10, left: -15, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
+                    <XAxis
+                      dataKey="date"
+                      stroke="var(--text-secondary)"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={{ stroke: 'var(--border-subtle)' }}
+                    />
+                    <YAxis
+                      stroke="var(--text-secondary)"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={val => shortMoney(val)}
+                      width={45}
+                    />
+                    <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
+                    <RechartsTooltip
+                      content={({ active, payload, label }: any) => {
+                        if (!active || !payload || !payload.length) return null;
+                        const d = payload[0]?.payload;
+                        if (!d) return null;
+                        return (
+                          <Box
+                            sx={{
+                              bgcolor: 'background.paper',
+                              border: '1px solid var(--border-subtle)',
+                              borderRadius: '4px',
+                              p: 1.5,
+                              boxShadow: '0 8px 20px rgba(0,0,0,0.22)',
+                              minWidth: 190
+                            }}
+                          >
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.primary', display: 'block', mb: 0.75 }}>
+                              {label}
                             </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>Thu nhập:</Typography>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-income)' }}>
+                                +{money(d.income)}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>Chi tiêu:</Typography>
+                              <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-expense)' }}>
+                                -{money(d.expense)}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5, borderTop: '1px dashed var(--border-subtle)' }}>
+                              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>Chênh lệch:</Typography>
+                              <Typography variant="caption" sx={{ fontWeight: 850, color: d.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)' }}>
+                                {d.net >= 0 ? '+' : ''}{money(d.net)}
+                              </Typography>
+                            </Box>
                           </Box>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>Chi tiêu:</Typography>
-                            <Typography variant="caption" sx={{ fontWeight: 800, color: 'var(--accent-expense)' }}>
-                              -{money(d.expense)}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5, borderTop: '1px dashed var(--border-subtle)' }}>
-                            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>Chênh lệch:</Typography>
-                            <Typography variant="caption" sx={{ fontWeight: 850, color: d.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)' }}>
-                              {d.net >= 0 ? '+' : ''}{money(d.net)}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      );
-                    }}
-                  />
-                  <Bar dataKey="income" name="Thu nhập" fill="#15966B" radius={[4, 4, 0, 0]} maxBarSize={28} />
-                  <Bar dataKey="expense" name="Chi tiêu" fill="#D65B58" radius={[4, 4, 0, 0]} maxBarSize={28} />
-                  <Line
-                    type="monotone"
-                    dataKey="net"
-                    name="Thặng dư ròng"
-                    stroke="#4E7BC5"
-                    strokeWidth={2.5}
-                    dot={{ r: 2.5, fill: '#4E7BC5', strokeWidth: 1.5, stroke: 'var(--bg-surface)' }}
-                    activeDot={{ r: 5 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            ) : (
-              <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
-            )}
+                        );
+                      }}
+                    />
+                    <Bar dataKey="income" name="Thu nhập" fill="#15966B" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                    <Bar dataKey="expense" name="Chi tiêu" fill="#D65B58" radius={[4, 4, 0, 0]} maxBarSize={28} />
+                    <Line
+                      type="monotone"
+                      dataKey="net"
+                      name="Thặng dư ròng"
+                      stroke="#4E7BC5"
+                      strokeWidth={2.5}
+                      dot={{ r: 2.5, fill: '#4E7BC5', strokeWidth: 1.5, stroke: 'var(--bg-surface)' }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              ) : (
+                <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
+              )}
+            </Box>
           </Box>
 
           {/* Cashflow Insight Pill */}
@@ -642,7 +673,10 @@ export default function Dashboard() {
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            minWidth: 0,
+            maxWidth: '100%',
+            overflow: 'hidden'
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -739,8 +773,11 @@ export default function Dashboard() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '1.45fr 1fr' },
-          gap: 2.5
+          gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 1.45fr) minmax(0, 1fr)' },
+          gap: 2.5,
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0
         }}
       >
         {/* SECTION 8: GIAO DỊCH GẦN ĐÂY */}
@@ -750,7 +787,10 @@ export default function Dashboard() {
             p: 2.5,
             borderRadius: '6px',
             background: 'var(--card-inset-bg)',
-            boxShadow: 'var(--card-inset-shadow)'
+            boxShadow: 'var(--card-inset-shadow)',
+            minWidth: 0,
+            maxWidth: '100%',
+            overflow: 'hidden'
           }}
         >
           <Box
@@ -760,7 +800,8 @@ export default function Dashboard() {
               justifyContent: 'space-between',
               alignItems: { xs: 'flex-start', sm: 'center' },
               gap: 1.5,
-              mb: 2
+              mb: 2,
+              flexWrap: 'wrap'
             }}
           >
             <Box>
@@ -772,7 +813,7 @@ export default function Dashboard() {
               </Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Box
                 sx={{
                   display: 'flex',
@@ -809,18 +850,33 @@ export default function Dashboard() {
             </Box>
           </Box>
 
-          {/* Desktop Table View */}
-          <TableContainer sx={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+          {/* Desktop Table View with Smooth Horizontal Scroll */}
+          <TableContainer
+            sx={{
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              '&::-webkit-scrollbar': { height: 6 },
+              '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+              '&::-webkit-scrollbar-thumb': {
+                bgcolor: 'var(--border-subtle)',
+                borderRadius: 3,
+                '&:hover': { bgcolor: 'var(--text-muted)' }
+              }
+            }}
+          >
             <Table size="small" sx={{ minWidth: 540 }}>
               <TableHead sx={{ bgcolor: 'action.hover' }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Giao dịch</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Tài khoản</TableCell>
-                  <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Ngày</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: 12 }}>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12, whiteSpace: 'nowrap' }}>Giao dịch</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12, whiteSpace: 'nowrap' }}>Tài khoản</TableCell>
+                  <TableCell sx={{ fontWeight: 800, fontSize: 12, whiteSpace: 'nowrap' }}>Ngày</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 800, fontSize: 12, whiteSpace: 'nowrap' }}>
                     Số tiền
                   </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 800, fontSize: 12 }}>
+                  <TableCell align="center" sx={{ fontWeight: 800, fontSize: 12, whiteSpace: 'nowrap' }}>
                     Trạng thái
                   </TableCell>
                 </TableRow>
@@ -832,15 +888,15 @@ export default function Dashboard() {
 
                   return (
                     <TableRow key={t.id} hover>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                      <TableCell sx={{ minWidth: 160, maxWidth: 220 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
                           <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 750, fontSize: 13 }}>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 750, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {t.name}
                             </Typography>
                             {t.note && (
-                              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: 11 }}>
+                              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {t.note}
                               </Typography>
                             )}
@@ -848,18 +904,18 @@ export default function Dashboard() {
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ fontSize: 12 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                      <TableCell sx={{ fontSize: 12, minWidth: 120 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, whiteSpace: 'nowrap' }}>
                           <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
-                          <span>{acc?.name}</span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{acc?.name}</span>
                         </Box>
                       </TableCell>
 
-                      <TableCell sx={{ fontSize: 12, color: 'text.secondary' }}>
+                      <TableCell sx={{ fontSize: 12, color: 'text.secondary', whiteSpace: 'nowrap', minWidth: 80 }}>
                         {dateLabel(t.date)}
                       </TableCell>
 
-                      <TableCell align="right">
+                      <TableCell align="right" sx={{ whiteSpace: 'nowrap', minWidth: 100 }}>
                         <Typography
                           variant="body2"
                           sx={{
@@ -881,7 +937,7 @@ export default function Dashboard() {
                         </Typography>
                       </TableCell>
 
-                      <TableCell align="center">
+                      <TableCell align="center" sx={{ whiteSpace: 'nowrap', minWidth: 70 }}>
                         <Chip
                           label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ'}
                           size="small"
@@ -956,7 +1012,7 @@ export default function Dashboard() {
         </Paper>
 
         {/* RIGHT COLUMN: BUDGETS, GOALS & ACCOUNTS */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, minWidth: 0, width: '100%', maxWidth: '100%' }}>
           {/* SECTION 9: NGÂN SÁCH THÁNG NÀY */}
           <Paper
             variant="outlined"
@@ -964,7 +1020,10 @@ export default function Dashboard() {
               p: 2.25,
               borderRadius: '6px',
               background: 'var(--card-inset-bg)',
-              boxShadow: 'var(--card-inset-shadow)'
+              boxShadow: 'var(--card-inset-shadow)',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflow: 'hidden'
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
@@ -1064,7 +1123,10 @@ export default function Dashboard() {
               p: 2.25,
               borderRadius: '6px',
               background: 'var(--card-inset-bg)',
-              boxShadow: 'var(--card-inset-shadow)'
+              boxShadow: 'var(--card-inset-shadow)',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflow: 'hidden'
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>

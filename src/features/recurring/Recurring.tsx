@@ -19,7 +19,6 @@ import {
 import { useFinance } from '../../store';
 import { dateLabel, money, nextDate, uid, todayKey } from '../../lib/finance';
 import { Confirm, PageHead } from '../../components/ui';
-import { HelpButton } from '../../components/HelpButton';
 import { canAutoExecuteRecurring } from '../../lib/subscription';
 import {
   MuiTextField,
@@ -66,16 +65,16 @@ export default function Recurring() {
     setForm(
       r
         ? {
-            name: r.name,
-            amount: String(r.amount),
-            type: r.type,
-            categoryId: r.categoryId,
-            accountId: r.accountId,
-            frequency: r.frequency,
-            nextDate: r.nextDate,
-            active: r.active,
-            autoExecute: r.autoExecute || false
-          }
+          name: r.name,
+          amount: String(r.amount),
+          type: r.type,
+          categoryId: r.categoryId,
+          accountId: r.accountId,
+          frequency: r.frequency,
+          nextDate: r.nextDate,
+          active: r.active,
+          autoExecute: r.autoExecute || false
+        }
         : blank
     );
     setError('');
@@ -98,8 +97,8 @@ export default function Recurring() {
       ...d,
       recurring: edit
         ? d.recurring.map(r =>
-            r.id === edit.id ? { ...r, ...form, categoryId: category, amount: n } : r
-          )
+          r.id === edit.id ? { ...r, ...form, categoryId: category, amount: n } : r
+        )
         : [...d.recurring, { ...form, categoryId: category, id: uid(), amount: n }]
     }));
     setOpen(false);
@@ -163,18 +162,14 @@ export default function Recurring() {
         title="Giao dịch định kỳ"
         subtitle="Lên lịch thanh toán lặp lại; Tích Sản VIP Gold hỗ trợ tự động ghi nhận ngầm không cần bấm tay."
         actions={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <HelpButton pageKey="recurring" />
-            <Button
-              id="tour-recurring-add-btn"
-              variant="contained"
-              color="primary"
-              startIcon={<Plus size={14} />}
-              onClick={() => start()}
-            >
-              Tạo lịch
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Plus size={14} />}
+            onClick={() => start()}
+          >
+            Tạo lịch
+          </Button>
         }
       />
 
@@ -219,7 +214,7 @@ export default function Recurring() {
         </Card>
       )}
 
-      <div id="tour-recurring-table" className="tiles">
+      <div className="tiles">
         {[...data.recurring]
           .sort((a, b) => a.nextDate.localeCompare(b.nextDate))
           .map(r => (

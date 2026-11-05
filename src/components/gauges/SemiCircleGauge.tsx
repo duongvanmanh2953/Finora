@@ -159,6 +159,10 @@ export function SemiCircleGauge({
         flexDirection: 'column',
         justifyContent: 'space-between',
         gap: 1.5,
+        minWidth: 0,
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
         transition: 'all 0.2s ease',
         '&:hover': {
           borderColor: isDark ? 'rgba(255, 255, 255, 0.25)' : '#CBD5E1',
@@ -167,13 +171,13 @@ export function SemiCircleGauge({
       }}
     >
       {/* Header: Title, Subtitle & Info Tooltip */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary', fontSize: '0.88rem' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', minWidth: 0 }}>
+        <Box sx={{ minWidth: 0, mr: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary', fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem', display: 'block' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {subtitle}
             </Typography>
           )}
@@ -192,18 +196,18 @@ export function SemiCircleGauge({
               </Box>
             }
           >
-            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'pointer' }} />
+            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'pointer', flexShrink: 0 }} />
           </Tooltip>
         )}
       </Box>
 
       {/* Speedometer Gauge Visual with Locked Axis and Vivid Active Zone Illumination */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%', minWidth: 0 }}>
         <svg
           width="100%"
           height={size / 2 + 18}
           viewBox={`0 0 ${size} ${size / 2 + 18}`}
-          style={{ maxWidth: size, display: 'block', overflow: 'visible' }}
+          style={{ width: '100%', maxWidth: size, height: 'auto', display: 'block', overflow: 'visible' }}
         >
           {/* SVG Glow Filter for the Active Zone */}
           <defs>
@@ -329,11 +333,11 @@ export function SemiCircleGauge({
 
       {/* Factors / Driver details if provided */}
       {factors.length > 0 && (
-        <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+        <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9', minWidth: 0 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, minWidth: 0 }}>
             {factors.map((f, i) => (
-              <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 'inherit' }}>
+              <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', minWidth: 0, gap: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                   {f.label}
                 </Typography>
                 <Typography
@@ -341,6 +345,7 @@ export function SemiCircleGauge({
                   sx={{
                     fontWeight: 700,
                     fontSize: 'inherit',
+                    flexShrink: 0,
                     color: f.isPositive ? '#10B981' : '#EF4444'
                   }}
                 >
@@ -364,7 +369,9 @@ export function SemiCircleGauge({
             color: 'text.secondary',
             fontSize: '0.70rem',
             lineHeight: 1.4,
-            borderLeft: `3px solid ${currentActiveZone.color}`
+            borderLeft: `3px solid ${currentActiveZone.color}`,
+            wordBreak: 'break-word',
+            minWidth: 0
           }}
         >
           {recommendation}

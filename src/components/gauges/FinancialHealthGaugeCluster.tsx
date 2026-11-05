@@ -65,8 +65,8 @@ export function FinancialHealthGaugeCluster() {
   const goalFeasibilityScore = primaryGoal ? Math.min(100, Math.round(goalProgressPct * 0.6 + (Number(runwayMonths) >= 3 ? 35 : 15))) : 80;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: '100%', minWidth: 0 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, flexWrap: 'wrap', gap: 1 }}>
         <Box>
           <Typography variant="h3" sx={{ fontWeight: 800, fontSize: { xs: '1rem', sm: '1.15rem' }, color: 'text.primary' }}>
             Bộ Đo Lường Sức Khỏe & An Toàn Tài Chính (Speedometer Gauges)
@@ -75,14 +75,52 @@ export function FinancialHealthGaugeCluster() {
             Hệ thống 4 tốc kế đồng bộ 4 vùng trực quan: Áp lực nợ, Thanh khoản dự phòng, Sức khỏe đầu tư & Khả thi mục tiêu
           </Typography>
         </Box>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'var(--brand-primary)',
+            fontWeight: 750,
+            fontSize: '0.72rem',
+            display: { xs: 'inline-flex', md: 'none' },
+            bgcolor: 'action.hover',
+            px: 1,
+            py: 0.35,
+            borderRadius: '4px',
+            border: '1px solid var(--border-subtle)'
+          }}
+        >
+          ← Vuốt ngang xem 4 chỉ số →
+        </Typography>
       </Box>
 
-      {/* Grid of Gauges: 1 Master Overall + 3 Component Gauges */}
+      {/* Grid of Gauges: Smooth horizontal swipe on mobile / tight 2x2 grid on tablet / 4-column on desktop */}
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: '1.2fr 1fr 1fr 1fr' },
-          gap: 2
+          display: { xs: 'flex', md: 'grid' },
+          overflowX: { xs: 'auto', md: 'visible' },
+          scrollSnapType: { xs: 'x mandatory', md: 'none' },
+          gridTemplateColumns: {
+            md: 'repeat(2, minmax(0, 1fr))',
+            xl: 'minmax(0, 1.25fr) repeat(3, minmax(0, 1fr))'
+          },
+          gap: 2,
+          pb: { xs: 1, md: 0 },
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0,
+          WebkitOverflowScrolling: 'touch',
+          '&::-webkit-scrollbar': { height: 6 },
+          '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'var(--border-subtle)',
+            borderRadius: 3,
+            '&:hover': { bgcolor: 'var(--text-muted)' }
+          },
+          '& > *': {
+            flex: { xs: '0 0 84%', sm: '0 0 320px', md: '1 1 auto' },
+            scrollSnapAlign: 'start',
+            minWidth: 0
+          }
         }}
       >
         {/* Gauge 1: Master Health Index */}

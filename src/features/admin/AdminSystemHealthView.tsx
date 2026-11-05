@@ -56,7 +56,7 @@ export function AdminSystemHealthView() {
       .then(res => {
         if (res.success) setServerHealth(res.data);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   useEffect(() => {

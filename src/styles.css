@@ -221,9 +221,12 @@ td,
 /* App Shell Layout */
 .app {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
   display: flex;
   background-color: var(--bg-app);
   transition: background-color 0.2s ease;
+  overflow-x: hidden;
 }
 
 /* Sidebar: Fixed Header, Scrollable Navigation, Fixed Footer */
@@ -410,6 +413,7 @@ td,
   margin-left: var(--sidebar-w);
   width: calc(100% - var(--sidebar-w));
   min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
   flex: 1;
   min-height: 100vh;
@@ -417,6 +421,7 @@ td,
   flex-direction: column;
   background-color: var(--bg-app);
   padding-top: var(--topbar-h);
+  overflow-x: hidden;
 }
 
 /* Topbar (100% Fixed on Desktop) */
@@ -468,6 +473,7 @@ td,
   padding: 32px 40px 64px;
   max-width: 1600px;
   width: 100%;
+  min-width: 0;
   margin: 0 auto;
   box-sizing: border-box;
   flex: 1;

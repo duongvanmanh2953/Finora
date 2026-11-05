@@ -26,6 +26,7 @@ import {
 import { useFinance } from '../../store';
 import { balance, dateLabel, goalSaved, money, uid, todayKey } from '../../lib/finance';
 import { Confirm, PageHead, Progress } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { ItemActionMenu } from '../../components/ItemActionMenu';
 import { canAddGoal } from '../../lib/subscription';
 import {
@@ -155,20 +156,24 @@ export default function Savings() {
         title="Mục tiêu tiết kiệm"
         subtitle="Theo dõi tiến độ và số tiền cần dành mỗi tháng."
         actions={
-          <Button
-            variant="contained"
-            startIcon={<Plus size={15} />}
-            onClick={() => start()}
-            sx={{
-              bgcolor: '#15966B',
-              '&:hover': { bgcolor: '#0D7A55' },
-              fontWeight: 800,
-              borderRadius: '4px',
-              boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
-            }}
-          >
-            Tạo mục tiêu
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpButton pageKey="savings" />
+            <Button
+              id="tour-savings-add-btn"
+              variant="contained"
+              startIcon={<Plus size={15} />}
+              onClick={() => start()}
+              sx={{
+                bgcolor: '#15966B',
+                '&:hover': { bgcolor: '#0D7A55' },
+                fontWeight: 800,
+                borderRadius: '4px',
+                boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
+              }}
+            >
+              Tạo mục tiêu
+            </Button>
+          </Box>
         }
       />
 
@@ -234,7 +239,7 @@ export default function Savings() {
         /* ========================================== */
         /* BENTO GRID VIEW OF SAVINGS GOALS           */
         /* ========================================== */
-        <Box>
+        <Box id="tour-savings-list">
           <div className="tiles">
             {data.goals
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

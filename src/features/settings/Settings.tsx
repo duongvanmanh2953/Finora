@@ -43,6 +43,7 @@ export default function Settings() {
   const [day, setDay] = useState(data.user.financialMonthStart);
   const [alerts, setAlerts] = useState(localStorage.getItem('finora:alerts') !== 'off');
   const [resetOpen, setResetOpen] = useState(false);
+  const [showFavGuide, setShowFavGuide] = useState(false);
 
   // Favorites Navigation Customization
   const DEFAULT_FAVORITES = ['/', '/transactions', '/budgets', '/reports'];
@@ -315,10 +316,10 @@ export default function Settings() {
 
         {/* Navigation Favorites Customization Card */}
         <Card id="tour-settings-favs" variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-              <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} />
-              <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '0.95rem', sm: '1.1rem' } }}>
+          <Box sx={{ display: 'flex', alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 1.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flexWrap: 'wrap' }}>
+              <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} style={{ flexShrink: 0 }} />
+              <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '0.92rem', sm: '1.05rem' }, lineHeight: 1.3 }}>
                 Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
               </Typography>
               <Tooltip
@@ -326,7 +327,12 @@ export default function Settings() {
                 arrow
                 placement="top"
               >
-                <IconButton size="small" sx={{ color: 'text.secondary', p: 0.5 }} aria-label="Xem hướng dẫn tùy chỉnh">
+                <IconButton
+                  size="small"
+                  onClick={() => setShowFavGuide(prev => !prev)}
+                  sx={{ color: showFavGuide ? '#F59E0B' : 'text.secondary', p: 0.5 }}
+                  aria-label="Xem hướng dẫn tùy chỉnh"
+                >
                   <Info size={16} />
                 </IconButton>
               </Tooltip>
@@ -334,9 +340,29 @@ export default function Settings() {
             <Chip
               label={`${favorites.length} mục đã ghim`}
               size="small"
-              sx={{ bgcolor: 'rgba(245, 158, 11, 0.12)', color: '#D97706', fontWeight: 700, fontSize: '0.75rem' }}
+              sx={{ bgcolor: 'rgba(245, 158, 11, 0.12)', color: '#D97706', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0 }}
             />
           </Box>
+
+          {showFavGuide && (
+            <Box
+              sx={{
+                p: 1.25,
+                mb: 1.5,
+                borderRadius: '6px',
+                bgcolor: 'action.hover',
+                border: '1px solid var(--border-subtle)',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 1
+              }}
+            >
+              <Info size={15} color="#3B82F6" style={{ flexShrink: 0, marginTop: 2 }} />
+              <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.5, fontSize: '0.8rem' }}>
+                Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại <strong>Mục Yêu Thích</strong> và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu.
+              </Typography>
+            </Box>
+          )}
 
           <Box
             sx={{

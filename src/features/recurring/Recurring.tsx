@@ -19,6 +19,7 @@ import {
 import { useFinance } from '../../store';
 import { dateLabel, money, nextDate, uid, todayKey } from '../../lib/finance';
 import { Confirm, PageHead } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { canAutoExecuteRecurring } from '../../lib/subscription';
 import {
   MuiTextField,
@@ -162,14 +163,18 @@ export default function Recurring() {
         title="Giao dịch định kỳ"
         subtitle="Lên lịch thanh toán lặp lại; Tích Sản VIP Gold hỗ trợ tự động ghi nhận ngầm không cần bấm tay."
         actions={
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Plus size={14} />}
-            onClick={() => start()}
-          >
-            Tạo lịch
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpButton pageKey="recurring" />
+            <Button
+              id="tour-recurring-add-btn"
+              variant="contained"
+              color="primary"
+              startIcon={<Plus size={14} />}
+              onClick={() => start()}
+            >
+              Tạo lịch
+            </Button>
+          </Box>
         }
       />
 
@@ -214,7 +219,7 @@ export default function Recurring() {
         </Card>
       )}
 
-      <div className="tiles">
+      <div id="tour-recurring-table" className="tiles">
         {[...data.recurring]
           .sort((a, b) => a.nextDate.localeCompare(b.nextDate))
           .map(r => (

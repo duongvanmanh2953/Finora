@@ -1,7 +1,19 @@
 import { driver, type Config } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-export type TourPageKey = 'dashboard' | 'assets' | 'transactions' | 'budgets' | 'settings' | 'adminUsers' | 'adminHealth';
+export type TourPageKey =
+  | 'dashboard'
+  | 'assets'
+  | 'transactions'
+  | 'budgets'
+  | 'settings'
+  | 'reports'
+  | 'payroll'
+  | 'savings'
+  | 'debts'
+  | 'recurring'
+  | 'adminUsers'
+  | 'adminHealth';
 
 const TOUR_CONFIGS: Record<TourPageKey, Config['steps']> = {
   dashboard: [
@@ -186,6 +198,129 @@ const TOUR_CONFIGS: Record<TourPageKey, Config['steps']> = {
         description: 'Tra cứu hạn dùng gói VIP Gold hoặc dùng công tắc Dev Mode để linh hoạt chuyển đổi qua lại giữa bản Free và Pro.',
         side: 'bottom',
         align: 'start'
+      }
+    }
+  ],
+
+  reports: [
+    {
+      element: '#tour-reports-timeframe',
+      popover: {
+        title: '📅 Chọn Khung Thời Gian Báo Cáo',
+        description: 'Chuyển đổi linh hoạt giữa 7 ngày qua, 30 ngày qua, Tháng này, Năm nay hoặc Tùy chỉnh khoảng ngày mong muốn.',
+        side: 'bottom',
+        align: 'start'
+      }
+    },
+    {
+      element: '#tour-reports-kpi',
+      popover: {
+        title: '📊 Chỉ Số Dòng Tiền & Tỷ Lệ Tiết Kiệm',
+        description: 'Đối chiếu tổng thu thực nhận, tổng chi thực tế và số tiền tích lũy ròng kèm tỷ lệ tiết kiệm (Savings Rate).',
+        side: 'bottom',
+        align: 'center'
+      }
+    },
+    {
+      element: '#tour-reports-charts',
+      popover: {
+        title: '📉 Biểu Đồ Thác Dòng Tiền & Cơ Cấu Chi Phí',
+        description: 'Trực quan hóa dòng tiền chuyển dịch và cơ cấu các danh mục chiếm tỷ trọng chi lớn nhất.',
+        side: 'top',
+        align: 'center'
+      }
+    }
+  ],
+
+  payroll: [
+    {
+      element: '#tour-payroll-inputs',
+      popover: {
+        title: '💼 Nhập Lương Gross & Phụ Cấp',
+        description: 'Điền mức lương hợp đồng và các khoản phụ cấp miễn thuế để tính toán theo quy định bảo hiểm và thuế Việt Nam mới nhất.',
+        side: 'bottom',
+        align: 'start'
+      }
+    },
+    {
+      element: '#tour-payroll-net',
+      popover: {
+        title: '💵 Lương Thực Nhận (Net Take-Home)',
+        description: 'Xem số tiền thực lĩnh sau khi đã trích nộp bảo hiểm bắt buộc (BHXH, BHYT, BHTN) và Thuế TNCN từng bậc lũy tiến.',
+        side: 'bottom',
+        align: 'center'
+      }
+    },
+    {
+      element: '#tour-payroll-sync-btn',
+      popover: {
+        title: '📥 Ghi Nhận Thành Giao Dịch Thu Nhập',
+        description: 'Bấm nút này để tự động tạo một giao dịch thu nhập lương vào ví mặc định mà không cần nhập tay lại.',
+        side: 'top',
+        align: 'end'
+      }
+    }
+  ],
+
+  savings: [
+    {
+      element: '#tour-savings-add-btn',
+      popover: {
+        title: '🎯 Tạo Mục Tiêu Tiết Kiệm Mới',
+        description: 'Thiết lập quỹ khẩn cấp, mua nhà, đổi xe hoặc du lịch với số tiền mục tiêu và hạn hoàn thành cụ thể.',
+        side: 'bottom',
+        align: 'end'
+      }
+    },
+    {
+      element: '#tour-savings-list',
+      popover: {
+        title: '📈 Theo Dõi Tiến Độ Tích Lũy',
+        description: 'Quan sát thanh tiến độ % hoàn thành và phân bổ nguồn tiền tích lũy mỗi khi nhận lương hoặc tiền thưởng.',
+        side: 'top',
+        align: 'center'
+      }
+    }
+  ],
+
+  debts: [
+    {
+      element: '#tour-debts-add-btn',
+      popover: {
+        title: '📝 Ghi Khoản Nợ Phải Trả Hoặc Cho Vay',
+        description: 'Quản lý các khoản nợ tín dụng, trả góp ngân hàng hoặc tiền cho bạn bè mượn kèm ngày đến hạn.',
+        side: 'bottom',
+        align: 'end'
+      }
+    },
+    {
+      element: '#tour-debts-summary',
+      popover: {
+        title: '⚖️ Bảng Tổng Hợp Nghĩa Vụ Tài Chính',
+        description: 'Xem rõ tổng tiền đang nợ và tổng tiền đang cho vay để lên kế hoạch trả nợ thông minh (Snowball / Avalanche).',
+        side: 'top',
+        align: 'center'
+      }
+    }
+  ],
+
+  recurring: [
+    {
+      element: '#tour-recurring-add-btn',
+      popover: {
+        title: '⏰ Thêm Giao Dịch Định Kỳ Mới',
+        description: 'Lên lịch cho tiền thuê nhà, internet, gói Netflix hoặc tiền đóng học phí để hệ thống tự động ghi chép.',
+        side: 'bottom',
+        align: 'end'
+      }
+    },
+    {
+      element: '#tour-recurring-table',
+      popover: {
+        title: '🔄 Lịch Trình Tự Động Hóa',
+        description: 'Theo dõi chu kỳ (hàng tuần/tháng) và trạng thái tự động thực thi khi khởi chạy ứng dụng.',
+        side: 'top',
+        align: 'center'
       }
     }
   ],

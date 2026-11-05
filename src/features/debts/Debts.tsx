@@ -25,6 +25,7 @@ import {
 import { useFinance } from '../../store';
 import { balance, dateLabel, debtRemaining, money, uid, todayKey } from '../../lib/finance';
 import { Confirm, PageHead, Progress } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { ItemActionMenu } from '../../components/ItemActionMenu';
 import { DebtLogoBadge } from '../../lib/brandBadges';
@@ -163,20 +164,24 @@ export default function Debts() {
         title="Quản lý Vay & Nợ"
         subtitle="Ghi nhớ ai đang nợ bạn, bạn đang nợ ai, kèm lịch nhắc nhở đến hạn tự động."
         actions={
-          <Button
-            variant="contained"
-            startIcon={<Plus size={15} />}
-            onClick={() => start()}
-            sx={{
-              bgcolor: '#15966B',
-              '&:hover': { bgcolor: '#0D7A55' },
-              fontWeight: 800,
-              borderRadius: '4px',
-              boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
-            }}
-          >
-            Thêm khoản nợ
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpButton pageKey="debts" />
+            <Button
+              id="tour-debts-add-btn"
+              variant="contained"
+              startIcon={<Plus size={15} />}
+              onClick={() => start()}
+              sx={{
+                bgcolor: '#15966B',
+                '&:hover': { bgcolor: '#0D7A55' },
+                fontWeight: 800,
+                borderRadius: '4px',
+                boxShadow: '0 2px 6px rgba(21, 150, 107, 0.25)'
+              }}
+            >
+              Thêm khoản nợ
+            </Button>
+          </Box>
         }
       />
 
@@ -222,7 +227,7 @@ export default function Debts() {
         </Card>
       )}
 
-      <div className="grid-stats" style={{ marginBottom: 20 }}>
+      <div id="tour-debts-summary" className="grid-stats" style={{ marginBottom: 20 }}>
         <div className="card stat">
           <span className="stat-label">Cần trả (Tôi nợ)</span>
           <div className="stat-value negative">{money(owed)}</div>

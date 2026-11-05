@@ -124,13 +124,16 @@ export function Layout() {
   const trialActive = data ? isTrialActive(data.user) : false;
   const daysRemaining = data ? getTrialDaysRemaining(data.user) : 0;
 
-  // Lock body scroll when mobile sidebar drawer is open to prevent background bleed
+  // Lock body and html root scroll when mobile sidebar drawer is open to prevent background bleed
   useEffect(() => {
     if (open) {
-      const prevOverflow = document.body.style.overflow;
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = prevOverflow;
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
       };
     }
   }, [open]);
@@ -291,9 +294,9 @@ export function Layout() {
             </span>
 
             {/* Action items: Crown Indicator & Favorite Star */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0, ml: 'auto' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6, flexShrink: 0, ml: 'auto' }}>
               {isLocked && (
-                <Tooltip title="Tính năng VIP Gold / Pro - Nhấp để xem gói cước">
+                <Tooltip title="Tính năng VIP Gold - Nhấp để xem gói cước" arrow placement="right">
                   <Box
                     component="span"
                     onClick={(e) => {
@@ -305,9 +308,9 @@ export function Layout() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      width: 18,
-                      height: 18,
-                      minWidth: 18,
+                      width: 17,
+                      height: 17,
+                      minWidth: 17,
                       borderRadius: '50%',
                       bgcolor: 'rgba(217, 154, 54, 0.15)',
                       border: '1px solid rgba(217, 154, 54, 0.4)',
@@ -320,30 +323,40 @@ export function Layout() {
                         borderColor: '#DFBA73'
                       }
                     }}
-                    aria-label="Tính năng VIP Pro"
+                    aria-label="Tính năng VIP Gold"
                   >
-                    <Crown size={10} color="#DFBA73" style={{ filter: 'drop-shadow(0 0 2px rgba(223, 186, 115, 0.5))' }} />
+                    <Crown size={9.5} color="#DFBA73" style={{ filter: 'drop-shadow(0 0 2px rgba(223, 186, 115, 0.5))' }} />
                   </Box>
                 </Tooltip>
               )}
 
-              {/* Star Favorite Button */}
+              {/* Star Favorite Button: Only visible by default if pinned (isFav), on desktop hover otherwise; hidden on mobile when unpinned to avoid crowding */}
               <IconButton
                 size="small"
                 onClick={(e) => toggleFavorite(e, item.url)}
-                title={isFav ? 'Bỏ ghim khỏi yêu thích (về mục gốc)' : 'Ghim vào mục yêu thích'}
+                title={isFav ? 'Bỏ ghim khỏi yêu thích (về danh mục gốc)' : 'Ghim vào mục yêu thích'}
+                className="navlink-star-action"
                 sx={{
-                  p: 0.25,
-                  width: 22,
-                  height: 22,
+                  p: 0.2,
+                  width: 20,
+                  height: 20,
+                  minWidth: 20,
                   color: isFav ? '#F59E0B' : 'text.secondary',
-                  opacity: isFav ? 1 : 0.35,
-                  transition: 'all 0.15s ease',
-                  '&:hover': { opacity: 1, color: '#F59E0B' }
+                  display: isFav ? 'inline-flex' : { xs: 'none', md: 'inline-flex' },
+                  opacity: isFav ? 1 : 0,
+                  transition: 'opacity 0.15s ease, transform 0.15s ease, color 0.15s ease',
+                  '.navlink:hover &': {
+                    opacity: isFav ? 1 : 0.65
+                  },
+                  '&:hover': {
+                    opacity: '1 !important',
+                    color: '#F59E0B',
+                    transform: 'scale(1.15)'
+                  }
                 }}
                 aria-label={isFav ? 'Bỏ ghim yêu thích' : 'Ghim tính năng yêu thích'}
               >
-                <Star size={12} fill={isFav ? '#F59E0B' : 'currentColor'} stroke="none" strokeWidth={0} />
+                <Star size={11} fill={isFav ? '#F59E0B' : 'currentColor'} stroke="none" strokeWidth={0} />
               </IconButton>
             </Box>
           </NavLink>

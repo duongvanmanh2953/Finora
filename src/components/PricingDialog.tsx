@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import {
   X,
-  Crown,
   CheckCircle2,
   XCircle,
   Sparkles,
@@ -113,25 +112,12 @@ export function PricingDialog({
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box
-            sx={{
-              width: 38,
-              height: 38,
-              borderRadius: '4px',
-              bgcolor: 'warning.main',
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Crown size={20} />
-          </Box>
+          <TierBadgeIcon tier="gold" size={42} iconSize={22} showTooltip={false} />
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-              Nâng cấp Finora Pro
+            <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2, color: 'text.primary' }}>
+              Nâng cấp Tích Sản VIP Gold
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.25 }}>
               Mở khóa toàn bộ sức mạnh tài chính cá nhân và tự động hóa không giới hạn
             </Typography>
           </Box>
@@ -373,9 +359,16 @@ export function PricingDialog({
               variant="contained"
               color="primary"
               onClick={() => setStep('checkout')}
-              startIcon={<Zap size={16} />}
-              endIcon={<ArrowRight size={16} />}
-              sx={{ px: 3 }}
+              startIcon={<Zap size={14} />}
+              endIcon={<ArrowRight size={14} />}
+              sx={{
+                px: 2,
+                py: 0.75,
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                borderRadius: '6px',
+                textTransform: 'none'
+              }}
             >
               Tiến hành thanh toán ({new Intl.NumberFormat('vi-VN').format(selectedPlan.price)} ₫)
             </Button>
@@ -391,7 +384,7 @@ export function PricingDialog({
               onClick={handleActivatePro}
               disabled={processing}
               startIcon={<Sparkles size={16} />}
-              sx={{ px: 3, fontWeight: 700 }}
+              sx={{ px: 2, py: 0.75, fontSize: '0.82rem', fontWeight: 700, borderRadius: '6px', textTransform: 'none' }}
             >
               {processing ? 'Đang kích hoạt...' : 'Tôi đã thanh toán (Demo kích hoạt Pro ngay)'}
             </Button>

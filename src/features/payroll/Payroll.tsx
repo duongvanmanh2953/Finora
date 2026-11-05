@@ -24,6 +24,7 @@ import {
 import { useFinance } from '../../store';
 import { money, todayKey, uid } from '../../lib/finance';
 import { PageHead } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
 import { MuiCurrencyInput, MuiTextField } from '../../components/mui/MuiInputs';
 import {
@@ -151,6 +152,7 @@ export default function Payroll() {
         subtitle="Bảng lương linh hoạt chuẩn Bộ luật Lao động 2019, tự động tính bảo hiểm 10.5% có trần và thuế TNCN 7 bậc lũy tiến"
         actions={
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+            <HelpButton pageKey="payroll" />
             <FullscreenButton onClick={() => setFullscreenSlipOpen(true)} title="Xem toàn màn hình phiếu lương" />
             <Button
               variant={activeTab === 'records' ? 'contained' : 'outlined'}
@@ -171,6 +173,7 @@ export default function Payroll() {
               Gross ⇄ Net
             </Button>
             <Button
+              id="tour-payroll-inputs"
               variant="contained"
               color="primary"
               startIcon={<Plus size={16} />}
@@ -207,7 +210,7 @@ export default function Payroll() {
           {currentRecord ? (
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 2fr' }, gap: 3 }}>
               {/* Summary KPIs */}
-              <Card sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2, height: '100%', position: 'relative', overflow: 'hidden' }}>
+              <Card id="tour-payroll-net" sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2, height: '100%', position: 'relative', overflow: 'hidden' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <Typography variant="caption" sx={{ textTransform: 'uppercase', letterSpacing: 0.8, color: 'text.secondary', fontWeight: 700 }}>
                     Lương Thực Nhận (Net Take-Home)
@@ -232,7 +235,7 @@ export default function Payroll() {
                   </strong>
                 </Typography>
 
-                <Box sx={{ mt: 'auto', pt: 2 }}>
+                <Box id="tour-payroll-sync-btn" sx={{ mt: 'auto', pt: 2 }}>
                   {currentRecord.status !== 'paid' ? (
                     <Button
                       fullWidth

@@ -56,6 +56,7 @@ import {
   totals
 } from '../../lib/finance';
 import { Empty, PageHead } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { canUsePeriodInReport, isProUser } from '../../lib/subscription';
 import { MuiSelect, MuiDatePicker } from '../../components/mui/MuiInputs';
 import { CategoryAvatarBadge } from '../../lib/brandBadges';
@@ -327,20 +328,24 @@ export default function Reports() {
         title="Báo cáo & Thống kê"
         subtitle="Toàn cảnh bức tranh tài chính đa chiều: Dòng tiền Thu/Chi, Thặng dư ròng, Quỹ đạo tài sản và Phân bổ danh mục"
         actions={
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Download size={14} />}
-            onClick={handleExportCsv}
-            sx={{ fontWeight: 700, fontSize: 13 }}
-          >
-            Xuất dữ liệu {!isPro && '(Pro)'}
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpButton pageKey="reports" />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Download size={14} />}
+              onClick={handleExportCsv}
+              sx={{ fontWeight: 700, fontSize: 13 }}
+            >
+              Xuất dữ liệu {!isPro && '(Pro)'}
+            </Button>
+          </Box>
         }
       />
 
       {/* Clean Time Presets & Filter Center */}
       <Paper
+        id="tour-reports-timeframe"
         variant="outlined"
         sx={{
           p: { xs: 1.75, sm: 2 },
@@ -426,6 +431,7 @@ export default function Reports() {
 
       {/* Executive Financial Health Strip (3 High-Contrast Obsidian Cards) */}
       <Box
+        id="tour-reports-kpi"
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
@@ -593,6 +599,7 @@ export default function Reports() {
 
       {/* HERO SECTION: BIỂU ĐỒ HỢP NHẤT TOÀN DIỆN (COMPOSED FINANCIAL CANVAS) */}
       <Paper
+        id="tour-reports-charts"
         variant="outlined"
         sx={{
           p: { xs: 2, sm: 2.75 },

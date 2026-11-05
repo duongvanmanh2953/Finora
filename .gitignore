@@ -34,3 +34,4 @@ android/build
 android/app/build
 *.apk
 !public/downloads/*.apk
+__pycache__/

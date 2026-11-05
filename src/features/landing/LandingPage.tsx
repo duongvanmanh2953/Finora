@@ -265,9 +265,14 @@ export default function LandingPage() {
         <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <img src="/logo.png" alt="Tích Sản" style={{ width: 34, height: 34, borderRadius: 8, boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)' }} />
-            <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF' }}>
-              Tích Sản
-            </Typography>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF', lineHeight: 1.1 }}>
+                Tích Sản
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '10px', fontWeight: 600, display: 'block', letterSpacing: '0.02em' }}>
+                Kiến tạo tự do tài chính
+              </Typography>
+            </Box>
           </Link>
 
           {/* Desktop Nav Links */}

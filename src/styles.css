@@ -254,14 +254,17 @@ td,
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden !important;
   min-height: 0;
   padding: 10px 10px;
   scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
   -webkit-overflow-scrolling: touch;
 }
 
 .sidebar-nav::-webkit-scrollbar {
-  width: 3px;
+  width: 4px;
+  height: 0px;
 }
 
 .sidebar-nav::-webkit-scrollbar-track {
@@ -269,8 +272,12 @@ td,
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 999px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
 }
 
 .sidebar-footer {
@@ -1177,4 +1184,43 @@ table th {
 .MuiBackdrop-root {
   touch-action: none !important;
   overscroll-behavior: contain !important;
+}
+
+/* Recharts Mobile 100% Fit & Anti-Overflow */
+.recharts-responsive-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.recharts-wrapper {
+  max-width: 100% !important;
+}
+
+.recharts-surface {
+  max-width: 100% !important;
+}
+
+/* Global Ultra-thin Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
 }

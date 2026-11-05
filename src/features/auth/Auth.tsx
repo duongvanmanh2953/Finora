@@ -160,9 +160,14 @@ export default function Auth() {
                   boxShadow: '0 6px 16px rgba(0,0,0,0.3)'
                 }}
               />
-              <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF' }}>
-                Tích Sản
-              </Typography>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF', lineHeight: 1.1 }}>
+                  Tích Sản
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '10px', fontWeight: 600, display: 'block', letterSpacing: '0.02em' }}>
+                  Kiến tạo tự do tài chính
+                </Typography>
+              </Box>
             </Link>
 
             <Chip

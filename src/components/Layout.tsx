@@ -37,7 +37,8 @@ import {
   Tooltip,
   Box,
   IconButton,
-  InputBase
+  InputBase,
+  Typography
 } from '@mui/material';
 import { useFinance } from '../store';
 import {
@@ -374,29 +375,48 @@ export function Layout() {
         <aside className={`sidebar ${open ? 'open' : ''}`}>
           {/* 1. Fixed Header (Brand & Pro Upgrade Button) */}
           <div className="sidebar-header">
-            <div className="brand">
-              <span className="brandmark">
+            <div className="brand" style={{ alignItems: 'flex-start' }}>
+              <span className="brandmark" style={{ marginTop: 2 }}>
                 <img src="/logo.png" alt="Logo Tích Sản" className="brandmark-img" />
               </span>
-              <span style={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: 18, color: 'var(--text-primary)' }}>Tích Sản</span>
-              {isPro && (
-                <Chip
-                  label="VIP GOLD"
-                  size="small"
+              <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span style={{ fontWeight: 850, letterSpacing: '-0.02em', fontSize: 17, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                    Tích Sản
+                  </span>
+                  {isPro && (
+                    <Chip
+                      label="VIP GOLD"
+                      size="small"
+                      sx={{
+                        height: 17,
+                        fontSize: 9,
+                        fontWeight: 800,
+                        bgcolor: 'rgba(217, 119, 6, 0.15)',
+                        color: '#B45309',
+                        border: '1px solid rgba(217, 119, 6, 0.35)'
+                      }}
+                    />
+                  )}
+                </Box>
+                <Typography
+                  variant="caption"
                   sx={{
-                    ml: 0.5,
-                    height: 18,
-                    fontSize: 9.5,
-                    fontWeight: 800,
-                    bgcolor: 'rgba(217, 119, 6, 0.15)',
-                    color: '#B45309',
-                    border: '1px solid rgba(217, 119, 6, 0.35)'
+                    fontSize: '10.5px',
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    letterSpacing: '0.01em',
+                    lineHeight: 1.3,
+                    mt: 0.25,
+                    whiteSpace: 'nowrap'
                   }}
-                />
-              )}
+                >
+                  Kiến tạo tự do tài chính
+                </Typography>
+              </Box>
               <button
                 className="iconbtn mobile-toggle"
-                style={{ marginLeft: 'auto' }}
+                style={{ marginLeft: 'auto', marginTop: 2 }}
                 onClick={() => setOpen(false)}
                 aria-label="Đóng menu"
               >

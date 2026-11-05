@@ -31,9 +31,15 @@ export function FullscreenModal({
 }: FullscreenModalProps) {
   const [isLandscape90, setIsLandscape90] = useState(false);
 
-  // Reset rotation when closed
+  // User request: Default to 90deg rotated landscape mode when opened on mobile (< 768px)
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        setIsLandscape90(true);
+      } else {
+        setIsLandscape90(false);
+      }
+    } else {
       setIsLandscape90(false);
     }
   }, [open]);

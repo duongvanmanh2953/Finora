@@ -446,235 +446,81 @@ export default function Transactions() {
       {/* SUBMENU 2: 3D Debossed Flow Summary Bento & Interactive Timeline Feed */}
       {activeSubTab === 'timeline' && (
         <>
-          {/* 3D Debossed Executive Flow Summary Bento */}
-          <Box
+          {/* Compact Executive Flow Summary Strip */}
+          <Paper
+            variant="outlined"
             sx={{
+              p: { xs: 1.25, sm: 1.5 },
+              mb: 2.5,
+              borderRadius: '6px',
+              bgcolor: 'background.paper',
+              borderColor: 'var(--border-subtle)',
               display: 'grid',
-              gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-              gap: 2,
-              mb: 3
+              gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' },
+              gap: { xs: 1, sm: 1.5 },
+              alignItems: 'center'
             }}
           >
-        {/* Total Inflow */}
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '6px',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 104,
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
-              Tổng thu vào
-            </Typography>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                bgcolor: 'rgba(21, 150, 107, 0.12)',
-                color: 'var(--accent-income)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingUp size={15} />
+            {/* Total Inflow Item */}
+            <Box sx={{ p: { xs: 0.85, sm: 1 }, borderRadius: '4px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 28, height: 28, borderRadius: '50%', bgcolor: 'rgba(21, 150, 107, 0.12)', color: 'var(--accent-income)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <TrendingUp size={14} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: 10.5, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Tổng thu
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 14.5 }, color: 'var(--accent-income)', letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  +{money(summary.income)}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: 16, sm: 19 },
-                color: 'var(--accent-income)',
-                letterSpacing: '-0.02em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums'
-              }}
-            >
-              +{money(summary.income)}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-              {summary.incomeCount} khoản thu đã ghi
-            </Typography>
-          </Box>
-        </Box>
 
-        {/* Total Outflow */}
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '6px',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 104,
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
-              Tổng chi tiêu
-            </Typography>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                bgcolor: 'rgba(214, 91, 88, 0.12)',
-                color: 'var(--accent-expense)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TrendingDown size={15} />
+            {/* Total Outflow Item */}
+            <Box sx={{ p: { xs: 0.85, sm: 1 }, borderRadius: '4px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 28, height: 28, borderRadius: '50%', bgcolor: 'rgba(214, 91, 88, 0.12)', color: 'var(--accent-expense)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <TrendingDown size={14} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: 10.5, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Tổng chi
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 14.5 }, color: 'var(--accent-expense)', letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  -{money(summary.expense)}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: 16, sm: 19 },
-                color: 'var(--accent-expense)',
-                letterSpacing: '-0.02em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums'
-              }}
-            >
-              -{money(summary.expense)}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-              {summary.expenseCount} khoản chi tiêu
-            </Typography>
-          </Box>
-        </Box>
 
-        {/* Net Cashflow */}
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '6px',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 104,
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
-              Dòng tiền ròng
-            </Typography>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                bgcolor: summary.net >= 0 ? 'rgba(21, 150, 107, 0.12)' : 'rgba(214, 91, 88, 0.12)',
-                color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Scale size={15} />
+            {/* Net Cashflow Item */}
+            <Box sx={{ p: { xs: 0.85, sm: 1 }, borderRadius: '4px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 28, height: 28, borderRadius: '50%', bgcolor: summary.net >= 0 ? 'rgba(21, 150, 107, 0.12)' : 'rgba(214, 91, 88, 0.12)', color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Scale size={14} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: 10.5, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Dòng tiền ròng
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 14.5 }, color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)', letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {summary.net >= 0 ? '+' : ''}{money(summary.net)}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: 16, sm: 19 },
-                color: summary.net >= 0 ? 'var(--accent-income)' : 'var(--accent-expense)',
-                letterSpacing: '-0.02em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums'
-              }}
-            >
-              {summary.net >= 0 ? '+' : ''}
-              {money(summary.net)}
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-              {summary.net >= 0 ? 'Thặng dư tài chính' : 'Thâm hụt dòng tiền'}
-            </Typography>
-          </Box>
-        </Box>
 
-        {/* Activity & Filter Count */}
-        <Box
-          sx={{
-            bgcolor: 'background.paper',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '6px',
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: 104,
-            transition: 'all 0.2s ease',
-            '&:hover': { borderColor: 'var(--border-strong)' }
-          }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: 11.5 }}>
-              Khối lượng giao dịch
-            </Typography>
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                bgcolor: 'rgba(78, 123, 197, 0.12)',
-                color: 'var(--accent-info)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <ReceiptText size={15} />
+            {/* Transaction Volume Item */}
+            <Box sx={{ p: { xs: 0.85, sm: 1 }, borderRadius: '4px', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ width: 28, height: 28, borderRadius: '50%', bgcolor: 'rgba(78, 123, 197, 0.12)', color: 'var(--accent-info)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <ReceiptText size={14} />
+              </Box>
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 650, fontSize: 10.5, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Khối lượng
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 800, fontSize: { xs: 13, sm: 14.5 }, color: 'text.primary', letterSpacing: '-0.02em', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {summary.totalCount} <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>mục</span>
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-          <Box sx={{ mt: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: 16, sm: 19 },
-                letterSpacing: '-0.02em',
-                fontFeatureSettings: '"tnum"',
-                fontVariantNumeric: 'tabular-nums'
-              }}
-            >
-              {summary.totalCount} <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>mục</span>
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-              {filtered.length === data.transactions.length ? 'Toàn bộ sổ giao dịch' : 'Khớp bộ lọc hiện tại'}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+          </Paper>
 
       {/* Filter and View Mode Control Center */}
       <Paper

@@ -324,12 +324,12 @@ export default function Reports() {
   };
 
   const renderHeroComposedChart = (chartHeight: number | string = 380) => (
-    <Box sx={{ width: '100%', height: chartHeight, minHeight: typeof chartHeight === 'number' ? chartHeight : 300, flex: 1 }}>
+    <Box sx={{ width: '100%', height: chartHeight, minHeight: typeof chartHeight === 'number' ? chartHeight : 280, minWidth: 0, overflow: 'hidden', flex: 1 }}>
       {unifiedTrend.length ? (
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={unifiedTrend}
-            margin={{ top: 15, right: showNetWorth ? 35 : 15, left: 5, bottom: 20 }}
+            margin={{ top: 15, right: showNetWorth ? 35 : 10, left: -15, bottom: 20 }}
           >
             <defs>
               <linearGradient id="netWorthGradient" x1="0" y1="0" x2="0" y2="1">
@@ -341,17 +341,18 @@ export default function Reports() {
             <XAxis
               dataKey="date"
               stroke="var(--text-secondary)"
-              fontSize={11.5}
+              fontSize={11}
               tickLine={false}
               axisLine={{ stroke: 'var(--border-subtle)' }}
             />
             <YAxis
               yAxisId="cashflow"
               stroke="var(--text-secondary)"
-              fontSize={11.5}
+              fontSize={11}
               tickLine={false}
               axisLine={false}
               tickFormatter={val => shortMoney(val)}
+              width={45}
             />
             {showNetWorth && (
               <YAxis
@@ -934,7 +935,7 @@ export default function Reports() {
           </Box>
 
           {/* Donut Canvas */}
-          <Box sx={{ width: '100%', height: 230, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box sx={{ width: '100%', height: 230, minHeight: 230, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {expenseCategories.length ? (
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart>

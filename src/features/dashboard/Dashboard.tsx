@@ -531,10 +531,10 @@ export default function Dashboard() {
           </Box>
 
           {/* Composed Chart Visualization */}
-          <Box sx={{ width: '100%', height: 280, minHeight: 280 }}>
+          <Box sx={{ width: '100%', height: { xs: 250, sm: 280 }, minHeight: { xs: 250, sm: 280 }, minWidth: 0, overflow: 'hidden' }}>
             {cashflowDataset.length ? (
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 15, left: 0, bottom: 20 }}>
+                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 10, left: -15, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
                   <XAxis
                     dataKey="date"
@@ -549,6 +549,7 @@ export default function Dashboard() {
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={val => shortMoney(val)}
+                    width={45}
                   />
                   <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
                   <RechartsTooltip

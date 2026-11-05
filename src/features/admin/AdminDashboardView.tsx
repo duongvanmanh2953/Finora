@@ -144,9 +144,9 @@ export function AdminDashboardView() {
             </Box>
           </Box>
 
-          <Box sx={{ width: '100%', height: 260 }}>
+          <Box sx={{ width: '100%', height: 260, minHeight: 260, minWidth: 0, overflow: 'hidden' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REVENUE_TIMELINE} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={REVENUE_TIMELINE} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                 <defs>
                   <linearGradient id="adminMrrGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
@@ -161,6 +161,7 @@ export function AdminDashboardView() {
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={val => `${(val / 1000000).toFixed(0)}Tr`}
+                  width={45}
                 />
                 <RechartsTooltip
                   formatter={(val: any) => [money(Number(val)), 'MRR']}

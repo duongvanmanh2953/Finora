@@ -256,7 +256,7 @@ export function AssetProjectionSection({
       </Paper>
 
       {/* 3. Multi-Scenario Line Chart */}
-      <Box sx={{ width: '100%', height: { xs: 260, sm: 290 }, maxWidth: '100%', overflow: 'hidden' }}>
+      <Box sx={{ width: '100%', height: { xs: 260, sm: 290 }, minHeight: { xs: 260, sm: 290 }, minWidth: 0, maxWidth: '100%', overflow: 'hidden' }}>
         {renderProjectionChart()}
       </Box>
 

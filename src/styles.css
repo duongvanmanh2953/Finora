@@ -1187,19 +1187,9 @@ table th {
   overscroll-behavior: contain !important;
 }
 
-/* Recharts Mobile 100% Fit & Anti-Overflow */
+/* Recharts Mobile Responsiveness: ensure flex/grid items can shrink without overflowing */
 .recharts-responsive-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-}
-
-.recharts-wrapper {
-  max-width: 100% !important;
-}
-
-.recharts-surface {
-  max-width: 100% !important;
+  min-width: 0 !important;
 }
 
 /* Global Ultra-thin Scrollbar */

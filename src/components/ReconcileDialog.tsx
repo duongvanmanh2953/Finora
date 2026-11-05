@@ -103,7 +103,7 @@ export function ReconcileDialog({
 
       <DialogContent dividers sx={{ p: 2.5, display: 'grid', gap: 2 }}>
         <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: 13 }}>
-          Cứu cánh khi bạn quên ghi chép một vài giao dịch nhỏ. Chỉ cần nhập số dư hiện tại trong ví hoặc ứng dụng ngân hàng, Finora sẽ tự động bù đắp chênh lệch.
+          Cứu cánh khi bạn quên ghi chép một vài giao dịch nhỏ. Chỉ cần nhập số dư hiện tại trong ví hoặc ứng dụng ngân hàng, Tích Sản sẽ tự động bù đắp chênh lệch.
         </Typography>
 
         <Paper variant="outlined" sx={{ p: 2, borderRadius: '4px', bgcolor: 'action.hover' }}>

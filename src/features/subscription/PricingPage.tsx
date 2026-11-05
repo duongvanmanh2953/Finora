@@ -33,6 +33,7 @@ import {
   getTrialDaysRemaining,
   isGoldUser
 } from '../../lib/subscription';
+import { PaymentCheckoutModal } from '../../components/subscription/PaymentCheckoutModal';
 import { money } from '../../lib/finance';
 
 export default function PricingPage() {
@@ -47,6 +48,17 @@ export default function PricingPage() {
   const isPro = user?.plan === 'pro';
 
   const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>('annual');
+  const [checkoutModal, setCheckoutModal] = useState<{
+    open: boolean;
+    planId: string;
+    planName: string;
+    amount: number;
+  }>({
+    open: false,
+    planId: '',
+    planName: '',
+    amount: 0
+  });
 
   const handleSelectPlan = async (planId: string, planName: string) => {
     if (!data) return;
@@ -63,7 +75,7 @@ export default function PricingPage() {
           trial_started_at: now.toISOString(),
           trial_ends_at: endsAt
         }
-      }), 'Đã kích hoạt dùng thử 30 ngày VIP Gold thành công!');
+      }), 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí. Khám phá toàn bộ tính năng cao cấp!');
       return;
     }
 
@@ -79,20 +91,15 @@ export default function PricingPage() {
       return;
     }
 
-    const isGoldPlan = planId.includes('gold');
-    const targetTier = isGoldPlan ? 'gold' : 'pro';
-    const expiresAt = new Date(Date.now() + (billingCycle === 'annual' ? 365 : 30) * 86400000).toISOString();
-
-    await update(d => ({
-      ...d,
-      user: {
-        ...d.user,
-        plan: targetTier,
-        subscription_status: 'active',
-        current_plan_id: planId,
-        proExpiresAt: expiresAt
-      }
-    }), `Chúc mừng bạn đã nâng cấp thành công gói ${planName}!`);
+    // For paid plans, trigger the PayOS & Legal compliance gate checkout
+    const targetPlan = SYSTEM_PLANS.find(p => p.id === planId);
+    const price = targetPlan ? (billingCycle === 'annual' ? targetPlan.price : Math.round(targetPlan.price * 1.5 / 12)) : 499000;
+    setCheckoutModal({
+      open: true,
+      planId,
+      planName,
+      amount: price
+    });
   };
 
   const featureMatrix = [
@@ -113,7 +120,7 @@ export default function PricingPage() {
       {/* 1. Page Header */}
       <PageHead
         title="Danh Sách Gói Dịch Vụ & Bảng Giá"
-        subtitle="Minh bạch, linh hoạt và không tự động trừ tiền. Trải nghiệm trọn vẹn sức mạnh quản lý tài sản Finora."
+        subtitle="Minh bạch, linh hoạt và không tự động trừ tiền. Trải nghiệm trọn vẹn sức mạnh quản lý tài sản Tích Sản."
       />
 
       {/* Active Subscription Status Banner */}
@@ -160,7 +167,7 @@ export default function PricingPage() {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                Gói hiện tại của bạn: {trialActive ? 'Dùng thử VIP Gold' : isGold ? 'Finora Gold VIP' : isPro ? 'Finora Pro' : 'Gói Miễn Phí (Free)'}
+                Gói hiện tại của bạn: {trialActive ? 'Dùng thử VIP Gold' : isGold ? 'Tích Sản VIP Gold' : isPro ? 'Tích Sản Pro' : 'Gói Miễn Phí (Free)'}
               </Typography>
               {trialActive && (
                 <Chip
@@ -430,8 +437,8 @@ export default function PricingPage() {
               <TableRow sx={{ borderBottom: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.16)' : '#CBD5E1' }}>
                 <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: isDark ? '#E2E8F0' : '#334155', py: 1.2 }}>TÍNH NĂNG & ĐẶC QUYỀN</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: isDark ? '#E2E8F0' : '#334155', py: 1.2 }}>MIỄN PHÍ (FREE)</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: '#2563EB', py: 1.2 }}>FINORA PRO</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: GOLD_COLOR_TOKENS.main, py: 1.2 }}>FINORA GOLD VIP</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: '#2563EB', py: 1.2 }}>TÍCH SẢN PRO</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: '11px', color: GOLD_COLOR_TOKENS.main, py: 1.2 }}>TÍCH SẢN VIP GOLD</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -460,7 +467,7 @@ export default function PricingPage() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.76rem', lineHeight: 1.6 }}>
-              Tất cả tài khoản đăng ký mới tại Finora đều được tự động cấp quyền trải nghiệm 30 ngày đầy đủ mọi đặc quyền của Gói Gold VIP. Chúng tôi không yêu cầu thông tin thẻ ngân hàng và tuyệt đối không tự ý trừ tiền tài khoản của bạn.
+              Tất cả tài khoản đăng ký mới tại Tích Sản đều được tự động cấp quyền trải nghiệm 30 ngày đầy đủ mọi đặc quyền của Gói Gold VIP. Chúng tôi không yêu cầu thông tin thẻ ngân hàng và tuyệt đối không tự ý trừ tiền tài khoản của bạn.
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -478,15 +485,25 @@ export default function PricingPage() {
 
         <Accordion elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '6px', '&:before': { display: 'none' } }}>
           <AccordionSummary expandIcon={<ChevronDown size={18} />}>
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>Tại sao Finora không có chức năng nạp tiền số dư vào ví app?</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>Tại sao Tích Sản không có chức năng nạp tiền số dư vào ví app?</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.76rem', lineHeight: 1.6 }}>
-              Finora là ứng dụng quản lý tài chính cá nhân và bảo mật dữ liệu, không phải ví trung gian thanh toán. Chúng tôi không giữ tiền của người dùng để đảm bảo an toàn pháp lý và tránh mọi rủi ro tài chính cho khách hàng.
+              Tích Sản là ứng dụng quản lý tài chính cá nhân và bảo mật dữ liệu, không phải ví trung gian thanh toán. Chúng tôi không giữ tiền của người dùng để đảm bảo an toàn pháp lý và tránh mọi rủi ro tài chính cho khách hàng.
             </Typography>
           </AccordionDetails>
         </Accordion>
       </Box>
+
+      {/* Payment Checkout Modal with PayOS & Legal Compliance Advisory Gate */}
+      <PaymentCheckoutModal
+        open={checkoutModal.open}
+        onClose={() => setCheckoutModal(prev => ({ ...prev, open: false }))}
+        planId={checkoutModal.planId}
+        planName={checkoutModal.planName}
+        amount={checkoutModal.amount}
+        userEmail={user?.email || 'user@tichsan.vn'}
+      />
     </Box>
   );
 }

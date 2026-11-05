@@ -49,7 +49,7 @@ export default function LegalPublicView() {
               <ShieldCheck size={16} />
             </Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>
-              Finora Legal & Trust Center
+              Tích Sản Legal & Trust Center
             </Typography>
           </Box>
         </Box>
@@ -170,7 +170,7 @@ export default function LegalPublicView() {
             {/* Document Footer */}
             <Box sx={{ pt: 3, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Ban hành bởi: {currentDoc.author} · Finora Vietnam Compliance
+                Ban hành bởi: {currentDoc.author} · Tích Sản Vietnam Compliance
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Liên hệ giải đáp pháp lý: <strong>legal@finora.vn</strong>

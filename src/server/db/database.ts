@@ -3,12 +3,90 @@ import path from 'path';
 import type { FinanceData, User } from '../../types';
 import { seed } from '../../mocks/data';
 import { todayKey, uid } from '../../lib/finance';
+import { hashPassword, verifyPassword, hashToken, generateSecureToken } from '../auth/security';
 
 export interface DbUser extends User {
+  role?: 'user' | 'admin';
   passwordHash?: string;
   isSuspended: boolean;
   createdAt: string;
   lastActive: string;
+  mustChangePassword?: boolean;
+  lastAdminResetTimestamp?: number;
+  emailVerified?: boolean;
+}
+
+export interface RefreshTokenSession {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  ip: string;
+  userAgent: string;
+  createdAt: number;
+  expiresAt: number; // Max 120 days
+  isRevoked: boolean;
+  replacedByTokenHash?: string; // For reuse detection
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  code: 'FREE' | 'VIP_GOLD' | 'PRO';
+  name: string;
+  price: number;
+  originalPrice?: number;
+  billingPeriod: string;
+  billingCycle: 'monthly' | 'annual';
+  badge?: string;
+  features: string[];
+  isActive: boolean;
+  tier: 'free' | 'pro' | 'gold';
+}
+
+export interface PaymentOrder {
+  id: string;
+  orderCode: number;
+  userId: string;
+  userEmail: string;
+  planId: string;
+  amount: number;
+  currency: 'VND';
+  status: 'CREATED' | 'PENDING' | 'PAID' | 'CANCELLED' | 'EXPIRED' | 'FAILED' | 'REFUNDED' | 'REQUIRES_REVIEW';
+  paymentLinkId?: string;
+  checkoutUrl?: string;
+  qrCode?: string;
+  idempotencyKey?: string;
+  payosTransactionId?: string;
+  reconciledAt?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IdempotencyRecord {
+  key: string;
+  scope: string;
+  endpoint: string;
+  requestHash: string;
+  status: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  response?: any;
+  createdAt: number;
+  expiresAt: number;
+}
+
+export interface ThirdPartyCost {
+  id: string;
+  provider: string;
+  category: 'server' | 'domain' | 'email' | 'ai' | 'storage' | 'payment_gateway';
+  amount: number;
+  currency: 'VND' | 'USD';
+  billingCycle: 'monthly' | 'annual' | 'usage_based';
+  dueDate: string;
+  status: 'paid' | 'pending' | 'overdue';
+  invoiceUrl?: string;
+  approvedBy?: string;
+  createdAt: string;
+  paidAt?: string;
+  notes?: string;
 }
 
 export interface AuditLogEntry {
@@ -25,14 +103,20 @@ export interface AuditLogEntry {
 export interface DatabaseSchema {
   users: Record<string, DbUser>;
   financeData: Record<string, FinanceData>;
-  sessions: Record<string, string>; // token -> userId
+  sessions: Record<string, string>; // accessToken -> userId
+  refreshTokens: Record<string, RefreshTokenSession>; // tokenHash -> session
+  plans: Record<string, SubscriptionPlan>;
+  orders: Record<string, PaymentOrder>;
+  idempotency: Record<string, IdempotencyRecord>;
+  thirdPartyCosts: ThirdPartyCost[];
   auditLogs: AuditLogEntry[];
 }
 
 const DATA_DIR = path.resolve(process.cwd(), '.data');
 const DB_FILE = path.join(DATA_DIR, 'finora_db.json');
+const MAX_SESSION_DAYS = 120;
 
-class FinoraDatabase {
+class TichSanDatabase {
   private schema: DatabaseSchema;
   private initialized = false;
 
@@ -41,6 +125,11 @@ class FinoraDatabase {
       users: {},
       financeData: {},
       sessions: {},
+      refreshTokens: {},
+      plans: {},
+      orders: {},
+      idempotency: {},
+      thirdPartyCosts: [],
       auditLogs: []
     };
     this.init();
@@ -55,9 +144,31 @@ class FinoraDatabase {
 
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
-        this.schema = JSON.parse(raw);
+        const loaded = JSON.parse(raw);
+        this.schema = {
+          ...this.schema,
+          ...loaded,
+          refreshTokens: loaded.refreshTokens || {},
+          plans: loaded.plans || {},
+          orders: loaded.orders || {},
+          idempotency: loaded.idempotency || {},
+          thirdPartyCosts: loaded.thirdPartyCosts || [],
+          auditLogs: loaded.auditLogs || []
+        };
       } else {
         this.seedInitialData();
+        this.persist();
+      }
+
+      // Ensure default plans exist
+      if (Object.keys(this.schema.plans).length === 0) {
+        this.seedDefaultPlans();
+        this.persist();
+      }
+
+      // Ensure initial third-party costs exist for monitoring
+      if (this.schema.thirdPartyCosts.length === 0) {
+        this.seedThirdPartyCosts();
         this.persist();
       }
     } catch {
@@ -73,17 +184,159 @@ class FinoraDatabase {
       }
       fs.writeFileSync(DB_FILE, JSON.stringify(this.schema, null, 2), 'utf-8');
     } catch (err) {
-      console.error('[FinoraDatabase] Error persisting database:', err);
+      console.error('[TichSanDatabase] Error persisting database:', err);
     }
   }
 
+  private seedDefaultPlans() {
+    const plans: SubscriptionPlan[] = [
+      {
+        id: 'plan-free',
+        code: 'FREE',
+        name: 'Gói Cơ Bản (Free)',
+        price: 0,
+        billingPeriod: 'Miễn phí vĩnh viễn',
+        billingCycle: 'monthly',
+        features: [
+          'Tối đa 2 tài khoản tiền mặt & ngân hàng',
+          'Ghi chép giao dịch không giới hạn',
+          '3 danh mục ngân sách chi tiêu',
+          '1 mục tiêu tích lũy tài chính',
+          'Lưu trữ dữ liệu Local-First bảo mật'
+        ],
+        isActive: true,
+        tier: 'free'
+      },
+      {
+        id: 'plan-trial',
+        code: 'VIP_GOLD',
+        name: 'Dùng Thử VIP Gold (30 Ngày)',
+        price: 0,
+        billingPeriod: 'Tặng miễn phí 30 ngày',
+        billingCycle: 'monthly',
+        badge: 'ƯU ĐÃI CHÀO MỪNG',
+        features: [
+          'Toàn bộ đặc quyền của Gói Gold VIP',
+          'Không giới hạn tài khoản & danh mục',
+          'Định giá danh mục đầu tư Realtime',
+          'Speedometer Gauges phân tích sức khỏe tài chính',
+          'Tự động quay về Free sau 30 ngày (Bảo toàn dữ liệu 100%)'
+        ],
+        isActive: true,
+        tier: 'gold'
+      },
+      {
+        id: 'plan-pro-year',
+        code: 'PRO',
+        name: 'Tích Sản Pro (Năm)',
+        price: 499000,
+        originalPrice: 840000,
+        billingPeriod: '499.000 ₫/năm (~41k/tháng)',
+        billingCycle: 'annual',
+        badge: 'TIẾT KIỆM 40%',
+        features: [
+          'Không giới hạn tài khoản ngân hàng & ví',
+          'Tự động ghi nhận giao dịch định kỳ (Auto-recurring)',
+          'Đồng bộ giá cổ phiếu HOSE/HNX & Vàng SJC',
+          'Xuất báo cáo tài chính Excel & PDF đa kỳ',
+          'Hỗ trợ ưu tiên 24/7'
+        ],
+        isActive: true,
+        tier: 'pro'
+      },
+      {
+        id: 'plan-gold-year',
+        code: 'VIP_GOLD',
+        name: 'Tích Sản VIP Gold (Năm)',
+        price: 999000,
+        originalPrice: 1800000,
+        billingPeriod: '999.000 ₫/năm (~83k/tháng)',
+        billingCycle: 'annual',
+        badge: 'KHUYÊN DÙNG — TOÀN DIỆN NHẤT',
+        features: [
+          'Toàn bộ đặc quyền của Gói Pro',
+          'Smart Ledger: Phân tách vốn đầu tư chưa thu hồi',
+          'Speedometer Gauges 4 cấp độ cảnh báo rủi ro',
+          'Tự tính lãi kép danh mục vàng, tiết kiệm & trái phiếu',
+          'Trợ lý AI Phân tích dòng tiền không giới hạn',
+          'Cố vấn tài chính chuyên biệt'
+        ],
+        isActive: true,
+        tier: 'gold'
+      }
+    ];
+
+    for (const p of plans) {
+      this.schema.plans[p.id] = p;
+    }
+  }
+
+  private seedThirdPartyCosts() {
+    this.schema.thirdPartyCosts = [
+      {
+        id: 'cost-hetzner',
+        provider: 'Hetzner Cloud VPS',
+        category: 'server',
+        amount: 320000,
+        currency: 'VND',
+        billingCycle: 'monthly',
+        dueDate: '2026-11-20',
+        status: 'paid',
+        approvedBy: 'Admin',
+        createdAt: '2026-11-01',
+        paidAt: '2026-11-02',
+        notes: 'Máy chủ chạy node runtime & Nginx production'
+      },
+      {
+        id: 'cost-cloudflare',
+        provider: 'Cloudflare Registrar & DNS',
+        category: 'domain',
+        amount: 240000,
+        currency: 'VND',
+        billingCycle: 'annual',
+        dueDate: '2027-05-15',
+        status: 'paid',
+        approvedBy: 'Admin',
+        createdAt: '2026-05-15',
+        paidAt: '2026-05-15',
+        notes: 'Tên miền tichsan.vn & SSL wildcard'
+      },
+      {
+        id: 'cost-resend',
+        provider: 'Resend SMTP Email',
+        category: 'email',
+        amount: 0,
+        currency: 'VND',
+        billingCycle: 'monthly',
+        dueDate: '2026-11-30',
+        status: 'paid',
+        approvedBy: 'Admin',
+        createdAt: '2026-11-01',
+        notes: 'Gói miễn phí 3.000 emails/tháng xác minh tài khoản'
+      },
+      {
+        id: 'cost-gemini-ai',
+        provider: 'Google Gemini Pro / Flash API',
+        category: 'ai',
+        amount: 150000,
+        currency: 'VND',
+        billingCycle: 'usage_based',
+        dueDate: '2026-12-05',
+        status: 'pending',
+        createdAt: '2026-11-01',
+        notes: 'API phân tích dòng tiền & trợ lý AI cá nhân'
+      }
+    ];
+  }
+
   private seedInitialData() {
-    // 1. Initial Admin & Demo Users
     const now = new Date();
+    // 1. Initial Demo User
     const demoUser: DbUser = {
       id: 'usr_demo_vip',
       name: 'Nguyễn Minh Anh',
-      email: 'minhanh@finora.vn',
+      email: 'minhanh@tichsan.vn',
+      role: 'user',
       currency: 'VND',
       financialMonthStart: 1,
       plan: 'gold',
@@ -93,17 +346,19 @@ class FinoraDatabase {
       current_plan_id: 'plan-trial',
       streakCount: 7,
       lastCheckInDate: todayKey(),
-      defaultAccountId: 'wallet',
+      defaultAccountId: 'acc_wallet',
       isSuspended: false,
       createdAt: '2026-10-15',
       lastActive: todayKey(),
-      nlpUsageToday: { date: todayKey(), count: 0 }
+      nlpUsageToday: { date: todayKey(), count: 0 },
+      emailVerified: true
     };
 
     const regularUser: DbUser = {
       id: 'usr_free_user',
       name: 'Trần Hoàng Long',
       email: 'hoanglong.tran@gmail.com',
+      role: 'user',
       currency: 'VND',
       financialMonthStart: 1,
       plan: 'free',
@@ -111,70 +366,42 @@ class FinoraDatabase {
       current_plan_id: 'plan-free',
       streakCount: 2,
       lastCheckInDate: todayKey(),
-      defaultAccountId: 'wallet',
+      defaultAccountId: 'acc_wallet',
       isSuspended: false,
       createdAt: '2026-10-10',
       lastActive: todayKey(),
-      nlpUsageToday: { date: todayKey(), count: 0 }
+      nlpUsageToday: { date: todayKey(), count: 0 },
+      emailVerified: true
     };
 
     this.schema.users[demoUser.id] = demoUser;
     this.schema.users[regularUser.id] = regularUser;
 
-    // 2. Demo User Finance Data
     this.schema.financeData[demoUser.id] = {
       ...structuredClone(seed),
       user: demoUser
     };
 
-    // 3. Initial Audit Logs
     this.schema.auditLogs = [
       {
         id: 'aud-891',
-        admin: 'superadmin@finora.vn',
-        action: 'VIEW_SAAS_MRR_ANALYTICS',
-        resource: '/api/admin/metrics',
+        admin: 'system',
+        action: 'BOOTSTRAP_DATABASE_INITIALIZED',
+        resource: '/system/db',
         status: 'SUCCESS',
-        ip: '113.161.42.18',
-        time: '10 phút trước',
-        timestamp: Date.now() - 600000
-      },
-      {
-        id: 'aud-892',
-        admin: 'finance@finora.vn',
-        action: 'EXPORT_MISA_INVOICES_VAT',
-        resource: '/api/admin/invoices/export',
-        status: 'SUCCESS',
-        ip: '14.162.88.9',
-        time: '1 giờ trước',
-        timestamp: Date.now() - 3600000
-      },
-      {
-        id: 'aud-893',
-        admin: 'support@finora.vn',
-        action: 'SUSPEND_BOT_USER',
-        resource: '/api/admin/users/usr-5',
-        status: 'SUCCESS',
-        ip: '118.69.12.55',
-        time: '2 giờ trước',
-        timestamp: Date.now() - 7200000
-      },
-      {
-        id: 'aud-894',
-        admin: 'unknown_probe@proxy.net',
-        action: 'UNAUTHORIZED_QUERY_USER_TRANSACTIONS',
-        resource: '/api/users/usr-1/transactions',
-        status: 'BLOCKED',
-        ip: '45.133.1.20',
-        time: '5 giờ trước',
-        timestamp: Date.now() - 18000000
+        ip: '127.0.0.1',
+        time: 'Vừa xong',
+        timestamp: Date.now()
       }
     ];
+
+    this.seedDefaultPlans();
+    this.seedThirdPartyCosts();
   }
 
   // --- USER AUTHENTICATION & TRIAL MANAGEMENT ---
 
-  public register(name: string, email: string, passwordHash?: string): { user: DbUser; token: string } {
+  public register(name: string, email: string, password?: string, ip = '127.0.0.1', userAgent = 'Browser'): { user: DbUser; accessToken: string; refreshToken: string } {
     const trimmedEmail = email.trim().toLowerCase();
     const existing = Object.values(this.schema.users).find(u => u.email === trimmedEmail);
     if (existing) {
@@ -182,13 +409,14 @@ class FinoraDatabase {
     }
 
     const now = new Date();
-    // Phase 6 & Phase 10: Auto-grant 30-Day VIP Gold Trial
+    // 30-Day VIP Gold Trial
     const trialEnds = new Date(now.getTime() + 30 * 86400 * 1000);
 
     const newUser: DbUser = {
       id: `usr_${uid()}`,
       name: name.trim(),
       email: trimmedEmail,
+      role: 'user',
       currency: 'VND',
       financialMonthStart: 1,
       plan: 'gold',
@@ -203,16 +431,16 @@ class FinoraDatabase {
       createdAt: todayKey(),
       lastActive: todayKey(),
       nlpUsageToday: { date: todayKey(), count: 0 },
-      passwordHash
+      emailVerified: false,
+      passwordHash: password ? hashPassword(password) : undefined
     };
 
     this.schema.users[newUser.id] = newUser;
 
-    // Create fresh initial finance data for new user (Clean initial state, not polluted by other users)
+    // Create fresh initial finance data for new user
     const freshData: FinanceData = {
       ...structuredClone(seed),
       user: newUser,
-      // Fresh clean initial accounts
       accounts: [
         {
           id: 'acc_wallet',
@@ -233,18 +461,17 @@ class FinoraDatabase {
           active: true
         }
       ],
-      // Fresh initial transactions
       transactions: [
         {
           id: `tx_${uid()}`,
-          name: 'Số dư đầu kỳ chào mừng Finora',
+          name: 'Số dư đầu kỳ chào mừng Tích Sản',
           amount: 17000000,
           type: 'income',
           categoryId: 'salary',
           accountId: 'acc_bank_vcb',
           date: todayKey(),
           method: 'Chuyển khoản',
-          note: 'Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold',
+          note: 'Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí',
           status: 'completed'
         }
       ]
@@ -252,43 +479,135 @@ class FinoraDatabase {
 
     this.schema.financeData[newUser.id] = freshData;
 
-    // Issue session token
-    const token = `tok_${uid()}_${Date.now()}`;
-    this.schema.sessions[token] = newUser.id;
+    // Issue tokens: Access token (15 mins) & Refresh token (120 days)
+    const { accessToken, refreshToken } = this.createSession(newUser.id, ip, userAgent);
 
-    // Log audit event
-    this.addAuditLog('system', 'USER_REGISTERED_30D_GOLD_TRIAL', `/api/users/${newUser.id}`, 'SUCCESS');
-
+    this.addAuditLog('system', 'USER_REGISTERED_30D_GOLD_TRIAL', `/api/users/${newUser.id}`, 'SUCCESS', ip);
     this.persist();
-    return { user: newUser, token };
+    return { user: newUser, accessToken, refreshToken };
   }
 
-  public login(email: string): { user: DbUser; token: string } {
+  public login(email: string, password?: string, ip = '127.0.0.1', userAgent = 'Browser'): { user: DbUser; accessToken: string; refreshToken: string } {
     const trimmedEmail = email.trim().toLowerCase();
-    let user = Object.values(this.schema.users).find(u => u.email === trimmedEmail);
+    const user = Object.values(this.schema.users).find(u => u.email === trimmedEmail);
 
     if (!user) {
-      // Auto-provision demo account for friction-free authentication
-      return this.register(trimmedEmail.split('@')[0] || 'Khách hàng', trimmedEmail);
+      // Auto-provision demo account if unseeded
+      return this.register(trimmedEmail.split('@')[0] || 'Khách hàng', trimmedEmail, password, ip, userAgent);
     }
 
     if (user.isSuspended) {
       throw new Error('Tài khoản đã bị tạm khóa do vi phạm chính sách bảo mật');
     }
 
+    if (user.passwordHash && password) {
+      const match = verifyPassword(password, user.passwordHash);
+      if (!match) {
+        this.addAuditLog(user.email, 'LOGIN_FAILED_WRONG_PASSWORD', `/api/auth/login`, 'BLOCKED', ip);
+        throw new Error('Mật khẩu không chính xác');
+      }
+    }
+
     user.lastActive = todayKey();
     this.checkTrialExpiry(user);
 
-    const token = `tok_${uid()}_${Date.now()}`;
-    this.schema.sessions[token] = user.id;
+    const { accessToken, refreshToken } = this.createSession(user.id, ip, userAgent);
 
-    this.addAuditLog(user.email, 'USER_LOGIN_SUCCESS', `/api/auth/login`, 'SUCCESS');
+    this.addAuditLog(user.email, 'USER_LOGIN_SUCCESS', `/api/auth/login`, 'SUCCESS', ip);
     this.persist();
-    return { user, token };
+    return { user, accessToken, refreshToken };
   }
 
-  public getUserByToken(token: string): DbUser | null {
-    const userId = this.schema.sessions[token];
+  /**
+   * 120-Day Session Management with Rotating Refresh Tokens
+   */
+  public createSession(userId: string, ip: string, userAgent: string): { accessToken: string; refreshToken: string } {
+    const accessToken = `atk_${generateSecureToken(24)}_${Date.now()}`;
+    const refreshToken = `rtk_${generateSecureToken(32)}_${Date.now()}`;
+    const tokenHash = hashToken(refreshToken);
+
+    const now = Date.now();
+    const expiresAt = now + MAX_SESSION_DAYS * 86400 * 1000; // 120 days
+
+    this.schema.sessions[accessToken] = userId;
+    this.schema.refreshTokens[tokenHash] = {
+      id: `ses_${uid()}`,
+      userId,
+      tokenHash,
+      ip,
+      userAgent,
+      createdAt: now,
+      expiresAt,
+      isRevoked: false
+    };
+
+    return { accessToken, refreshToken };
+  }
+
+  /**
+   * Refresh Token Rotation with Reuse Detection
+   */
+  public rotateRefreshToken(oldRefreshToken: string, ip: string, userAgent: string): { accessToken: string; refreshToken: string; user: DbUser } {
+    const oldHash = hashToken(oldRefreshToken);
+    const session = this.schema.refreshTokens[oldHash];
+
+    if (!session) {
+      throw new Error('Refresh token không hợp lệ hoặc không tồn tại');
+    }
+
+    // Reuse detection: If token was already replaced, someone might have stolen it!
+    if (session.isRevoked || session.replacedByTokenHash) {
+      // Revoke all sessions for this user immediately for safety
+      this.revokeAllUserSessions(session.userId);
+      this.addAuditLog(session.userId, 'SECURITY_ALERT_REFRESH_TOKEN_REUSE_DETECTED', '/api/auth/refresh', 'BLOCKED', ip);
+      this.persist();
+      throw new Error('Phát hiện token đã qua sử dụng. Toàn bộ phiên đăng nhập đã bị thu hồi vì lý do bảo mật.');
+    }
+
+    if (Date.now() > session.expiresAt) {
+      session.isRevoked = true;
+      this.persist();
+      throw new Error('Phiên đăng nhập 120 ngày đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+
+    const user = this.schema.users[session.userId];
+    if (!user || user.isSuspended) {
+      throw new Error('Tài khoản không hợp lệ hoặc đã bị khóa');
+    }
+
+    // Issue new pair and rotate
+    const newAccessToken = `atk_${generateSecureToken(24)}_${Date.now()}`;
+    const newRefreshToken = `rtk_${generateSecureToken(32)}_${Date.now()}`;
+    const newHash = hashToken(newRefreshToken);
+
+    const now = Date.now();
+    // Maintain original session lifespan or slide safely within 120 days
+    const expiresAt = Math.min(session.expiresAt, now + MAX_SESSION_DAYS * 86400 * 1000);
+
+    // Invalidate old token and link to new one
+    session.isRevoked = true;
+    session.replacedByTokenHash = newHash;
+
+    this.schema.sessions[newAccessToken] = user.id;
+    this.schema.refreshTokens[newHash] = {
+      id: `ses_${uid()}`,
+      userId: user.id,
+      tokenHash: newHash,
+      ip,
+      userAgent,
+      createdAt: now,
+      expiresAt,
+      isRevoked: false
+    };
+
+    this.checkTrialExpiry(user);
+    this.persist();
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken, user };
+  }
+
+  public getUserByToken(accessToken: string): DbUser | null {
+    const userId = this.schema.sessions[accessToken];
     if (!userId) return null;
     const user = this.schema.users[userId];
     if (user) {
@@ -297,15 +616,38 @@ class FinoraDatabase {
     return user || null;
   }
 
-  public logout(token: string) {
-    delete this.schema.sessions[token];
+  public logout(accessToken: string, refreshToken?: string) {
+    delete this.schema.sessions[accessToken];
+    if (refreshToken) {
+      const hash = hashToken(refreshToken);
+      const session = this.schema.refreshTokens[hash];
+      if (session) {
+        session.isRevoked = true;
+      }
+    }
+    this.persist();
+  }
+
+  public revokeAllUserSessions(userId: string) {
+    // Revoke all access tokens
+    for (const [token, uidVal] of Object.entries(this.schema.sessions)) {
+      if (uidVal === userId) {
+        delete this.schema.sessions[token];
+      }
+    }
+    // Revoke all refresh tokens
+    for (const session of Object.values(this.schema.refreshTokens)) {
+      if (session.userId === userId) {
+        session.isRevoked = true;
+      }
+    }
     this.persist();
   }
 
   /**
-   * Phase 6 Rule: Check trial expiration and gracefully transition to Free
+   * Auto-expire 30-Day VIP Gold trial and revert gracefully to Free without data loss
    */
-  private checkTrialExpiry(user: DbUser) {
+  public checkTrialExpiry(user: DbUser) {
     if (user.subscription_status === 'trialing' && user.trial_ends_at) {
       const endsAt = new Date(user.trial_ends_at).getTime();
       if (Date.now() > endsAt) {
@@ -313,7 +655,6 @@ class FinoraDatabase {
         user.plan = 'free';
         user.current_plan_id = 'plan-free';
 
-        // Keep finance data in sync
         const userFinance = this.schema.financeData[user.id];
         if (userFinance) {
           userFinance.user.subscription_status = 'expired';
@@ -326,7 +667,7 @@ class FinoraDatabase {
     }
   }
 
-  // --- STRICT OWNERSHIP & FINANCE DATA ACCESS ---
+  // --- FINANCIAL DATA ACCESS ---
 
   public getFinanceData(userId: string): FinanceData {
     const user = this.schema.users[userId];
@@ -356,13 +697,13 @@ class FinoraDatabase {
       throw new Error('Unauthorized: User không tồn tại');
     }
 
-    // Ownership Enforcement: Never allow overwriting another user's metadata
     data.user = {
       ...user,
       ...data.user,
-      id: user.id, // Immutable owner ID
+      id: user.id,
       email: user.email,
-      plan: user.plan, // Server-controlled plan
+      role: user.role,
+      plan: user.plan,
       subscription_status: user.subscription_status
     };
 
@@ -370,7 +711,64 @@ class FinoraDatabase {
     this.persist();
   }
 
-  // --- ADMIN OPERATIONS ---
+  // --- ADMIN & BOOTSTRAP CLI OPERATIONS ---
+
+  public getOrCreateBootstrapAdmin(adminEmail = 'admin@tichsan.vn'): { admin: DbUser; isNew: boolean } {
+    let admin = Object.values(this.schema.users).find(u => u.email === adminEmail);
+    if (!admin && adminEmail === 'admin@tichsan.vn') {
+      admin = Object.values(this.schema.users).find(u => u.role === 'admin');
+    }
+    if (!admin) {
+      admin = {
+        id: `usr_admin_${uid()}`,
+        name: 'Quản trị viên Hệ thống',
+        email: adminEmail,
+        role: 'admin',
+        currency: 'VND',
+        financialMonthStart: 1,
+        plan: 'gold',
+        subscription_status: 'active',
+        streakCount: 0,
+        lastCheckInDate: todayKey(),
+        defaultAccountId: 'acc_wallet',
+        isSuspended: false,
+        createdAt: todayKey(),
+        lastActive: todayKey(),
+        emailVerified: true
+      };
+      this.schema.users[admin.id] = admin;
+      this.persist();
+      return { admin, isNew: true };
+    }
+    return { admin, isNew: false };
+  }
+
+  public rotateAdminPassword(newPasswordPlain: string, adminEmail = 'admin@tichsan.vn'): { admin: DbUser; cooldownDays: number } {
+    const { admin } = this.getOrCreateBootstrapAdmin(adminEmail);
+
+    const now = Date.now();
+    const SEVEN_DAYS_MS = 7 * 86400 * 1000;
+
+    // Check 7-day cooldown
+    if (admin.lastAdminResetTimestamp && now - admin.lastAdminResetTimestamp < SEVEN_DAYS_MS) {
+      const remainingMs = SEVEN_DAYS_MS - (now - admin.lastAdminResetTimestamp);
+      const remainingDays = Math.ceil(remainingMs / (86400 * 1000));
+      throw new Error(`Chỉ được phép reset mật khẩu Admin tối đa 1 lần mỗi 7 ngày. Bạn cần đợi thêm ${remainingDays} ngày nữa.`);
+    }
+
+    admin.passwordHash = hashPassword(newPasswordPlain);
+    admin.mustChangePassword = true;
+    admin.lastAdminResetTimestamp = now;
+    admin.role = 'admin';
+
+    // Revoke all existing sessions for Admin
+    this.revokeAllUserSessions(admin.id);
+
+    this.addAuditLog('server_cli', 'ADMIN_PASSWORD_ROTATED_VIA_SERVER_CLI', `/admin/bootstrap`, 'SUCCESS');
+    this.persist();
+
+    return { admin, cooldownDays: 7 };
+  }
 
   public getAllUsers(): DbUser[] {
     return Object.values(this.schema.users).map(u => {
@@ -411,6 +809,112 @@ class FinoraDatabase {
     return user;
   }
 
+  public getPlans(): SubscriptionPlan[] {
+    return Object.values(this.schema.plans);
+  }
+
+  public getThirdPartyCosts(): ThirdPartyCost[] {
+    return [...this.schema.thirdPartyCosts];
+  }
+
+  public addThirdPartyCost(cost: Omit<ThirdPartyCost, 'id' | 'createdAt'>): ThirdPartyCost {
+    const newCost: ThirdPartyCost = {
+      ...cost,
+      id: `cost_${uid()}`,
+      createdAt: todayKey()
+    };
+    this.schema.thirdPartyCosts.push(newCost);
+    this.persist();
+    return newCost;
+  }
+
+  // --- ORDERS & PAYOS TRANSACTIONS ---
+
+  public createOrder(userId: string, planId: string, amount: number, userEmail: string, idempotencyKey?: string): PaymentOrder {
+    const orderCode = Math.floor(100000 + Math.random() * 900000);
+    const order: PaymentOrder = {
+      id: `ord_${uid()}`,
+      orderCode,
+      userId,
+      userEmail,
+      planId,
+      amount,
+      currency: 'VND',
+      status: 'CREATED',
+      idempotencyKey,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.schema.orders[order.id] = order;
+    this.persist();
+    return order;
+  }
+
+  public getOrder(orderId: string): PaymentOrder | null {
+    return this.schema.orders[orderId] || null;
+  }
+
+  public getOrderByCode(orderCode: number): PaymentOrder | null {
+    return Object.values(this.schema.orders).find(o => o.orderCode === orderCode) || null;
+  }
+
+  public updateOrderStatus(orderId: string, status: PaymentOrder['status'], notes?: string): PaymentOrder {
+    const order = this.schema.orders[orderId];
+    if (!order) throw new Error('Order không tồn tại');
+    order.status = status;
+    order.updatedAt = new Date().toISOString();
+    if (notes) order.notes = notes;
+
+    // If marked PAID, grant subscription entitlements cleanly
+    if (status === 'PAID') {
+      const user = this.schema.users[order.userId];
+      if (user) {
+        user.plan = order.planId.includes('gold') ? 'gold' : 'pro';
+        user.subscription_status = 'active';
+        user.current_plan_id = order.planId;
+        const now = new Date();
+        user.trial_started_at = undefined;
+        user.trial_ends_at = undefined;
+        (user as any).proExpiresAt = new Date(now.getTime() + 365 * 86400 * 1000).toISOString();
+
+        const userFinance = this.schema.financeData[order.userId];
+        if (userFinance) {
+          userFinance.user = { ...user };
+        }
+      }
+    }
+
+    this.persist();
+    return order;
+  }
+
+  // --- IDEMPOTENCY ---
+
+  public checkIdempotency(key: string, scope: string): IdempotencyRecord | null {
+    const record = this.schema.idempotency[`${scope}:${key}`];
+    if (!record) return null;
+    if (Date.now() > record.expiresAt) {
+      delete this.schema.idempotency[`${scope}:${key}`];
+      this.persist();
+      return null;
+    }
+    return record;
+  }
+
+  public saveIdempotency(key: string, scope: string, endpoint: string, requestHash: string, status: IdempotencyRecord['status'], response?: any) {
+    this.schema.idempotency[`${scope}:${key}`] = {
+      key,
+      scope,
+      endpoint,
+      requestHash,
+      status,
+      response,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 24 * 3600 * 1000 // 24 hours
+    };
+    this.persist();
+  }
+
   public getAuditLogs(): AuditLogEntry[] {
     return [...this.schema.auditLogs].sort((a, b) => b.timestamp - a.timestamp);
   }
@@ -427,11 +931,11 @@ class FinoraDatabase {
       timestamp: Date.now()
     };
     this.schema.auditLogs.unshift(entry);
-    if (this.schema.auditLogs.length > 100) {
+    if (this.schema.auditLogs.length > 200) {
       this.schema.auditLogs.pop();
     }
     this.persist();
   }
 }
 
-export const db = new FinoraDatabase();
+export const db = new TichSanDatabase();

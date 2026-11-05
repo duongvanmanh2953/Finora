@@ -127,7 +127,7 @@ export function DataSourceSettingsModal({ open, onClose }: DataSourceSettingsMod
           icon={<SecurityRounded fontSize="inherit" />}
           sx={{ borderRadius: '4px', fontSize: '0.8rem', py: 0.5 }}
         >
-          <strong>Bảo mật Read-Only:</strong> Finora chỉ đọc số dư và giá thị trường danh mục đầu tư. Hệ thống hoàn toàn không có quyền đặt lệnh mua bán hay rút tiền.
+          <strong>Bảo mật Read-Only:</strong> Tích Sản chỉ đọc số dư và giá thị trường danh mục đầu tư. Hệ thống hoàn toàn không có quyền đặt lệnh mua bán hay rút tiền.
         </Alert>
 
         {/* Master Switch */}

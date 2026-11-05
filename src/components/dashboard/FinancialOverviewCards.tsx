@@ -94,7 +94,7 @@ export function FinancialOverviewCards({
             minHeight: 122,
             transition: 'all 0.2s ease',
             '&:hover': {
-              boxShadow: isDark ? '0 4px 16px rgba(124, 58, 237, 0.25)' : '0 4px 12px rgba(124, 58, 237, 0.15)'
+              boxShadow: isDark ? '0 4px 16px rgba(37, 99, 235, 0.25)' : '0 4px 12px rgba(37, 99, 235, 0.15)'
             }
           }}
         >
@@ -470,7 +470,7 @@ export function FinancialOverviewCards({
             minHeight: 110,
             transition: 'all 0.2s ease',
             '&:hover': {
-              boxShadow: isDark ? '0 4px 16px rgba(234, 88, 12, 0.2)' : '0 4px 12px rgba(234, 88, 12, 0.12)'
+              boxShadow: isDark ? '0 4px 16px rgba(225, 29, 72, 0.2)' : '0 4px 12px rgba(225, 29, 72, 0.12)'
             }
           }}
         >

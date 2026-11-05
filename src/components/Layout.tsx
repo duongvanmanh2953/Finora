@@ -119,7 +119,7 @@ export function Layout() {
   const loc = useLocation();
   const navigate = useNavigate();
 
-  const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Finora';
+  const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Tích Sản';
   const isPro = data ? isProUser(data) : false;
   const isGold = data ? isGoldUser(data) : false;
   const trialActive = data ? isTrialActive(data.user) : false;
@@ -330,21 +330,21 @@ export function Layout() {
         <aside className={`sidebar ${open ? 'open' : ''}`}>
           <div className="brand">
             <span className="brandmark">
-              <img src="/logo.png" alt="Logo Finora" className="brandmark-img" />
+              <img src="/logo.png" alt="Logo Tích Sản" className="brandmark-img" />
             </span>
-            <span style={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: 18, color: 'var(--text-primary)' }}>Finora</span>
+            <span style={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: 18, color: 'var(--text-primary)' }}>Tích Sản</span>
             {isPro && (
               <Chip
-                label="PRO"
+                label="VIP GOLD"
                 size="small"
                 sx={{
                   ml: 0.5,
                   height: 18,
                   fontSize: 9.5,
                   fontWeight: 800,
-                  bgcolor: 'rgba(217, 154, 54, 0.15)',
-                  color: '#D99A36',
-                  border: '1px solid rgba(217, 154, 54, 0.3)'
+                  bgcolor: 'rgba(217, 119, 6, 0.15)',
+                  color: '#B45309',
+                  border: '1px solid rgba(217, 119, 6, 0.35)'
                 }}
               />
             )}
@@ -364,11 +364,11 @@ export function Layout() {
                 fullWidth
                 variant="outlined"
                 size="small"
-                startIcon={<Crown size={14} color="#D99A36" />}
-                onClick={() => openPricing('Mở khóa gói cước Finora Pro')}
+                startIcon={<Crown size={14} color="#D97706" />}
+                onClick={() => openPricing('Mở khóa gói cước VIP Gold')}
                 sx={{
                   color: 'text.primary',
-                  borderColor: 'rgba(217, 154, 54, 0.4)',
+                  borderColor: 'rgba(217, 119, 6, 0.4)',
                   fontSize: 12,
                   fontWeight: 700,
                   py: 0.7,
@@ -427,29 +427,33 @@ export function Layout() {
               </>
             )}
 
-            <div className="navlabel">QUẢN TRỊ NỀN TẢNG</div>
-            <NavLink
-              to="/admin"
-              className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-              onClick={() => setOpen(false)}
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
-              <Server size={18} />
-              <span>Admin Console</span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  color: '#10B981',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
-                  fontSize: 10,
-                  fontWeight: 800
-                }}
-              >
-                ADMIN
-              </span>
-            </NavLink>
+            {data?.user?.role === 'admin' && (
+              <>
+                <div className="navlabel">QUẢN TRỊ NỀN TẢNG</div>
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
+                  onClick={() => setOpen(false)}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <Server size={18} />
+                  <span>Admin Console</span>
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                      color: '#10B981',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontSize: 10,
+                      fontWeight: 800
+                    }}
+                  >
+                    ADMIN
+                  </span>
+                </NavLink>
+              </>
+            )}
           </nav>
 
           <div className="sidebottom">
@@ -594,7 +598,7 @@ export function Layout() {
                 <Menu size={20} />
               </button>
 
-              {/* Logo Finora trên Mobile & Tablet */}
+              {/* Logo Tích Sản trên Mobile & Tablet */}
               <Box
                 sx={{
                   display: { xs: 'flex', md: 'none' },
@@ -605,7 +609,7 @@ export function Layout() {
               >
                 <img
                   src="/logo.png"
-                  alt="Logo Finora"
+                  alt="Logo Tích Sản"
                   style={{
                     width: 28,
                     height: 28,
@@ -622,7 +626,7 @@ export function Layout() {
                   className="crumb"
                   sx={{ display: { xs: 'none', sm: 'block' } }}
                 >
-                  Finora / Sổ tài chính
+                  Tích Sản / Sổ tài chính
                 </Box>
                 <h1 style={{
                   fontSize: 'inherit',
@@ -768,7 +772,7 @@ export function Layout() {
               </Tooltip>
 
               {/* AI Copilot (WebMCP Drawer) */}
-              <Tooltip title="Mở Trợ lý AI Finora (WebMCP Copilot)">
+              <Tooltip title="Mở Trợ lý AI Tích Sản (WebMCP Copilot)">
                 <IconButton
                   size="small"
                   onClick={() => setAiDrawerOpen(true)}
@@ -788,53 +792,57 @@ export function Layout() {
                 </IconButton>
               </Tooltip>
 
-              {/* Admin SaaS Console */}
-              <Tooltip title="Mở Bảng điều khiển Quản trị Doanh nghiệp (Finora SaaS Admin)">
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate('/admin')}
-                  startIcon={<Server size={14} color="#10B981" />}
-                  sx={{
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    fontSize: 12,
-                    fontWeight: 700,
-                    height: 28,
-                    borderRadius: '4px',
-                    borderColor: 'rgba(16, 185, 129, 0.4)',
-                    color: '#10B981',
-                    bgcolor: 'rgba(16, 185, 129, 0.08)',
-                    '&:hover': {
-                      bgcolor: 'rgba(16, 185, 129, 0.16)',
-                      borderColor: '#10B981'
-                    }
-                  }}
-                >
-                  Trang Admin
-                </Button>
-              </Tooltip>
+              {/* Admin SaaS Console (Only visible to verified Administrators) */}
+              {data?.user?.role === 'admin' && (
+                <>
+                  <Tooltip title="Mở Bảng điều khiển Quản trị Hệ thống (Tích Sản Admin)">
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => navigate('/admin')}
+                      startIcon={<Server size={14} color="#10B981" />}
+                      sx={{
+                        display: { xs: 'none', sm: 'inline-flex' },
+                        fontSize: 12,
+                        fontWeight: 700,
+                        height: 28,
+                        borderRadius: '4px',
+                        borderColor: 'rgba(16, 185, 129, 0.4)',
+                        color: '#10B981',
+                        bgcolor: 'rgba(16, 185, 129, 0.08)',
+                        '&:hover': {
+                          bgcolor: 'rgba(16, 185, 129, 0.16)',
+                          borderColor: '#10B981'
+                        }
+                      }}
+                    >
+                      Trang Admin
+                    </Button>
+                  </Tooltip>
 
-              <Tooltip title="Mở Trang Quản trị SaaS">
-                <IconButton
-                  size="small"
-                  onClick={() => navigate('/admin')}
-                  sx={{
-                    display: { xs: 'inline-flex', sm: 'none' },
-                    color: '#10B981',
-                    bgcolor: 'rgba(16, 185, 129, 0.1)',
-                    border: '1px solid rgba(16, 185, 129, 0.3)',
-                    borderRadius: '4px',
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    p: 0.75
-                  }}
-                  aria-label="Quản trị SaaS"
-                >
-                  <Server size={16} />
-                </IconButton>
-              </Tooltip>
+                  <Tooltip title="Mở Trang Quản trị">
+                    <IconButton
+                      size="small"
+                      onClick={() => navigate('/admin')}
+                      sx={{
+                        display: { xs: 'inline-flex', sm: 'none' },
+                        color: '#10B981',
+                        bgcolor: 'rgba(16, 185, 129, 0.1)',
+                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                        borderRadius: '4px',
+                        width: 34,
+                        height: 34,
+                        minWidth: 34,
+                        minHeight: 34,
+                        p: 0.75
+                      }}
+                      aria-label="Quản trị"
+                    >
+                      <Server size={16} />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
 
               {/* Fast search pill */}
               <Box

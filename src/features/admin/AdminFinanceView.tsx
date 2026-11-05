@@ -65,7 +65,7 @@ export function AdminFinanceView() {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tab} onChange={(_, v) => setTab(v)}>
           <Tab value="invoices" label="Hóa đơn Điện tử MISA (e-Invoices)" />
-          <Tab value="expenses" label="Chi phí Doanh nghiệp Finora" />
+          <Tab value="expenses" label="Quản lý Chi phí Bên Thứ Ba (Server, Domain, AI...)" />
           <Tab value="tax" label="Kê khai Thuế & Đối soát Kế toán" />
         </Tabs>
       </Box>
@@ -128,35 +128,50 @@ export function AdminFinanceView() {
 
       {tab === 'expenses' && (
         <BaseCard>
-          <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1 }}>
-            Chi phí Doanh nghiệp SaaS
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
-            Các khoản chi phục vụ vận hành hạ tầng máy chủ và API
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                Quản lý Chi phí Bên Thứ Ba & Hạ tầng Vận hành
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Theo dõi định kỳ các dịch vụ: Máy chủ VPS, Tên miền DNS, Email SMTP, AI Tokens, Cloud Storage
+              </Typography>
+            </Box>
+          </Box>
+
           <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px' }}>
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Hạng mục</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Hạng mục dịch vụ</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Nhà cung cấp</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Số tiền</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>Chứng từ</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Chu kỳ</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Hạn thanh toán</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Số tiền</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Trạng thái</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Người duyệt</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Hạ tầng VPS & Database High Availability</TableCell>
-                  <TableCell>Cloudflare / AWS</TableCell>
-                  <TableCell sx={{ fontWeight: 750 }}>350.000 ₫/tháng</TableCell>
-                  <TableCell><StatusBadge label="Hóa đơn VAT quốc tế" status="info" size="small" /></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 700 }}>Cổng kết nối Open Banking & VietQR</TableCell>
-                  <TableCell>payOS Gateway</TableCell>
-                  <TableCell sx={{ fontWeight: 750 }}>100.000 ₫/tháng</TableCell>
-                  <TableCell><StatusBadge label="Đã trích nợ tự động" status="success" size="small" /></TableCell>
-                </TableRow>
+                {[
+                  { name: 'Máy chủ VPS & Node.js Runtime', provider: 'Hetzner Cloud VPS', cycle: 'Hàng tháng', due: '20/11/2026', amount: 320000, status: 'Đã thanh toán', approver: 'Root Admin', isPaid: true },
+                  { name: 'Tên miền tichsan.vn & DNS SSL', provider: 'Cloudflare Registrar', cycle: 'Hàng năm', due: '15/05/2027', amount: 240000, status: 'Đã thanh toán', approver: 'Root Admin', isPaid: true },
+                  { name: 'Hệ thống Email Xác minh SMTP', provider: 'Resend SMTP', cycle: 'Hàng tháng', due: '30/11/2026', amount: 0, status: 'Gói Free (Đủ quota)', approver: 'Hệ thống', isPaid: true },
+                  { name: 'Trợ lý AI & NLP Market Engine', provider: 'Google Gemini Pro / Flash', cycle: 'Theo lưu lượng', due: '05/12/2026', amount: 150000, status: 'Chờ thanh toán', approver: 'Chờ duyệt', isPaid: false },
+                  { name: 'Cổng kết nối thanh toán VietQR', provider: 'payOS Merchant Services', cycle: 'Theo giao dịch', due: 'Cuối tháng', amount: 100000, status: 'Đã trích nợ tự động', approver: 'Kế toán', isPaid: true }
+                ].map((c, i) => (
+                  <TableRow key={i} hover>
+                    <TableCell sx={{ fontWeight: 700 }}>{c.name}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{c.provider}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{c.cycle}</TableCell>
+                    <TableCell sx={{ fontSize: 12 }}>{c.due}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 800 }}>{money(c.amount)}</TableCell>
+                    <TableCell>
+                      <StatusBadge label={c.status} status={c.isPaid ? 'success' : 'warning'} size="small" variant="soft" />
+                    </TableCell>
+                    <TableCell sx={{ fontSize: 12, color: 'text.secondary' }}>{c.approver}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>

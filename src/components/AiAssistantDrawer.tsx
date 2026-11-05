@@ -38,7 +38,7 @@ export function AiAssistantDrawer({
       id: 'welcome',
       sender: 'assistant',
       type: 'text',
-      text: 'Xin chào! Tôi là **Finora AI** — Trợ lý Trí tuệ & Điều hành Tài chính cá nhân của bạn.\n\nTôi có thể giúp bạn:\n• Phân tích thu chi, ngân sách và dòng tiền thực tế.\n• Kiểm tra danh mục đầu tư, lãi/lỗ và cảnh báo cắt lỗ SL/TP.\n• Đề xuất và tự động lập kế hoạch **Action Plan** nhiều bước (Ghi nhận chi tiêu, tạo ngân sách) có chọn lọc trước khi bạn phê duyệt.',
+      text: 'Xin chào! Tôi là **Tích Sản AI** — Trợ lý Trí tuệ & Điều hành Tài chính cá nhân của bạn.\n\nTôi có thể giúp bạn:\n• Phân tích thu chi, ngân sách và dòng tiền thực tế.\n• Kiểm tra danh mục đầu tư, lãi/lỗ và cảnh báo cắt lỗ SL/TP.\n• Đề xuất và tự động lập kế hoạch **Action Plan** nhiều bước (Ghi nhận chi tiêu, tạo ngân sách) có chọn lọc trước khi bạn phê duyệt.',
       timestamp: '18:00'
     }
   ]);
@@ -176,7 +176,7 @@ export function AiAssistantDrawer({
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 15 }}>
-                Finora AI
+                Tích Sản AI
               </Typography>
 
               {/* Gold PRO Badge */}
@@ -274,7 +274,7 @@ export function AiAssistantDrawer({
                       variant="primary"
                       size="small"
                       icon={<Sparkles size={14} />}
-                      onClick={() => openPricing('Nâng cấp gói Pro để trò chuyện Finora AI không giới hạn!')}
+                      onClick={() => openPricing('Nâng cấp gói VIP Gold để trò chuyện Tích Sản AI không giới hạn!')}
                       sx={{
                         alignSelf: 'flex-start',
                         bgcolor: '#C99A32',
@@ -291,7 +291,7 @@ export function AiAssistantDrawer({
                 )}
 
                 <Typography variant="caption" sx={{ display: 'block', mt: 1, color: 'text.secondary', fontSize: 10 }}>
-                  {msg.timestamp} · Finora AI Copilot
+                  {msg.timestamp} · Tích Sản AI Copilot
                 </Typography>
               </Paper>
 
@@ -310,7 +310,7 @@ export function AiAssistantDrawer({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, color: 'text.secondary', p: 1 }}>
             <CircularProgress size={16} color="primary" />
             <Typography variant="caption" sx={{ fontSize: 12 }}>
-              Finora AI đang phân tích dữ liệu và lập kế hoạch tài chính...
+              Tích Sản AI đang phân tích dữ liệu và lập kế hoạch tài chính...
             </Typography>
           </Box>
         )}

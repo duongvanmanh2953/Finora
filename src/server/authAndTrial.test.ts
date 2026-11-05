@@ -11,7 +11,8 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
     expect(result.user).toBeDefined();
     expect(result.user.name).toBe(testName);
     expect(result.user.email).toBe(testEmail);
-    expect(result.token).toBeDefined();
+    expect(result.accessToken).toBeDefined();
+    expect(result.refreshToken).toBeDefined();
 
     // Verify VIP Gold tier & 30-day trial status
     expect(result.user.plan).toBe('gold');
@@ -34,9 +35,9 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
   it('2. Authenticates registered user with persistent session and returns matching user profile', () => {
     const loginResult = db.login(testEmail);
     expect(loginResult.user.email).toBe(testEmail);
-    expect(loginResult.token).toBeDefined();
+    expect(loginResult.accessToken).toBeDefined();
 
-    const userByToken = db.getUserByToken(loginResult.token);
+    const userByToken = db.getUserByToken(loginResult.accessToken);
     expect(userByToken).toBeDefined();
     expect(userByToken?.id).toBe(loginResult.user.id);
   });
@@ -118,5 +119,30 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
     db.toggleSuspend(user.id);
     const res = db.login(user.email);
     expect(res.user.email).toBe(user.email);
+  });
+
+  it('7. 120-Day session refresh token rotation and token reuse detection', () => {
+    const user = db.register('User Refresh Test', `refresh_${Date.now()}@tichsan.vn`);
+    const initialRefresh = user.refreshToken;
+
+    // Normal rotation
+    const rotated = db.rotateRefreshToken(initialRefresh, '127.0.0.1', 'Vitest');
+    expect(rotated.accessToken).toBeDefined();
+    expect(rotated.refreshToken).toBeDefined();
+    expect(rotated.refreshToken).not.toBe(initialRefresh);
+
+    // Reuse detection: Attempting to use initialRefresh again must throw and revoke session
+    expect(() => db.rotateRefreshToken(initialRefresh, '127.0.0.1', 'Attacker')).toThrowError(/đã qua sử dụng/);
+  });
+
+  it('8. Server Admin CLI password rotation enforces 7-day cooldown', () => {
+    const adminEmail = `admin_test_${Date.now()}@tichsan.vn`;
+    // First rotation succeeds
+    const firstRotation = db.rotateAdminPassword('InitialPass123!@#', adminEmail);
+    expect(firstRotation.admin.role).toBe('admin');
+    expect(firstRotation.cooldownDays).toBe(7);
+
+    // Immediate second rotation must fail due to 7-day cooldown
+    expect(() => db.rotateAdminPassword('SecondPass456!@#', adminEmail)).toThrowError(/7 ngày/);
   });
 });

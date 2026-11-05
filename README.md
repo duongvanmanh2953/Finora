@@ -1,41 +1,91 @@
-# Finora – Personal Finance Manager
+# TÍCH SẢN — Nền Tảng Quản Lý Tài Chính & Tích Lũy Tài Sản Cá Nhân
 
-Finora là website quản lý tài chính cá nhân dùng React, TypeScript, Vite và Tailwind CSS. Bản đầu hoạt động bằng dữ liệu mẫu lưu trên trình duyệt; chưa có backend hay xác thực tài khoản thật.
+**Tích Sản** là hệ thống quản lý tài chính cá nhân, dòng tiền và phân bổ tài sản thực tế theo chuẩn Fintech hiện đại. Hệ thống được phát triển với kiến trúc bảo mật sâu, phiên đăng nhập 120 ngày, phân quyền Admin CLI an toàn, cơ chế dùng thử VIP Gold 30 ngày và sẵn sàng kết nối cổng thanh toán PayOS.
 
-## Chạy dự án
+---
 
-Cần Node.js 20.19+ và pnpm 10+.
+## 1. Điểm Nhấn Kiến Trúc & Tính Năng Nổi Bật
 
+1. **Quản trị Máy chủ CLI (`Tichsan2953@`)**:
+   - Khởi tạo và luân chuyển mật khẩu Admin trực tiếp qua SSH/Shell máy chủ.
+   - Không lưu mật khẩu thô (plaintext), băm bằng thuật toán `scrypt` an toàn.
+   - Khóa chu kỳ reset tối đa 1 lần mỗi 7 ngày (7-Day Cooldown).
+   - Ẩn hoàn toàn nút Admin khỏi giao diện người dùng thông thường và Demo.
+2. **Phiên Đăng Nhập 120 Ngày (120-Day Long Session)**:
+   - Access token ngắn hạn (15 phút) hạn chế rủi ro lộ token.
+   - Refresh token dài hạn tối đa 120 ngày luân chuyển liên tục (Token Rotation).
+   - Lưu trữ dạng băm SHA-256 kèm Secret Pepper trong database; Cookie `HttpOnly` chống XSS.
+   - Tự động phát hiện token tái sử dụng (Reuse Detection) và vô hiệu hóa ngay phiên xâm phạm.
+3. **Chính Sách Gói Cước & Trial 30 Ngày**:
+   - Mặc định đăng ký mới thuộc gói Miễn Phí (Free).
+   - Hệ thống tự động tặng ngay **30 ngày trải nghiệm VIP Gold miễn phí** mà không yêu cầu thẻ tín dụng hay nạp tiền.
+   - Hết 30 ngày tự động chuyển về Free, bảo toàn 100% dữ liệu đã ghi chép.
+4. **Cổng Pháp Lý & Tích Hợp PayOS (VietQR)**:
+   - Mặc định an toàn pháp lý (`PAYMENTS_ENABLED=false`, `LEGAL_COMPLIANCE_APPROVED=false`).
+   - Hiển thị thông báo tuân thủ pháp lý và QR mẫu minh họa khi chưa đủ điều kiện thu tiền.
+   - Tích hợp sẵn sàng PayOS SDK, đối soát hai chiều (`orderCode`, `amount`), chữ ký Webhook HMAC-SHA256 và khóa Idempotency.
+5. **Tổng Quan Tài Chính & Speedometer Gauges**:
+   - 7 thẻ tổng quan với 7 sắc màu nền phân biệt rõ rệt (Tài sản: Blue, Thu nhập: Emerald, Chi tiêu: Coral, Dòng tiền: Teal, Tiết kiệm: Purple, Ngân sách: Amber, Nợ: Rose).
+   - Bộ đo sức khỏe tài chính GSAP chạy từ 0 đến giá trị thực, kim xoay dưới nắp trục tâm che khít, 5 dải màu tương phản cao.
+
+---
+
+## 2. Hướng Dẫn Cài Đặt & Chạy Cục Bộ
+
+### 2.1. Yêu cầu
+- Node.js 20.18+ (hoặc 22+)
+- pnpm 10+ hoặc npm
+
+### 2.2. Khởi chạy
 ```bash
+# 1. Cài đặt dependencies
 pnpm install
+
+# 2. Cấu hình biến môi trường
+cp .env.example .env
+
+# 3. Chạy môi trường phát triển (bao gồm Frontend & API Handler)
 pnpm dev
 ```
+Mở trình duyệt tại: `http://localhost:5173`.
 
-Mở URL Vite in trong terminal (thường là `http://localhost:5173`). Kiểm tra nghiệp vụ bằng `pnpm test`; tạo bản production bằng `pnpm build`.
+### 2.3. Lệnh Quản trị Máy chủ
+Để lấy thông tin đăng nhập hoặc luân chuyển mật khẩu Admin:
+```bash
+./Tichsan2953@
+# hoặc
+bash scripts/admin-bootstrap.sh
+```
 
-Nếu muốn bắt đầu lại, vào **Cài đặt → Khôi phục dữ liệu mẫu**. Dữ liệu demo được lưu trong `localStorage` trên thiết bị hiện tại. Mật khẩu nhập trong màn hình auth demo không được lưu.
+---
 
-## Cấu trúc và các giai đoạn
+## 3. Kiểm Thử & Đóng Gói Production
 
-| Giai đoạn | Tệp chính | Đã hoàn thành |
-| --- | --- | --- |
-| 1. Nền tảng | `package.json`, `vite.config.ts`, `tailwind.config.js`, `src/main.tsx`, `src/components/Layout.tsx`, `src/styles.css` | React/TS/Vite, Tailwind, route, sidebar, header, theme sáng/tối, responsive |
-| 2. Tổng quan | `src/features/dashboard/Dashboard.tsx`, `src/mocks/data.ts`, `src/lib/finance.ts` | 6 chỉ số, bộ lọc thời gian, biểu đồ thu chi, danh mục, dòng tiền, tài sản ròng, ngân sách, mục tiêu, nhắc nhở |
-| 3. Giao dịch & tài khoản | `src/features/transactions/Transactions.tsx`, `src/features/accounts/Accounts.tsx`, `src/features/categories/Categories.tsx` | CRUD giao dịch, lọc/tìm/sắp xếp/phân trang/CSV, tài khoản, chuyển tiền nội bộ, danh mục |
-| 4. Kế hoạch | `src/features/budgets/Budgets.tsx`, `src/features/savings/Savings.tsx`, `src/features/debts/Debts.tsx` | Ngân sách thực chi, đóng góp mục tiêu, thanh toán dư nợ |
-| 5. Báo cáo & cài đặt | `src/features/reports/Reports.tsx`, `src/features/recurring/Recurring.tsx`, `src/features/settings/Settings.tsx`, `src/features/auth/Auth.tsx` | Báo cáo/CSV, lịch định kỳ, cấu hình cơ bản, giao diện auth demo |
-| 6. Trạng thái giao diện | `src/components/ui.tsx`, `src/styles.css`, `src/store.ts` | Modal, xác nhận xóa, toast, skeleton, empty/error state, animation nhẹ |
-| 7. Kiểm tra | `src/lib/finance.test.ts` | Test các quy tắc tính tiền; TypeScript và build production |
+```bash
+# Kiểm tra kiểu dữ liệu TypeScript
+npx tsc --noEmit
 
-## Quy tắc dữ liệu
+# Chạy toàn bộ Unit Tests & Business Logic Tests
+npx vitest run
 
-- Mọi số tiền là số nguyên VND. Tài khoản có số dư đầu kỳ và số dư hiện tại được tính từ giao dịch **đã hoàn tất**.
-- Chuyển khoản nội bộ ghi một bản ghi có tài khoản gửi và nhận; số dư hai tài khoản đổi tương ứng, tổng thu/chi không đổi.
-- Đóng góp mục tiêu từ tài khoản khác tạo chuyển khoản nội bộ. Đóng góp từ chính tài khoản mục tiêu chỉ đánh dấu khoản tiền đã dành, không thay đổi số dư.
-- Trả hoặc thu hồi nợ tạo dòng tiền loại chuyển khoản với đối tác bên ngoài, giảm dư nợ và điều chỉnh số dư tài khoản nhưng không cộng vào thu nhập hoặc chi tiêu tiêu dùng.
-- Dashboard, tài khoản, ngân sách và báo cáo dùng cùng nguồn `FinanceData` và các hàm trong `src/lib/finance.ts`.
-- `src/services/financeService.ts` là lớp truy cập dữ liệu; có thể thay adapter mock bằng REST API khi triển khai backend.
+# Đóng gói Production
+pnpm build
 
-## Giới hạn của bản demo
+# Build Docker Container
+docker compose build --no-cache
+docker compose up -d
+```
 
-Màn hình đăng nhập, đăng ký và đặt lại mật khẩu chỉ trình diễn luồng giao diện. Không có email, JWT hoặc bảo vệ dữ liệu phía máy chủ. Giao dịch định kỳ chỉ phát sinh khi người dùng bấm **Ghi nhận kỳ này**. Số dư đầu kỳ và các khoản nợ mẫu là giả định tại thời điểm bắt đầu sổ; không có giao dịch lịch sử trước thời điểm đó.
+---
+
+## 4. Tài Liệu Kỹ Thuật Chi Tiết
+- [Hướng dẫn thiết lập Biến Môi Trường (ENV Setup)](docs/ENV_SETUP.md)
+- [Quy chuẩn Bảo mật (Security Specification)](docs/SECURITY.md)
+- [Quy trình Thanh toán & Đối soát PayOS](docs/PAYMENT_FLOW.md)
+- [Quy trình Phục hồi & Khởi tạo Admin](docs/ADMIN_RECOVERY.md)
+- [Hướng dẫn Triển khai & Rollback (Deployment)](docs/DEPLOYMENT.md)
+- [Bản đồ Tính năng & Phân hệ (Feature Inventory)](docs/FEATURE_INVENTORY.md)
+- [Bảng Kiểm tra Phát hành (Release Checklist)](docs/RELEASE_CHECKLIST.md)
+
+---
+© 2026 Tích Sản Platform. Bản quyền được bảo hộ.

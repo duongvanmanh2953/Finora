@@ -80,36 +80,42 @@ export const FINORA_TOKENS = {
     }
   },
 
-  // 7 Financial Overview Card Color Tones (Distinct Pastel & Slate Backdrops)
+  // 7 Financial Overview Card Color Tones (Distinct Pastel & Slate Backdrops as per Master Spec)
   overviewCards: {
     assets: {
-      // Tím trần (Ceiling Purple - Stock market benchmark)
-      light: { bg: '#FAF5FF', border: '#DDD6FE', text: '#6D28D9', accent: '#7C3AED', iconBg: 'rgba(124, 58, 237, 0.14)' },
-      dark: { bg: '#221338', border: 'rgba(139, 92, 246, 0.38)', text: '#E9D5FF', accent: '#A78BFA', iconBg: 'rgba(139, 92, 246, 0.25)' }
+      // Blue / Blue tint
+      light: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF', accent: '#2563EB', iconBg: 'rgba(37, 99, 235, 0.12)' },
+      dark: { bg: '#0F1E36', border: 'rgba(59, 130, 246, 0.35)', text: '#93C5FD', accent: '#60A5FA', iconBg: 'rgba(59, 130, 246, 0.2)' }
     },
     income: {
+      // Emerald / Green tint
       light: { bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46', accent: '#059669', iconBg: 'rgba(16, 185, 129, 0.12)' },
       dark: { bg: '#0B281E', border: 'rgba(16, 185, 129, 0.3)', text: '#6EE7B7', accent: '#34D399', iconBg: 'rgba(16, 185, 129, 0.2)' }
     },
     expense: {
+      // Coral / Red tint
       light: { bg: '#FEF2F2', border: '#FECACA', text: '#991B1B', accent: '#DC2626', iconBg: 'rgba(239, 68, 68, 0.12)' },
       dark: { bg: '#2C1113', border: 'rgba(239, 68, 68, 0.3)', text: '#FCA5A5', accent: '#F87171', iconBg: 'rgba(239, 68, 68, 0.2)' }
     },
     cashflow: {
+      // Teal / Teal tint
       light: { bg: '#F0FDFA', border: '#99F6E4', text: '#115E59', accent: '#0D9488', iconBg: 'rgba(13, 148, 136, 0.12)' },
       dark: { bg: '#0A2B29', border: 'rgba(20, 184, 166, 0.3)', text: '#5EEAD4', accent: '#2DD4BF', iconBg: 'rgba(20, 184, 166, 0.2)' }
     },
     savings: {
-      light: { bg: '#F5F3FF', border: '#C7D2FE', text: '#3730A3', accent: '#4F46E5', iconBg: 'rgba(79, 70, 229, 0.12)' },
-      dark: { bg: '#171B38', border: 'rgba(99, 102, 241, 0.35)', text: '#C7D2FE', accent: '#818CF8', iconBg: 'rgba(99, 102, 241, 0.2)' }
+      // Purple / Purple tint
+      light: { bg: '#FAF5FF', border: '#DDD6FE', text: '#6D28D9', accent: '#7C3AED', iconBg: 'rgba(124, 58, 237, 0.14)' },
+      dark: { bg: '#221338', border: 'rgba(139, 92, 246, 0.38)', text: '#E9D5FF', accent: '#A78BFA', iconBg: 'rgba(139, 92, 246, 0.25)' }
     },
     budget: {
+      // Amber / Yellow tint
       light: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E', accent: '#D97706', iconBg: 'rgba(217, 119, 6, 0.12)' },
       dark: { bg: '#2B1D09', border: 'rgba(245, 158, 11, 0.3)', text: '#FCD34D', accent: '#FBBF24', iconBg: 'rgba(245, 158, 11, 0.2)' }
     },
     debt: {
-      light: { bg: '#FFF7ED', border: '#FED7AA', text: '#9A3412', accent: '#EA580C', iconBg: 'rgba(234, 88, 12, 0.12)' },
-      dark: { bg: '#2D140A', border: 'rgba(249, 115, 22, 0.3)', text: '#FDBA74', accent: '#FB923C', iconBg: 'rgba(249, 115, 22, 0.2)' }
+      // Rose / Rose tint
+      light: { bg: '#FFF1F2', border: '#FECDD3', text: '#9F1239', accent: '#E11D48', iconBg: 'rgba(225, 29, 72, 0.12)' },
+      dark: { bg: '#2B0E14', border: 'rgba(244, 63, 94, 0.3)', text: '#FDA4AF', accent: '#FB7185', iconBg: 'rgba(244, 63, 94, 0.2)' }
     }
   },
 
@@ -283,3 +289,4 @@ export function resolveUniversalStatus(status: string): {
 }
 
 export const resolveFinoraStatus = (status: string) => resolveUniversalStatus(status).type;
+export const TICHSAN_TOKENS = FINORA_TOKENS;

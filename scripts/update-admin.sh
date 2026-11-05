@@ -9,3 +9,4 @@ echo "          TÍCH SẢN / FINORA — CẬP NHẬT TÀI KHOẢN ADMIN    "
 echo "=========================================================="
 
 npx tsx src/server/admin/adminResetCli.ts "$@"
+

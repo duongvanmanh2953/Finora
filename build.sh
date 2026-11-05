@@ -71,3 +71,4 @@ echo "  • Kiểm tra status: docker ps -f name=finora-app"
 echo "  • Xem logs       : docker logs -f finora-app"
 echo "======================================================================"
 echo ""
+

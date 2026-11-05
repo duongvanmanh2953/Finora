@@ -23,21 +23,21 @@ export interface SemiCircleGaugeProps {
   unitLabel?: string; // default '/100'
 }
 
-// 5 crisp status zones (Critical -> Poor -> Average -> Good -> Excellent)
+// 5 vivid, high-contrast status zones (Critical -> Poor -> Average -> Good -> Excellent)
 const HEALTH_ZONES: GaugeZone[] = [
-  { min: 0, max: 20, color: '#EF4444', label: 'Nguy cấp' },
-  { min: 20, max: 40, color: '#F97316', label: 'Cần chú ý' },
-  { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
-  { min: 60, max: 80, color: '#10B981', label: 'Tốt' },
-  { min: 80, max: 100, color: '#06B6D4', label: 'Xuất sắc' }
+  { min: 0, max: 20, color: '#FF4D4F', label: 'Nguy cấp' },
+  { min: 20, max: 40, color: '#FF7A45', label: 'Cần chú ý' },
+  { min: 40, max: 60, color: '#FFC53D', label: 'Trung bình' },
+  { min: 60, max: 80, color: '#52C41A', label: 'Tốt' },
+  { min: 80, max: 100, color: '#13C2C2', label: 'Xuất sắc' }
 ];
 
 const RISK_ZONES: GaugeZone[] = [
-  { min: 0, max: 20, color: '#06B6D4', label: 'Rất an toàn' },
-  { min: 20, max: 40, color: '#10B981', label: 'An toàn' },
-  { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
-  { min: 60, max: 80, color: '#F97316', label: 'Rủi ro cao' },
-  { min: 80, max: 100, color: '#EF4444', label: 'Báo động' }
+  { min: 0, max: 20, color: '#13C2C2', label: 'Rất an toàn' },
+  { min: 20, max: 40, color: '#52C41A', label: 'An toàn' },
+  { min: 40, max: 60, color: '#FFC53D', label: 'Trung bình' },
+  { min: 60, max: 80, color: '#FF7A45', label: 'Rủi ro cao' },
+  { min: 80, max: 100, color: '#FF4D4F', label: 'Báo động' }
 ];
 
 export function SemiCircleGauge({

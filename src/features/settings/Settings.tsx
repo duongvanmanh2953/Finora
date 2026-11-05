@@ -102,7 +102,7 @@ export default function Settings() {
     }));
     notify(
       nextPlan === 'pro'
-        ? 'Đã bật chế độ Finora Pro (Dev Mode)'
+        ? 'Đã bật chế độ Tích Sản Pro (Dev Mode)'
         : 'Đã chuyển về gói Cơ bản (Free)'
     );
   };
@@ -176,7 +176,7 @@ export default function Settings() {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Box>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  {isPro ? 'Finora Pro' : 'Gói Cơ Bản (Free)'}
+                  {isPro ? 'Tích Sản VIP Gold' : 'Gói Cơ Bản (Free)'}
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                   {isPro
@@ -198,10 +198,10 @@ export default function Settings() {
                 size="small"
                 color="primary"
                 startIcon={<Sparkles size={15} />}
-                onClick={() => openPricing('Nâng cấp Finora Pro')}
+                onClick={() => openPricing('Nâng cấp Tích Sản VIP Gold')}
                 sx={{ mt: 1 }}
               >
-                Nâng cấp lên Pro ngay
+                Nâng cấp lên VIP Gold ngay
               </Button>
             ) : (
               <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600, display: 'block', mt: 0.5 }}>
@@ -376,7 +376,7 @@ export default function Settings() {
         onClose={() => setResetOpen(false)}
         onConfirm={() => update(() => structuredClone(seed))}
         title="Khôi phục dữ liệu mẫu ban đầu"
-        message="Mọi thay đổi trên thiết bị này sẽ được thay thế bằng bộ dữ liệu mẫu ban đầu của Finora."
+        message="Mọi thay đổi trên thiết bị này sẽ được thay thế bằng bộ dữ liệu mẫu ban đầu của Tích Sản."
       />
     </>
   );

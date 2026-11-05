@@ -101,7 +101,7 @@ export function AdminLayout() {
           </Box>
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1 }}>
-              FINORA ADMIN
+              TÍCH SẢN ADMIN
             </Typography>
             <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: 11 }}>
               Platform Management Console

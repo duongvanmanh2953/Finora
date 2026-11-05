@@ -172,7 +172,7 @@ export default function LandingPage() {
       });
 
       // Section Titles Reveal with ScrollTrigger
-      gsap.utils.toArray<HTMLElement>('.reveal-section').forEach(sec => {
+      gsap.utils.toArray<HTMLElement>('.reveal-section').forEach((sec: any) => {
         gsap.from(sec, {
           scrollTrigger: {
             trigger: sec,
@@ -243,9 +243,9 @@ export default function LandingPage() {
       >
         <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <img src="/logo.png" alt="Finora" style={{ width: 34, height: 34, borderRadius: 8, boxShadow: '0 4px 14px rgba(124, 58, 237, 0.3)' }} />
+            <img src="/logo.png" alt="Tích Sản" style={{ width: 34, height: 34, borderRadius: 8, boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)' }} />
             <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF' }}>
-              Finora
+              Tích Sản
             </Typography>
           </Link>
 
@@ -449,10 +449,10 @@ export default function LandingPage() {
               }}
             />
             <Typography variant="h3" sx={{ fontWeight: 850, letterSpacing: -1, mb: 1.5 }}>
-              Bạn Cần Gì? — Finora Đã Lo Hết Tự Động
+              Bạn Cần Gì? — Tích Sản Đã Lo Hết Tự Động
             </Typography>
             <Typography variant="body1" sx={{ color: '#94A3B8', maxWidth: 680, mx: 'auto' }}>
-              Không cần học kiến thức kế toán phức tạp. Chọn đúng nhu cầu của bạn và xem cách Finora giải quyết triệt để chỉ trong 1 chạm.
+              Không cần học kiến thức kế toán phức tạp. Chọn đúng nhu cầu của bạn và xem cách Tích Sản giải quyết triệt để chỉ trong 1 chạm.
             </Typography>
 
             {/* Quick Filter Buttons for Fast Reading */}
@@ -714,7 +714,7 @@ export default function LandingPage() {
               }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#FFFFFF', mb: 1 }}>
-                Chỉ Số Sức Khỏe Toàn Diện (Finora Health)
+                Chỉ Số Sức Khỏe Toàn Diện (Tích Sản Health)
               </Typography>
               <SemiCircleGauge score={gaugeDemoScore} size={310} title="Sức Khỏe Tài Chính" />
             </Paper>
@@ -953,7 +953,7 @@ export default function LandingPage() {
                 }}
               >
                 <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
-                  Finora Gold VIP (Năm)
+                  Tích Sản VIP Gold (Năm)
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#94A3B8', mb: 2.5 }}>
                   Dành cho nhà đầu tư cá nhân & gia đình
@@ -968,7 +968,7 @@ export default function LandingPage() {
                     'Theo dõi vốn đầu tư chưa thu hồi & rủi ro',
                     'Speedometer Gauges phân tích chuyên sâu',
                     'Xuất báo cáo tài chính PDF & Excel/CSV',
-                    'Hỗ trợ ưu tiên 24/7 từ chuyên viên Finora'
+                    'Hỗ trợ ưu tiên 24/7 từ chuyên viên Tích Sản'
                   ].map((f, i) => (
                     <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.2, fontSize: 13, color: '#CBD5E1' }}>
                       <Check size={16} color="#34D399" />
@@ -1001,7 +1001,7 @@ export default function LandingPage() {
             Triết lý Bảo mật Local-First & Zero-Knowledge
           </Typography>
           <Typography variant="body1" sx={{ color: '#94A3B8', lineHeight: 1.8, mb: 4 }}>
-            Finora không bao giờ lưu trữ mật khẩu ngân hàng, mã OTP hay thông tin thẻ tín dụng của bạn. Toàn bộ sổ ghi chép, tài sản và danh mục được lưu trữ trực tiếp trên thiết bị của bạn với chuẩn mã hóa cao nhất. Ngay cả đội ngũ quản trị viên Finora cũng không thể truy cập vào sổ sách của bạn.
+            Tích Sản không bao giờ lưu trữ mật khẩu ngân hàng, mã OTP hay thông tin thẻ tín dụng của bạn. Toàn bộ sổ ghi chép, tài sản và danh mục được lưu trữ trực tiếp trên thiết bị của bạn với chuẩn mã hóa cao nhất. Ngay cả đội ngũ quản trị viên Tích Sản cũng không thể truy cập vào sổ sách của bạn.
           </Typography>
         </Container>
       </Box>
@@ -1017,15 +1017,15 @@ export default function LandingPage() {
             {[
               {
                 q: 'Gói dùng thử VIP Gold 30 ngày có yêu cầu thẻ tín dụng không?',
-                a: 'Tuyệt đối không! Finora không yêu cầu bạn nhập bất kỳ thông tin thanh toán nào. Khi bạn đăng ký tài khoản, hệ thống sẽ tự động kích hoạt 30 ngày trải nghiệm gói VIP Gold.'
+                a: 'Tuyệt đối không! Tích Sản không yêu cầu bạn nhập bất kỳ thông tin thanh toán nào. Khi bạn đăng ký tài khoản, hệ thống sẽ tự động kích hoạt 30 ngày trải nghiệm gói VIP Gold.'
               },
               {
                 q: 'Hết 30 ngày dùng thử thì tài khoản của tôi sẽ như thế nào?',
                 a: 'Sau 30 ngày, tài khoản sẽ tự động chuyển về gói Miễn Phí (Free). Toàn bộ dữ liệu bạn đã ghi chép, tài khoản, danh mục và lịch sử sẽ được bảo toàn nguyên vẹn 100%. Không có bất kỳ khoản phí ngầm nào phát sinh.'
               },
               {
-                q: 'Finora có chức năng nạp tiền hay giữ tiền của người dùng không?',
-                a: 'Không. Finora là công cụ quản lý tài sản và dòng tiền cá nhân, không phải là ví điện tử hay ngân hàng trung gian. Chúng tôi không bao giờ yêu cầu bạn nạp tiền vào hệ thống.'
+                q: 'Tích Sản có chức năng nạp tiền hay giữ tiền của người dùng không?',
+                a: 'Không. Tích Sản là công cụ quản lý tài sản và dòng tiền cá nhân, không phải là ví điện tử hay ngân hàng trung gian. Chúng tôi không bao giờ yêu cầu bạn nạp tiền vào hệ thống.'
               },
               {
                 q: 'Làm thế nào để xuất dữ liệu khi tôi muốn sao lưu?',
@@ -1089,7 +1089,7 @@ export default function LandingPage() {
 
           <Box sx={{ mt: 8, pt: 4, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Typography variant="caption" sx={{ color: '#64748B' }}>
-              © 2026 Finora Platform. Bản quyền thuộc về Finora Team.
+              © {new Date().getFullYear()} Tích Sản Platform. Bản quyền thuộc về Tích Sản Team.
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, fontSize: 13 }}>
               <Link to="/legal" style={{ color: '#94A3B8', textDecoration: 'none' }}>

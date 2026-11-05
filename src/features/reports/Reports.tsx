@@ -83,7 +83,7 @@ export default function Reports() {
 
   const handlePeriodPreset = (newPeriod: Period) => {
     if (newPeriod !== 'month' && !canUsePeriodInReport(data, newPeriod as any)) {
-      openPricing('Xem báo cáo đa kỳ (7 ngày/30 ngày/Năm/Tùy chỉnh) là đặc quyền Finora Pro');
+      openPricing('Xem báo cáo đa kỳ (7 ngày/30 ngày/Năm/Tùy chỉnh) là đặc quyền Tích Sản VIP Gold');
       return;
     }
     setPeriod(newPeriod);
@@ -220,7 +220,7 @@ export default function Reports() {
 
   const handleExportCsv = () => {
     if (!isPro) {
-      openPricing('Xuất dữ liệu báo cáo phân tích CSV/Excel là tính năng Finora Pro');
+      openPricing('Xuất dữ liệu báo cáo phân tích CSV/Excel là tính năng Tích Sản VIP Gold');
       return;
     }
     const csv = [

@@ -115,7 +115,7 @@ export const SYSTEM_PLANS: PlanDefinition[] = [
   {
     id: 'plan-pro-annual',
     tier: 'pro',
-    name: 'Finora Pro (Năm)',
+    name: 'Tích Sản Pro (Năm)',
     price: 599000,
     originalPrice: 1188000,
     billingPeriod: '49.900 ₫/tháng (599.000 ₫/năm)',
@@ -132,19 +132,19 @@ export const SYSTEM_PLANS: PlanDefinition[] = [
   {
     id: 'plan-gold-annual',
     tier: 'gold',
-    name: 'Finora Gold VIP (Năm)',
+    name: 'Tích Sản VIP Gold (Năm)',
     price: 999000,
     originalPrice: 1788000,
     billingPeriod: '83.250 ₫/tháng (999.000 ₫/năm)',
     badge: 'Đặc quyền Tinh hoa',
     isGold: true,
     features: [
-      'Toàn bộ đặc quyền Finora Pro',
+      'Toàn bộ đặc quyền Tích Sản Pro',
       'Hệ thống AI Context WebMCP độc quyền phân tích dòng tiền',
       'Smart Ledger theo dõi vốn đầu tư chưa thu hồi',
       'Speedometer Gauges đo lường sức khỏe tài chính nâng cao',
       'Huy hiệu thành viên Champagne Gold độc quyền',
-      'Ưu tiên kết nối trực tiếp với chuyên gia tài chính Finora'
+      'Ưu tiên kết nối trực tiếp với chuyên gia tài chính Tích Sản'
     ]
   }
 ];

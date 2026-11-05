@@ -8,6 +8,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role?: 'user' | 'admin';
   currency: 'VND';
   financialMonthStart: number;
   plan: PlanTier;

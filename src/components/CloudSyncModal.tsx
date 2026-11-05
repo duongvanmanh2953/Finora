@@ -124,7 +124,7 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
 
       <DialogContent sx={{ pt: 1.5 }}>
         <Alert severity="info" variant="outlined" sx={{ mb: 2.5, borderRadius: '4px' }}>
-          Finora hoạt động theo nguyên lý <strong>Local-First (Ưu tiên ngoại tuyến)</strong>: Toàn bộ sổ thu chi được lưu trực tiếp trên thiết bị của bạn. Chỉ khi bạn bấm &ldquo;Đồng bộ lên Cloud&rdquo;, dữ liệu mới được đẩy lên máy chủ đám mây an toàn.
+          Tích Sản hoạt động theo nguyên lý <strong>Local-First (Ưu tiên ngoại tuyến)</strong>: Toàn bộ sổ thu chi được lưu trực tiếp trên thiết bị của bạn. Chỉ khi bạn bấm &ldquo;Đồng bộ lên Cloud&rdquo;, dữ liệu mới được đẩy lên máy chủ đám mây an toàn.
         </Alert>
 
         {syncing && <LinearProgress sx={{ mb: 2, borderRadius: 1 }} />}

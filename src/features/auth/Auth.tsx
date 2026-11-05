@@ -37,8 +37,8 @@ export default function Auth() {
   const [error, setError] = useState('');
 
   const titles: Record<string, string> = {
-    login: 'Đăng nhập vào Finora',
-    register: 'Mở tài khoản Finora mới',
+    login: 'Đăng nhập vào Tích Sản',
+    register: 'Mở tài khoản Tích Sản mới',
     forgot: 'Khôi phục quyền truy cập',
     reset: 'Thiết lập mật khẩu mới'
   };
@@ -82,13 +82,13 @@ export default function Auth() {
       if (mode === 'register') {
         await register(name, email);
         notify({
-          message: 'Chào mừng bạn! Đã tự động kích hoạt 30 ngày trải nghiệm trọn vẹn VIP Gold.',
+          message: 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí. Khám phá toàn bộ tính năng cao cấp và nâng cao khả năng quản lý tài chính của bạn.',
           severity: 'success'
         });
       } else {
         await login(email);
         notify({
-          message: 'Đăng nhập thành công!',
+          message: 'Đăng nhập vào Tích Sản thành công!',
           severity: 'success'
         });
       }
@@ -152,7 +152,7 @@ export default function Auth() {
             >
               <img
                 src="/logo.png"
-                alt="Finora"
+                alt="Tích Sản"
                 style={{
                   width: 38,
                   height: 38,
@@ -161,7 +161,7 @@ export default function Auth() {
                 }}
               />
               <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF' }}>
-                Finora
+                Tích Sản
               </Typography>
             </Link>
 
@@ -399,7 +399,7 @@ export default function Auth() {
                     ? 'Đăng ký & Kích hoạt VIP Gold (30 ngày)'
                     : mode === 'reset'
                       ? 'Lưu mật khẩu mới'
-                      : 'Đăng nhập vào Finora'}
+                      : 'Đăng nhập vào Tích Sản'}
             </Button>
           </Box>
 

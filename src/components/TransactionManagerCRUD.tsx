@@ -35,7 +35,7 @@ import { AssetLogoBadge } from '../lib/brandBadges';
 import { MuiCurrencyInput, MuiSelect, MuiTextField } from './mui/MuiInputs';
 import { Confirm } from './ui';
 import { StatusBadge } from './ui/StatusBadge';
-import { FullscreenModal, FullscreenButton } from './ui/FullscreenModal';
+import { FullscreenModal, FullscreenButton, FullscreenChartContent } from './ui/FullscreenModal';
 import type { Transaction, TxType } from '../types';
 
 export function TransactionManagerCRUD() {
@@ -775,45 +775,49 @@ export function TransactionManagerCRUD() {
         title="Sổ Giao Dịch Chi Tiết (Toàn Màn Hình)"
         subtitle="Xem và quản lý toàn bộ các giao dịch tài chính với đầy đủ cột dữ liệu và đối soát"
       >
-        <TableContainer sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, overflow: 'auto', flex: 1 }}>
-          <Table size="small" sx={{ minWidth: 700 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 800, width: 120 }}>Ngày</TableCell>
-                <TableCell sx={{ fontWeight: 800, width: 180 }}>Danh mục</TableCell>
-                <TableCell sx={{ fontWeight: 800 }}>Mô tả & Ghi chú</TableCell>
-                <TableCell sx={{ fontWeight: 800, width: 120 }}>Trạng thái</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 800, width: 150 }}>Số tiền (₫)</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 800, width: 110 }}>Thao tác</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredList.map(tx => {
-                const isIncome = tx.type === 'income';
-                return (
-                  <TableRow key={tx.id} hover>
-                    <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>{tx.date}</TableCell>
-                    <TableCell><BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={32} /></TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 700 }}>{tx.name}</Typography>
-                      {tx.note && <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{tx.note}</Typography>}
-                    </TableCell>
-                    <TableCell><StatusBadge label={tx.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'} status={tx.status === 'completed' ? 'success' : 'warning'} variant="soft" size="small" /></TableCell>
-                    <TableCell align="right">
-                      <Typography variant="body2" sx={{ fontWeight: 800, color: isIncome ? 'success.main' : 'text.primary' }}>
-                        {isIncome ? '+' : '-'}{money(tx.amount)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton size="small" onClick={() => handleOpenEdit(tx)} title="Sửa"><EditRounded fontSize="small" /></IconButton>
-                      <IconButton size="small" onClick={() => setDeletingTx(tx)} title="Xóa" sx={{ color: 'error.main' }}><DeleteOutlineRounded fontSize="small" /></IconButton>
-                    </TableCell>
+        <FullscreenChartContent>
+          {({ height }) => (
+            <TableContainer sx={{ width: '100%', height, maxHeight: height, overflow: 'auto', flex: 1 }}>
+              <Table size="small" sx={{ minWidth: 700 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 800, width: 120 }}>Ngày</TableCell>
+                    <TableCell sx={{ fontWeight: 800, width: 180 }}>Danh mục</TableCell>
+                    <TableCell sx={{ fontWeight: 800 }}>Mô tả & Ghi chú</TableCell>
+                    <TableCell sx={{ fontWeight: 800, width: 120 }}>Trạng thái</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 800, width: 150 }}>Số tiền (₫)</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: 800, width: 110 }}>Thao tác</TableCell>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {filteredList.map(tx => {
+                    const isIncome = tx.type === 'income';
+                    return (
+                      <TableRow key={tx.id} hover>
+                        <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>{tx.date}</TableCell>
+                        <TableCell><BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={32} /></TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>{tx.name}</Typography>
+                          {tx.note && <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{tx.note}</Typography>}
+                        </TableCell>
+                        <TableCell><StatusBadge label={tx.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'} status={tx.status === 'completed' ? 'success' : 'warning'} variant="soft" size="small" /></TableCell>
+                        <TableCell align="right">
+                          <Typography variant="body2" sx={{ fontWeight: 800, color: isIncome ? 'success.main' : 'text.primary' }}>
+                            {isIncome ? '+' : '-'}{money(tx.amount)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton size="small" onClick={() => handleOpenEdit(tx)} title="Sửa"><EditRounded fontSize="small" /></IconButton>
+                          <IconButton size="small" onClick={() => setDeletingTx(tx)} title="Xóa" sx={{ color: 'error.main' }}><DeleteOutlineRounded fontSize="small" /></IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </FullscreenChartContent>
       </FullscreenModal>
     </Card>
   );

@@ -57,7 +57,7 @@ import {
 } from '../../lib/finance';
 import { Empty, PageHead } from '../../components/ui';
 import { HelpButton } from '../../components/HelpButton';
-import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
+import { FullscreenModal, FullscreenButton, FullscreenChartContent } from '../../components/ui/FullscreenModal';
 import { canUsePeriodInReport, isProUser } from '../../lib/subscription';
 import { MuiSelect, MuiDatePicker } from '../../components/mui/MuiInputs';
 import { CategoryAvatarBadge } from '../../lib/brandBadges';
@@ -323,10 +323,10 @@ export default function Reports() {
     );
   };
 
-  const renderHeroComposedChart = (chartHeight: number | string = 380) => (
-    <Box sx={{ width: '100%', height: chartHeight, minHeight: typeof chartHeight === 'number' ? chartHeight : 280, minWidth: 0, overflow: 'hidden', flex: 1 }}>
+  const renderHeroComposedChart = (chartHeight: number | `${number}%` = 380, chartWidth: number | `${number}%` = '100%') => (
+    <Box sx={{ width: chartWidth, height: chartHeight, minHeight: typeof chartHeight === 'number' ? chartHeight : 280, minWidth: 0, overflow: 'hidden', flex: 1 }}>
       {unifiedTrend.length ? (
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width={chartWidth} height={chartHeight}>
           <ComposedChart
             data={unifiedTrend}
             margin={{ top: 15, right: showNetWorth ? 35 : 10, left: -15, bottom: 20 }}
@@ -1097,9 +1097,13 @@ export default function Reports() {
         title="Biểu đồ Dòng tiền & Tài sản Hợp nhất"
         subtitle="Khung nhìn toàn cảnh: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản"
       >
-        <Box sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, display: 'flex', flexDirection: 'column' }}>
-          {renderHeroComposedChart('100%')}
-        </Box>
+        <FullscreenChartContent>
+          {({ width, height }) => (
+            <Box sx={{ width, height, minHeight: height, display: 'flex', flexDirection: 'column' }}>
+              {renderHeroComposedChart(height, width)}
+            </Box>
+          )}
+        </FullscreenChartContent>
       </FullscreenModal>
     </>
   );

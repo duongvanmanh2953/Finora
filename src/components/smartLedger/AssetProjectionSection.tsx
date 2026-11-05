@@ -28,7 +28,7 @@ import {
 
 import { money } from '../../lib/finance';
 import { generateThreeScenarioProjections } from '../../lib/investmentProjectionEngine';
-import { FullscreenModal, FullscreenButton } from '../ui/FullscreenModal';
+import { FullscreenModal, FullscreenButton, FullscreenChartContent } from '../ui/FullscreenModal';
 
 interface AssetProjectionSectionProps {
   currentNetWorth: number;
@@ -109,9 +109,9 @@ export function AssetProjectionSection({
     return null;
   };
 
-  const renderProjectionChart = (height: number | `${number}%` = 280) => (
+  const renderProjectionChart = (width: number | `${number}%` = '100%', height: number | `${number}%` = 280) => (
     <Box sx={{ width: '100%', height: height, minHeight: typeof height === 'number' ? height : 300, minWidth: 0, overflow: 'hidden' }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width={width} height={height}>
         <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
           <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 600 }} />
@@ -334,11 +334,13 @@ export function AssetProjectionSection({
         title="Phóng Chiếu Tài Sản & Dòng Tiền Tương Lai (3 Kịch Bản)"
         subtitle="Mô hình lãi kép 3 kịch bản: Thận trọng, Cơ sở và Tích cực, bù trừ theo tỷ lệ lạm phát"
       >
-        <Box sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, display: 'flex', flexDirection: 'column', p: { xs: 0.5, sm: 1.5 } }}>
-          <Box sx={{ flex: 1, width: '100%', height: '100%', minHeight: 350 }}>
-            {renderProjectionChart('100%')}
-          </Box>
-        </Box>
+        <FullscreenChartContent>
+          {({ width, height }) => (
+            <Box sx={{ width, height, display: 'flex', flexDirection: 'column' }}>
+              {renderProjectionChart(width, height)}
+            </Box>
+          )}
+        </FullscreenChartContent>
       </FullscreenModal>
     </Paper>
   );

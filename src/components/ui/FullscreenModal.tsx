@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,6 +11,33 @@ import {
   Button
 } from '@mui/material';
 import { Maximize2, Minimize2, RotateCw } from 'lucide-react';
+
+export interface FullscreenContextValue {
+  isLandscape90: boolean;
+  chartWidth: number;
+  chartHeight: number;
+}
+
+export const FullscreenContext = createContext<FullscreenContextValue>({
+  isLandscape90: false,
+  chartWidth: 800,
+  chartHeight: 500
+});
+
+export const useFullscreenModal = () => useContext(FullscreenContext);
+
+interface FullscreenChartContentProps {
+  children: (info: {
+    width: number;
+    height: number;
+    isLandscape90: boolean;
+  }) => React.ReactNode;
+}
+
+export function FullscreenChartContent({ children }: FullscreenChartContentProps) {
+  const context = useContext(FullscreenContext);
+  return <>{children({ width: context.chartWidth, height: context.chartHeight, isLandscape90: context.isLandscape90 })}</>;
+}
 
 interface FullscreenModalProps {
   open: boolean;
@@ -29,8 +56,6 @@ export function FullscreenModal({
   badge = 'Toàn màn hình',
   children
 }: FullscreenModalProps) {
-  // Always default to normal fullscreen so charts and tables never collapse or turn black on load.
-  // User can click "Xoay ngang 90°" button anytime to toggle landscape simulation.
   const [isLandscape90, setIsLandscape90] = useState(false);
   const [viewport, setViewport] = useState({
     w: typeof window !== 'undefined' ? window.innerWidth : 800,
@@ -53,12 +78,31 @@ export function FullscreenModal({
     };
   }, []);
 
-  // Reset rotation when modal closes
+  // User requirement: When opening on mobile (< 768px), auto-rotate horizontally (landscape 90deg) immediately.
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        setIsLandscape90(true);
+      } else {
+        setIsLandscape90(false);
+      }
+    } else {
       setIsLandscape90(false);
     }
   }, [open]);
+
+  // Exact local pixel dimensions for Recharts & tables so they NEVER invert or collapse:
+  // In rotated landscape: local width is viewport.h, local height is viewport.w
+  const headerHeight = 56;
+  const paddingOffset = 24;
+
+  const chartWidth = isLandscape90
+    ? Math.max(viewport.h - paddingOffset, 480)
+    : Math.max(viewport.w - paddingOffset, 320);
+
+  const chartHeight = isLandscape90
+    ? Math.max(viewport.w - headerHeight - paddingOffset, 240)
+    : Math.max(viewport.h - headerHeight - paddingOffset - 30, 360);
 
   return (
     <Dialog
@@ -111,7 +155,9 @@ export function FullscreenModal({
       >
         <DialogTitle
           sx={{
-            p: { xs: 1.5, sm: 2.25 },
+            p: { xs: 1.25, sm: 2 },
+            minHeight: headerHeight,
+            maxHeight: headerHeight,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -128,7 +174,7 @@ export function FullscreenModal({
                   variant="h6"
                   sx={{
                     fontWeight: 800,
-                    fontSize: { xs: '0.92rem', sm: '1.15rem' },
+                    fontSize: { xs: '0.88rem', sm: '1.15rem' },
                     color: 'text.primary',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -143,7 +189,8 @@ export function FullscreenModal({
                     size="small"
                     sx={{
                       fontWeight: 700,
-                      fontSize: '0.7rem',
+                      fontSize: '0.68rem',
+                      height: 20,
                       bgcolor: 'rgba(16, 185, 129, 0.12)',
                       color: '#10B981',
                       border: '1px solid rgba(16, 185, 129, 0.3)'
@@ -155,7 +202,7 @@ export function FullscreenModal({
                     label="Chế độ ngang 90°"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 700, fontSize: '0.7rem' }}
+                    sx={{ fontWeight: 700, fontSize: '0.68rem', height: 20 }}
                   />
                 )}
               </Box>
@@ -166,7 +213,7 @@ export function FullscreenModal({
                     color: 'text.secondary',
                     display: { xs: 'none', sm: 'block' },
                     mt: 0.25,
-                    fontSize: '0.78rem'
+                    fontSize: '0.76rem'
                   }}
                 >
                   {subtitle}
@@ -187,8 +234,8 @@ export function FullscreenModal({
                 sx={{
                   textTransform: 'none',
                   fontWeight: 750,
-                  fontSize: '0.76rem',
-                  py: 0.5,
+                  fontSize: '0.74rem',
+                  py: 0.4,
                   px: { xs: 1, sm: 1.5 },
                   borderRadius: '6px'
                 }}
@@ -200,11 +247,11 @@ export function FullscreenModal({
             <Tooltip title="Thu nhỏ / Đóng toàn màn hình (Esc)">
               <IconButton
                 onClick={onClose}
-                size="medium"
+                size="small"
                 sx={{
                   bgcolor: 'action.hover',
                   borderRadius: '8px',
-                  p: 0.9,
+                  p: 0.8,
                   color: 'text.primary',
                   '&:hover': {
                     bgcolor: 'action.selected'
@@ -212,7 +259,7 @@ export function FullscreenModal({
                 }}
                 aria-label="Đóng toàn màn hình"
               >
-                <Minimize2 size={18} />
+                <Minimize2 size={16} />
               </IconButton>
             </Tooltip>
           </Box>
@@ -220,18 +267,20 @@ export function FullscreenModal({
 
         <DialogContent
           sx={{
-            p: { xs: 1.25, sm: 2.5 },
+            p: { xs: 1, sm: 1.5 },
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
             bgcolor: 'background.default',
-            width: '100%',
-            height: '100%',
-            minHeight: { xs: 350, sm: 480 }
+            width: isLandscape90 ? `${viewport.h}px` : '100%',
+            height: `${chartHeight + paddingOffset}px`,
+            maxHeight: `${chartHeight + paddingOffset}px`
           }}
         >
-          {children}
+          <FullscreenContext.Provider value={{ isLandscape90, chartWidth, chartHeight }}>
+            {children}
+          </FullscreenContext.Provider>
         </DialogContent>
       </Box>
     </Dialog>

@@ -1565,6 +1565,194 @@
       "passwordHash": "scrypt$2cc16d39a2ad77a3c4739130a9511d43$5b7945ffa88c83f99df734d121709ce919ef904242af6df33eb05aa092e21ee80a66e808d776e3c93a70d3e75f93a699dc866ca8899d4289dfcb39f64ec6d928",
       "mustChangePassword": false,
       "lastAdminResetTimestamp": 1793867649537
+    },
+    "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b": {
+      "id": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+      "name": "Lê Văn Kiểm Thử",
+      "email": "user_test_1793869665578@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:45.605Z",
+      "trial_ends_at": "2026-12-05T09:07:45.605Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04": {
+      "id": "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+      "name": "Người Dùng Hết Hạn",
+      "email": "expired_user_1793869665686@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "free",
+      "subscription_status": "expired",
+      "trial_started_at": "2026-11-05T09:07:45.686Z",
+      "trial_ends_at": "2026-10-05T09:07:45.720Z",
+      "current_plan_id": "plan-free",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_345efeda-367f-4cfd-85fb-44a31def1ebb": {
+      "id": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+      "name": "User A",
+      "email": "usera_1793869665763@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:45.763Z",
+      "trial_ends_at": "2026-12-05T09:07:45.763Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb": {
+      "id": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+      "name": "User B",
+      "email": "userb_1793869665812@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:45.812Z",
+      "trial_ends_at": "2026-12-05T09:07:45.812Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f": {
+      "id": "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+      "name": "User C",
+      "email": "userc_1793869665866@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:45.909Z",
+      "trial_ends_at": "2026-12-05T09:07:45.909Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7": {
+      "id": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "name": "User Suspended",
+      "email": "user_sus_1793869665947@finora.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:45.947Z",
+      "trial_ends_at": "2026-12-05T09:07:45.947Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_97b0579b-edef-4330-b420-9c9c236d34d7": {
+      "id": "usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+      "name": "User Refresh Test",
+      "email": "refresh_1793869666108@tichsan.vn",
+      "role": "user",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "trialing",
+      "trial_started_at": "2026-11-05T09:07:46.108Z",
+      "trial_ends_at": "2026-12-05T09:07:46.108Z",
+      "current_plan_id": "plan-trial",
+      "streakCount": 1,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "nlpUsageToday": {
+        "date": "2026-11-05",
+        "count": 0
+      },
+      "emailVerified": false
+    },
+    "usr_admin_2cbeb768-ef31-4b52-92a6-581a1e9507b2": {
+      "id": "usr_admin_2cbeb768-ef31-4b52-92a6-581a1e9507b2",
+      "name": "Quản trị viên Hệ thống",
+      "email": "admin_test_1793869666216@tichsan.vn",
+      "role": "admin",
+      "currency": "VND",
+      "financialMonthStart": 1,
+      "plan": "gold",
+      "subscription_status": "active",
+      "streakCount": 0,
+      "lastCheckInDate": "2026-11-05",
+      "defaultAccountId": "acc_wallet",
+      "isSuspended": false,
+      "createdAt": "2026-11-05",
+      "lastActive": "2026-11-05",
+      "emailVerified": true,
+      "passwordHash": "scrypt$57b3150a65388efb23d3348a28ad030d$5df660aac55454e5756ab6b94b33c3a2ae3c32f2bd78488e73b29e5ab3a7b972a07bdca9bede64b9dda62badb7efdf92020dd0dd9240ee2f552674aa1fe97583",
+      "mustChangePassword": false,
+      "lastAdminResetTimestamp": 1793869666238
     }
   },
   "financeData": {
@@ -47788,6 +47976,5232 @@
           "actualPaidDate": "2026-09-30"
         }
       ]
+    },
+    "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b": {
+      "user": {
+        "id": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+        "name": "Lê Văn Kiểm Thử",
+        "email": "user_test_1793869665578@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:45.605Z",
+        "trial_ends_at": "2026-12-05T09:07:45.605Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_e65df191-24b7-45ea-89ca-50079a3e2353",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04": {
+      "user": {
+        "id": "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+        "name": "Người Dùng Hết Hạn",
+        "email": "expired_user_1793869665686@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "free",
+        "subscription_status": "expired",
+        "trial_started_at": "2026-11-05T09:07:45.686Z",
+        "trial_ends_at": "2026-10-05T09:07:45.720Z",
+        "current_plan_id": "plan-free",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_3c3581b8-d1d9-40c5-973f-1c879b4b8820",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        },
+        {
+          "id": "tx_pre_expiry_test",
+          "name": "Chi tiêu trước khi hết hạn",
+          "amount": 150000,
+          "type": "expense",
+          "accountId": "acc_wallet",
+          "date": "2026-10-01",
+          "method": "Tiền mặt",
+          "note": "Dữ liệu không bao giờ bị xóa",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_345efeda-367f-4cfd-85fb-44a31def1ebb": {
+      "user": {
+        "id": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+        "name": "User B",
+        "email": "userb_1793869665812@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:45.812Z",
+        "trial_ends_at": "2026-12-05T09:07:45.812Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_5ce54d9c-eb1a-4a5e-9799-0645d84b74b9",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb": {
+      "user": {
+        "id": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+        "name": "User B",
+        "email": "userb_1793869665812@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:45.812Z",
+        "trial_ends_at": "2026-12-05T09:07:45.812Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_5ce54d9c-eb1a-4a5e-9799-0645d84b74b9",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f": {
+      "user": {
+        "id": "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+        "name": "User C",
+        "email": "userc_1793869665866@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:45.909Z",
+        "trial_ends_at": "2026-12-05T09:07:45.909Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_e5941790-133e-41c8-a1ab-59de1954e0f4",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7": {
+      "user": {
+        "id": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+        "name": "User Suspended",
+        "email": "user_sus_1793869665947@finora.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:45.947Z",
+        "trial_ends_at": "2026-12-05T09:07:45.947Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_24fa476a-100b-4076-9a30-62e38c0ed501",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
+    },
+    "usr_97b0579b-edef-4330-b420-9c9c236d34d7": {
+      "user": {
+        "id": "usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+        "name": "User Refresh Test",
+        "email": "refresh_1793869666108@tichsan.vn",
+        "role": "user",
+        "currency": "VND",
+        "financialMonthStart": 1,
+        "plan": "gold",
+        "subscription_status": "trialing",
+        "trial_started_at": "2026-11-05T09:07:46.108Z",
+        "trial_ends_at": "2026-12-05T09:07:46.108Z",
+        "current_plan_id": "plan-trial",
+        "streakCount": 1,
+        "lastCheckInDate": "2026-11-05",
+        "defaultAccountId": "acc_wallet",
+        "isSuspended": false,
+        "createdAt": "2026-11-05",
+        "lastActive": "2026-11-05",
+        "nlpUsageToday": {
+          "date": "2026-11-05",
+          "count": 0
+        },
+        "emailVerified": false
+      },
+      "accounts": [
+        {
+          "id": "acc_wallet",
+          "name": "Ví tiền mặt",
+          "type": "cash",
+          "openingBalance": 2000000,
+          "color": "#10B981",
+          "createdAt": "2026-11-05",
+          "active": true
+        },
+        {
+          "id": "acc_bank_vcb",
+          "name": "Vietcombank Digibank",
+          "type": "bank",
+          "openingBalance": 15000000,
+          "color": "#059669",
+          "createdAt": "2026-11-05",
+          "active": true
+        }
+      ],
+      "categories": [
+        {
+          "id": "food",
+          "name": "Ăn uống",
+          "type": "expense",
+          "icon": "Utensils",
+          "color": "#10b981",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "transport",
+          "name": "Di chuyển",
+          "type": "expense",
+          "icon": "Car",
+          "color": "#3b82f6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "housing",
+          "name": "Nhà ở",
+          "type": "expense",
+          "icon": "House",
+          "color": "#0284c7",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "shopping",
+          "name": "Mua sắm",
+          "type": "expense",
+          "icon": "ShoppingBag",
+          "color": "#ec4899",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "entertainment",
+          "name": "Giải trí",
+          "type": "expense",
+          "icon": "Clapperboard",
+          "color": "#f59e0b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "health",
+          "name": "Sức khỏe",
+          "type": "expense",
+          "icon": "HeartPulse",
+          "color": "#ef4444",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "education",
+          "name": "Học tập",
+          "type": "expense",
+          "icon": "BookOpen",
+          "color": "#0d9488",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "bills",
+          "name": "Hóa đơn",
+          "type": "expense",
+          "icon": "Receipt",
+          "color": "#14b8a6",
+          "hidden": false,
+          "isEssential": true
+        },
+        {
+          "id": "travel",
+          "name": "Du lịch",
+          "type": "expense",
+          "icon": "Plane",
+          "color": "#06b6d4",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "other",
+          "name": "Khác",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "reconcile-expense",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "expense",
+          "icon": "Shapes",
+          "color": "#64748b",
+          "hidden": false,
+          "isEssential": false
+        },
+        {
+          "id": "salary",
+          "name": "Lương",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "bonus",
+          "name": "Thưởng",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        },
+        {
+          "id": "freelance",
+          "name": "Làm thêm",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "invest",
+          "name": "Đầu tư",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "business",
+          "name": "Kinh doanh",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "income-other",
+          "name": "Thu nhập khác",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "business"
+        },
+        {
+          "id": "passive-rent",
+          "name": "Cho thuê nhà",
+          "type": "income",
+          "icon": "House",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "passive"
+        },
+        {
+          "id": "reconcile-income",
+          "name": "Điều chỉnh số dư / Quên ghi",
+          "type": "income",
+          "icon": "CircleDollarSign",
+          "color": "#10b981",
+          "hidden": false,
+          "incomeKind": "active"
+        }
+      ],
+      "transactions": [
+        {
+          "id": "tx_7e15f53e-3c3b-4784-a07c-41089afe0214",
+          "name": "Số dư đầu kỳ chào mừng Tích Sản",
+          "amount": 17000000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "acc_bank_vcb",
+          "date": "2026-11-05",
+          "method": "Chuyển khoản",
+          "note": "Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí",
+          "status": "completed"
+        }
+      ],
+      "budgets": [
+        {
+          "id": "b-food",
+          "name": "Ăn uống",
+          "categoryId": "food",
+          "limit": 3000000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-travel",
+          "name": "Di chuyển",
+          "categoryId": "transport",
+          "limit": 1200000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-shopping",
+          "name": "Mua sắm",
+          "categoryId": "shopping",
+          "limit": 2500000,
+          "month": "2026-11"
+        },
+        {
+          "id": "b-all",
+          "name": "Tổng chi tiêu",
+          "limit": 17000000,
+          "month": "2026-11"
+        }
+      ],
+      "goals": [
+        {
+          "id": "g1",
+          "name": "Mua laptop",
+          "target": 25000000,
+          "startDate": "2026-08-17",
+          "dueDate": "2027-05-04",
+          "accountId": "saving",
+          "icon": "Laptop",
+          "contributions": [
+            {
+              "id": "c1",
+              "amount": 8500000,
+              "date": "2026-09-21",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g2",
+          "name": "Quỹ dự phòng",
+          "target": 30000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-11-05",
+          "accountId": "saving",
+          "icon": "ShieldCheck",
+          "contributions": [
+            {
+              "id": "c2",
+              "amount": 16000000,
+              "date": "2026-10-06",
+              "accountId": "saving"
+            }
+          ]
+        },
+        {
+          "id": "g3",
+          "name": "Du lịch Nhật Bản",
+          "target": 10000000,
+          "startDate": "2026-10-01",
+          "dueDate": "2027-06-03",
+          "accountId": "saving",
+          "icon": "Plane",
+          "contributions": [
+            {
+              "id": "c3",
+              "amount": 2800000,
+              "date": "2026-10-16",
+              "accountId": "saving"
+            }
+          ]
+        }
+      ],
+      "debts": [
+        {
+          "id": "d1",
+          "name": "FE Credit · Trả góp xe máy",
+          "kind": "owed",
+          "principal": 35000000,
+          "startDate": "2026-05-09",
+          "dueDate": "2027-03-05",
+          "interestRate": 1.8,
+          "payments": [
+            {
+              "id": "p1",
+              "amount": 10000000,
+              "date": "2026-09-26",
+              "note": "Đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "name": "Home Credit · Trả góp điện thoại",
+          "kind": "owed",
+          "principal": 15000000,
+          "startDate": "2026-08-07",
+          "dueDate": "2027-01-19",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p3",
+              "amount": 5000000,
+              "date": "2026-10-21",
+              "note": "Đợt 2"
+            }
+          ]
+        },
+        {
+          "id": "d3",
+          "name": "Vay thấu chi Vietcombank",
+          "kind": "owed",
+          "principal": 40000000,
+          "startDate": "2026-07-08",
+          "dueDate": "2027-02-03",
+          "interestRate": 8.5,
+          "payments": [
+            {
+              "id": "p4",
+              "amount": 15000000,
+              "date": "2026-10-06",
+              "note": "Trả gốc đợt 1"
+            }
+          ]
+        },
+        {
+          "id": "d4",
+          "name": "Nợ thẻ tín dụng Techcombank",
+          "kind": "owed",
+          "principal": 18000000,
+          "startDate": "2026-09-21",
+          "dueDate": "2026-11-20",
+          "interestRate": 0,
+          "payments": [
+            {
+              "id": "p5",
+              "amount": 6000000,
+              "date": "2026-10-26",
+              "note": "Thanh toán sao kê"
+            }
+          ]
+        },
+        {
+          "id": "d5",
+          "name": "Bạn Nam mượn công việc",
+          "kind": "lent",
+          "principal": 5000000,
+          "startDate": "2026-09-06",
+          "dueDate": "2026-11-25",
+          "payments": [
+            {
+              "id": "p2",
+              "amount": 1500000,
+              "date": "2026-10-26",
+              "note": "Trả một phần"
+            }
+          ]
+        }
+      ],
+      "recurring": [
+        {
+          "id": "r1",
+          "name": "Lương tháng",
+          "amount": 28500000,
+          "type": "income",
+          "categoryId": "salary",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-10",
+          "active": true,
+          "autoExecute": true
+        },
+        {
+          "id": "r2",
+          "name": "Tiền thuê nhà",
+          "amount": 6500000,
+          "type": "expense",
+          "categoryId": "housing",
+          "accountId": "bank",
+          "frequency": "monthly",
+          "nextDate": "2026-11-14",
+          "active": true,
+          "autoExecute": false
+        },
+        {
+          "id": "r3",
+          "name": "Gói nghe nhạc",
+          "amount": 59000,
+          "type": "expense",
+          "categoryId": "entertainment",
+          "accountId": "wallet",
+          "frequency": "monthly",
+          "nextDate": "2026-11-19",
+          "active": true,
+          "autoExecute": false
+        }
+      ],
+      "notifications": [
+        {
+          "id": "n1",
+          "title": "Kiểm tra ngân sách tháng này",
+          "read": false,
+          "date": "2026-11-05"
+        },
+        {
+          "id": "n2",
+          "title": "Tiền thuê nhà sắp đến hạn",
+          "read": false,
+          "date": "2026-11-04"
+        }
+      ],
+      "quickTemplates": [
+        {
+          "id": "qt-1",
+          "label": "Cafe 30k",
+          "name": "Cà phê sáng",
+          "amount": 30000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-2",
+          "label": "Gửi xe 5k",
+          "name": "Vé gửi xe",
+          "amount": 5000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "cash"
+        },
+        {
+          "id": "qt-3",
+          "label": "Ăn sáng 40k",
+          "name": "Ăn sáng bánh mì/phở",
+          "amount": 40000,
+          "type": "expense",
+          "categoryId": "food",
+          "accountId": "wallet"
+        },
+        {
+          "id": "qt-4",
+          "label": "Đổ xăng 50k",
+          "name": "Đổ xăng xe máy",
+          "amount": 50000,
+          "type": "expense",
+          "categoryId": "transport",
+          "accountId": "bank"
+        },
+        {
+          "id": "qt-5",
+          "label": "Bán hàng 5tr (Trích 60%)",
+          "name": "Doanh thu bán hàng",
+          "amount": 5000000,
+          "type": "income",
+          "categoryId": "freelance",
+          "accountId": "bank",
+          "isBusinessBundle": true,
+          "costRatio": 0.6
+        }
+      ],
+      "investments": [
+        {
+          "id": "inv-1",
+          "symbol": "BTC",
+          "name": "Bitcoin (BTC)",
+          "assetClass": "crypto",
+          "quantity": 0.05,
+          "totalCostBasis": 95000000,
+          "currentUnitPrice": 2350000000,
+          "targetTakeProfit": 2600000000,
+          "targetStopLoss": 2100000000,
+          "riskRewardRatio": 1.67,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-05"
+        },
+        {
+          "id": "inv-2",
+          "symbol": "FPT",
+          "name": "Công ty Cổ phần FPT",
+          "assetClass": "stock",
+          "quantity": 200,
+          "totalCostBasis": 24000000,
+          "currentUnitPrice": 138000,
+          "targetTakeProfit": 155000000,
+          "targetStopLoss": 125000,
+          "riskRewardRatio": 2.2,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-3",
+          "symbol": "SJC",
+          "name": "Vàng miếng SJC 9999",
+          "assetClass": "gold",
+          "quantity": 2,
+          "totalCostBasis": 165000000,
+          "currentUnitPrice": 89000000,
+          "freshness": "eod",
+          "updatedAt": "2026-11-04"
+        },
+        {
+          "id": "inv-4",
+          "symbol": "VCB",
+          "name": "Cổ phiếu Vietcombank",
+          "assetClass": "stock",
+          "quantity": 500,
+          "totalCostBasis": 43000000,
+          "currentUnitPrice": 94500,
+          "targetTakeProfit": 105000,
+          "targetStopLoss": 88000,
+          "riskRewardRatio": 1.8,
+          "freshness": "realtime",
+          "updatedAt": "2026-11-03"
+        },
+        {
+          "id": "inv-5",
+          "symbol": "DCDS",
+          "name": "Quỹ Năng động Dragon Capital (DCDS)",
+          "assetClass": "fund",
+          "quantity": 350,
+          "totalCostBasis": 26000000,
+          "currentUnitPrice": 84200,
+          "freshness": "nav_published",
+          "updatedAt": "2026-11-02"
+        },
+        {
+          "id": "inv-6",
+          "symbol": "BIDV-SAVING",
+          "name": "Sổ tiết kiệm BIDV 12 tháng",
+          "assetClass": "savings",
+          "quantity": 1,
+          "totalCostBasis": 50000000,
+          "currentUnitPrice": 50000000,
+          "annualYieldRate": 5.2,
+          "freshness": "manual",
+          "updatedAt": "2026-09-06"
+        }
+      ],
+      "investmentTransactions": [
+        {
+          "id": "tx-inv-1",
+          "assetId": "inv-4",
+          "symbol": "VCB",
+          "type": "BUY",
+          "date": "2026-10-15",
+          "quantity": 500,
+          "unitPrice": 86000,
+          "totalAmount": 43000000,
+          "fee": 64500,
+          "tax": 0,
+          "note": "Mua tích lũy dài hạn cổ phiếu VCB"
+        },
+        {
+          "id": "tx-inv-2",
+          "assetId": "inv-3",
+          "symbol": "SJC",
+          "type": "BUY",
+          "date": "2026-09-02",
+          "quantity": 2,
+          "unitPrice": 82500000,
+          "totalAmount": 165000000,
+          "fee": 0,
+          "tax": 0,
+          "note": "Mua 2 lượng vàng miếng SJC bảo hiểm lạm phát"
+        },
+        {
+          "id": "tx-inv-3",
+          "assetId": "inv-1",
+          "symbol": "BTC",
+          "type": "BUY",
+          "date": "2026-08-10",
+          "quantity": 0.05,
+          "unitPrice": 1900000000,
+          "totalAmount": 95000000,
+          "fee": 95000,
+          "tax": 0,
+          "note": "Mua tích lũy DCA Bitcoin"
+        }
+      ],
+      "payrolls": [
+        {
+          "id": "pay-2026-11",
+          "userId": "demo",
+          "month": "2026-11",
+          "status": "draft",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 6,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1636364,
+          "overtimeTaxExemptPay": 545455,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 3500000,
+          "salesCommission": 0,
+          "grossIncome": 39366364,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 38090909,
+          "assessableIncome": 19330909,
+          "pitWithheld": 2216182,
+          "netSalary": 33790182,
+          "targetAccountId": "bank"
+        },
+        {
+          "id": "pay-2026-10",
+          "userId": "demo",
+          "month": "2026-10",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": false,
+          "probationRate": 1,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 23,
+          "actualWorkDays": 23,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 4,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 1043478,
+          "overtimeTaxExemptPay": 347826,
+          "taxableAllowances": 1500000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 2000000,
+          "salesCommission": 0,
+          "grossIncome": 37273478,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 36195652,
+          "assessableIncome": 17435652,
+          "pitWithheld": 1865348,
+          "netSalary": 32048130,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-10-31"
+        },
+        {
+          "id": "pay-2026-09",
+          "userId": "demo",
+          "month": "2026-09",
+          "status": "paid",
+          "contractSalary": 32000000,
+          "isProbation": true,
+          "probationRate": 0.85,
+          "baseSalaryForInsurance": 32000000,
+          "standardWorkDays": 22,
+          "actualWorkDays": 22,
+          "paidLeaveDays": 0,
+          "unpaidLeaveDays": 0,
+          "overtimeWeekdayHours": 0,
+          "overtimeWeekendHours": 0,
+          "overtimeHolidayHours": 0,
+          "overtimePayTotal": 0,
+          "overtimeTaxExemptPay": 0,
+          "taxableAllowances": 1000000,
+          "nonTaxableAllowances": 730000,
+          "performanceBonus": 0,
+          "salesCommission": 0,
+          "grossIncome": 28930000,
+          "socialInsuranceEmployee": 2560000,
+          "healthInsuranceEmployee": 480000,
+          "unemploymentInsuranceEmployee": 320000,
+          "totalInsuranceEmployee": 3360000,
+          "socialInsuranceEmployer": 5600000,
+          "healthInsuranceEmployer": 960000,
+          "unemploymentInsuranceEmployer": 320000,
+          "totalInsuranceEmployer": 7040000,
+          "personalDeduction": 11000000,
+          "dependentCount": 1,
+          "dependentDeductionTotal": 4400000,
+          "taxableIncome": 28200000,
+          "assessableIncome": 9440000,
+          "pitWithheld": 694000,
+          "netSalary": 24876000,
+          "targetAccountId": "bank",
+          "actualPaidDate": "2026-09-30"
+        }
+      ]
     }
   },
   "sessions": {
@@ -47862,7 +53276,15 @@
     "atk_62916ede969a4f0083a1df434cf4d29163c58d2988188105_1793867649132": "usr_bea00e12-6abc-4a31-977a-e68740a94ab9",
     "atk_255c9097ece09501b366e0dd6dd95598bbc4f27265a1fff0_1793867649177": "usr_abd8c2ef-8ab1-46b6-8d93-3a84f0c342d2",
     "atk_e210092f7766f0cc1114f65438fa4744d784e8a7f4b67910_1793867649244": "usr_bf8b3266-14eb-48cd-b830-26cde0686c25",
-    "atk_4fe4cd0ec4330f3637eb91469236a77e0737bd7a441b6d86_1793867649349": "usr_bf8b3266-14eb-48cd-b830-26cde0686c25"
+    "atk_4fe4cd0ec4330f3637eb91469236a77e0737bd7a441b6d86_1793867649349": "usr_bf8b3266-14eb-48cd-b830-26cde0686c25",
+    "atk_ee65b6235b76ee73fa4dc81b11e09d3587030320a703b6cc_1793869665608": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+    "atk_ec4e3301dd60853e68e911b4134966b96bc7b6aaa643b545_1793869665652": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+    "atk_166054490e94fdc9daeedff836b07aa016c17d3d5542fa4d_1793869665687": "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+    "atk_7b426cf9b6f43460c520c8182d171cf3d205af1fe163f38d_1793869665764": "usr_345efeda-367f-4cfd-85fb-44a31def1ebb",
+    "atk_95de93c24e7c119278c6718486e45a43f34afa7d9e222609_1793869665813": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+    "atk_03d1da10e50ec5e56d1442c4ca63c46e1506adcb90eff4d1_1793869665867": "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+    "atk_8c5ce54ad8c63a7d563fd528ec9b95632834eb59091869e2_1793869665947": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+    "atk_de632c865b31f582fd6c6f164c6bf527220b5c623e1ba622_1793869666077": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7"
   },
   "refreshTokens": {
     "0ef4c18dd882c0f73fefd05d287f76ae1d664a3d5ca80e6cf8033d1b0a6bed0a": {
@@ -48470,6 +53892,107 @@
       "createdAt": 1793867649431,
       "expiresAt": 1804235649391,
       "isRevoked": true
+    },
+    "802ff87677cc07be942ba27e1848b81685633123762285de6404c2ad891d914f": {
+      "id": "ses_3dc86961-1172-4781-9fe6-ee08c527a98e",
+      "userId": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+      "tokenHash": "802ff87677cc07be942ba27e1848b81685633123762285de6404c2ad891d914f",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665609,
+      "expiresAt": 1804237665609,
+      "isRevoked": false
+    },
+    "9061472ca9c7a9e38bbe9916eb3fefe5cd35345bc3e18f04fcd1f3e593ae074b": {
+      "id": "ses_a2ce3b31-066f-4752-8d6e-baf3916d8f2a",
+      "userId": "usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+      "tokenHash": "9061472ca9c7a9e38bbe9916eb3fefe5cd35345bc3e18f04fcd1f3e593ae074b",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665652,
+      "expiresAt": 1804237665652,
+      "isRevoked": false
+    },
+    "fe2726df505c65cb080b180e58093ad70288f7076056fc8a66edba7799c4672a": {
+      "id": "ses_cd7dea5f-703b-47d0-8f87-14d861e26f65",
+      "userId": "usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+      "tokenHash": "fe2726df505c65cb080b180e58093ad70288f7076056fc8a66edba7799c4672a",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665687,
+      "expiresAt": 1804237665687,
+      "isRevoked": false
+    },
+    "6735eb236471db9a8a4964bf3fca8a805a8bae78a357c2efa233ba9dfcaa4e4c": {
+      "id": "ses_eebd2994-009a-455f-9fdb-6ec859e7ea1a",
+      "userId": "usr_345efeda-367f-4cfd-85fb-44a31def1ebb",
+      "tokenHash": "6735eb236471db9a8a4964bf3fca8a805a8bae78a357c2efa233ba9dfcaa4e4c",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665764,
+      "expiresAt": 1804237665764,
+      "isRevoked": false
+    },
+    "79b3674564138412575f831256d51272bd1c3b4ebe2e24b8d243758ee5ca3e75": {
+      "id": "ses_531433c5-9f41-41cb-9871-b3865100b2f1",
+      "userId": "usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+      "tokenHash": "79b3674564138412575f831256d51272bd1c3b4ebe2e24b8d243758ee5ca3e75",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665813,
+      "expiresAt": 1804237665813,
+      "isRevoked": false
+    },
+    "4f2d73c2e3d0e3c69b61c5756ca62f629912bec9da85151238e54a3a6b20e6d0": {
+      "id": "ses_2f1a1869-83d1-485b-b10b-d3e936b71f05",
+      "userId": "usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+      "tokenHash": "4f2d73c2e3d0e3c69b61c5756ca62f629912bec9da85151238e54a3a6b20e6d0",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665867,
+      "expiresAt": 1804237665867,
+      "isRevoked": false
+    },
+    "07f740681e007c94138d16fb034d5cbefee1a901894713061cc0ce20add7d098": {
+      "id": "ses_d53b884e-f0fe-4176-a440-8eb95b47f600",
+      "userId": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "tokenHash": "07f740681e007c94138d16fb034d5cbefee1a901894713061cc0ce20add7d098",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869665948,
+      "expiresAt": 1804237665948,
+      "isRevoked": false
+    },
+    "cc435358a5378ecbb26aca05b08b608a3eb27871759dd3fd9ddacfa1ac64f1f9": {
+      "id": "ses_186fd6d5-b0d6-436b-9505-0c3fa5b38ac6",
+      "userId": "usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "tokenHash": "cc435358a5378ecbb26aca05b08b608a3eb27871759dd3fd9ddacfa1ac64f1f9",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869666078,
+      "expiresAt": 1804237666078,
+      "isRevoked": false
+    },
+    "218f43e33de47e9ee845fee50d932d366b812caccde320691a46d130ebae90f0": {
+      "id": "ses_e8269070-d23d-4ffe-9a87-bea474ac69ab",
+      "userId": "usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+      "tokenHash": "218f43e33de47e9ee845fee50d932d366b812caccde320691a46d130ebae90f0",
+      "ip": "127.0.0.1",
+      "userAgent": "Browser",
+      "createdAt": 1793869666109,
+      "expiresAt": 1804237666109,
+      "isRevoked": true,
+      "replacedByTokenHash": "545063940f6d9d16056e55c40ae9491e060d9a7a231801958799acd6a38d3ed2"
+    },
+    "545063940f6d9d16056e55c40ae9491e060d9a7a231801958799acd6a38d3ed2": {
+      "id": "ses_3ce70169-23f9-4e0c-92b8-6106b25544db",
+      "userId": "usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+      "tokenHash": "545063940f6d9d16056e55c40ae9491e060d9a7a231801958799acd6a38d3ed2",
+      "ip": "127.0.0.1",
+      "userAgent": "Vitest",
+      "createdAt": 1793869666135,
+      "expiresAt": 1804237666109,
+      "isRevoked": true
     }
   },
   "plans": {
@@ -48606,6 +54129,156 @@
     }
   ],
   "auditLogs": [
+    {
+      "id": "aud-928",
+      "admin": "server_cli",
+      "action": "ADMIN_PASSWORD_ROTATED_VIA_SERVER_CLI",
+      "resource": "/admin/bootstrap",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869666308
+    },
+    {
+      "id": "aud-725",
+      "admin": "usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+      "action": "SECURITY_ALERT_REFRESH_TOKEN_REUSE_DETECTED",
+      "resource": "/api/auth/refresh",
+      "status": "BLOCKED",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869666170
+    },
+    {
+      "id": "aud-436",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_97b0579b-edef-4330-b420-9c9c236d34d7",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869666109
+    },
+    {
+      "id": "aud-139",
+      "admin": "user_sus_1793869665947@finora.vn",
+      "action": "USER_LOGIN_SUCCESS",
+      "resource": "/api/auth/login",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869666078
+    },
+    {
+      "id": "aud-207",
+      "admin": "admin",
+      "action": "ADMIN_UNSUSPEND_USER",
+      "resource": "/api/users/usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869666043
+    },
+    {
+      "id": "aud-878",
+      "admin": "admin",
+      "action": "ADMIN_SUSPEND_USER",
+      "resource": "/api/users/usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665993
+    },
+    {
+      "id": "aud-798",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_c9a95d7f-e7ab-4202-b623-c47e83652de7",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665948
+    },
+    {
+      "id": "aud-410",
+      "admin": "admin",
+      "action": "ADMIN_GRANT_30D_TRIAL",
+      "resource": "/api/users/usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665909
+    },
+    {
+      "id": "aud-554",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_1f2dc954-f161-4db7-8dd3-3685497e5c9f",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665867
+    },
+    {
+      "id": "aud-374",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_ff31326c-c06d-4460-ac55-a15dea2deeeb",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665813
+    },
+    {
+      "id": "aud-823",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_345efeda-367f-4cfd-85fb-44a31def1ebb",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665764
+    },
+    {
+      "id": "aud-761",
+      "admin": "system",
+      "action": "TRIAL_AUTO_EXPIRED_REVERT_TO_FREE",
+      "resource": "/api/users/usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665721
+    },
+    {
+      "id": "aud-671",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_792c06df-61e3-47b7-ba10-ba7e1663ac04",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665687
+    },
+    {
+      "id": "aud-834",
+      "admin": "user_test_1793869665578@finora.vn",
+      "action": "USER_LOGIN_SUCCESS",
+      "resource": "/api/auth/login",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665652
+    },
+    {
+      "id": "aud-941",
+      "admin": "system",
+      "action": "USER_REGISTERED_30D_GOLD_TRIAL",
+      "resource": "/api/users/usr_8da7764f-0e58-4e1e-8a32-caa7f5a3374b",
+      "status": "SUCCESS",
+      "ip": "127.0.0.1",
+      "time": "Vừa xong",
+      "timestamp": 1793869665609
+    },
     {
       "id": "aud-985",
       "admin": "server_cli",

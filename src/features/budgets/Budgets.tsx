@@ -27,6 +27,7 @@ import {
 import { useFinance } from '../../store';
 import { budgetSpent, money, monthKey, uid } from '../../lib/finance';
 import { Confirm, PageHead, Progress } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { BudgetCategoryBadge } from '../../components/BudgetCategoryIcons';
 import { canAddBudget } from '../../lib/subscription';
@@ -118,13 +119,17 @@ export default function Budgets() {
         subtitle="Theo dõi mức đã dùng từ các giao dịch chi tiêu thực tế."
         actions={
           activeTab === 'categories' ? (
-            <>
-              <MuiMonthPicker
-                label="Chọn tháng"
-                value={month}
-                onChange={val => { setMonth(val); setPage(0); }}
-              />
+            <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center', flexWrap: 'wrap' }}>
+              <HelpButton pageKey="budgets" />
+              <Box id="tour-budget-month">
+                <MuiMonthPicker
+                  label="Chọn tháng"
+                  value={month}
+                  onChange={val => { setMonth(val); setPage(0); }}
+                />
+              </Box>
               <Button
+                id="tour-budget-add-btn"
                 variant="contained"
                 startIcon={<Plus size={15} />}
                 onClick={() => start()}
@@ -138,8 +143,10 @@ export default function Budgets() {
               >
                 Tạo ngân sách
               </Button>
-            </>
-          ) : undefined
+            </Box>
+          ) : (
+            <HelpButton pageKey="budgets" />
+          )
         }
       />
 
@@ -198,7 +205,7 @@ export default function Budgets() {
       ) : (
         <>
           {/* Stats Summary */}
-          <div className="grid-stats" style={{ marginBottom: 20 }}>
+          <div id="tour-budget-progress" className="grid-stats" style={{ marginBottom: 20 }}>
             <div className="card stat">
               <span className="stat-label">Tổng hạn mức</span>
               <div className="stat-value">

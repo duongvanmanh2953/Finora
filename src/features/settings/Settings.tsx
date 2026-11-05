@@ -8,7 +8,8 @@ import {
   Tags,
   Crown,
   Sparkles,
-  Star
+  Star,
+  Info
 } from 'lucide-react';
 import {
   Box,
@@ -18,13 +19,16 @@ import {
   Switch,
   Chip,
   Paper,
-  Divider
+  Divider,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 
 import { useFinance } from '../../store';
 import { seed } from '../../mocks/data';
 import { downloadCsv } from '../../lib/finance';
 import { Confirm, PageHead } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { MuiTextField, MuiSelect } from '../../components/mui/MuiInputs';
 import { isProUser } from '../../lib/subscription';
 
@@ -113,11 +117,16 @@ export default function Settings() {
         eyebrow="CÁ NHÂN HÓA"
         title="Cài đặt"
         subtitle="Tùy chỉnh trải nghiệm quản lý tài chính và chế độ đăng ký gói cước."
+        actions={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <HelpButton pageKey="settings" />
+          </Box>
+        }
       />
 
       <div className="rowcharts">
         {/* Personal Info */}
-        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
+        <Card id="tour-settings-profile" variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
           <div className="section-head">
             <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
               <UserRound size={18} /> Thông tin cá nhân
@@ -165,7 +174,7 @@ export default function Settings() {
         </Card>
 
         {/* Plan / Subscription / Dev Mode */}
-        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
+        <Card id="tour-settings-pro" variant="outlined" className="card pad" sx={{ borderRadius: '4px' }}>
           <div className="section-head">
             <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Crown size={18} color="#f59e0b" /> Gói cước & Đăng ký
@@ -305,15 +314,29 @@ export default function Settings() {
         </Card>
 
         {/* Navigation Favorites Customization Card */}
-        <Card variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
-          <div className="section-head">
-            <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} /> Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.25 }}>
-              Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại <strong>Mục Yêu Thích</strong> và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu.
-            </Typography>
-          </div>
+        <Card id="tour-settings-favs" variant="outlined" className="card pad" sx={{ borderRadius: '4px', gridColumn: '1 / -1' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+              <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} />
+              <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '0.95rem', sm: '1.1rem' } }}>
+                Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
+              </Typography>
+              <Tooltip
+                title="Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại Mục Yêu Thích và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu."
+                arrow
+                placement="top"
+              >
+                <IconButton size="small" sx={{ color: 'text.secondary', p: 0.5 }} aria-label="Xem hướng dẫn tùy chỉnh">
+                  <Info size={16} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Chip
+              label={`${favorites.length} mục đã ghim`}
+              size="small"
+              sx={{ bgcolor: 'rgba(245, 158, 11, 0.12)', color: '#D97706', fontWeight: 700, fontSize: '0.75rem' }}
+            />
+          </Box>
 
           <Box
             sx={{

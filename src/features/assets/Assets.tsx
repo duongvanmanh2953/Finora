@@ -164,6 +164,7 @@ export default function Assets() {
               Nguồn Finnhub / MCP
             </Button>
             <Button
+              id="tour-market-sync-btn"
               variant="outlined"
               startIcon={<RefreshCw size={16} className={refreshing ? 'spin' : ''} />}
               onClick={handleRefreshMarketPrices}
@@ -173,6 +174,7 @@ export default function Assets() {
               Đồng bộ giá thị trường
             </Button>
             <Button
+              id="tour-add-asset-btn"
               variant="contained"
               startIcon={<Plus size={16} />}
               onClick={() => setOpenAddModal(true)}
@@ -192,14 +194,16 @@ export default function Assets() {
       />
 
       {/* 2. Master Net Worth Control Header & Dual Mode Bento */}
-      <NetWorthControlHeader
-        summary={netWorthSummary}
-        hideRiskyAssets={hideRiskyAssets}
-        onToggleHideRiskyAssets={handleToggleSafeMode}
-      />
+      <Box id="tour-asset-net-worth">
+        <NetWorthControlHeader
+          summary={netWorthSummary}
+          hideRiskyAssets={hideRiskyAssets}
+          onToggleHideRiskyAssets={handleToggleSafeMode}
+        />
+      </Box>
 
       {/* 3. Navigation Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Box id="tour-asset-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => { setActiveTab(v); setTxPage(0); }}

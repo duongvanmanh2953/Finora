@@ -49,6 +49,7 @@ import {
 import { useFinance } from '../../store';
 import { balance, dateLabel, downloadCsv, money, uid, todayKey } from '../../lib/finance';
 import { Confirm, Empty, PageHead } from '../../components/ui';
+import { HelpButton } from '../../components/HelpButton';
 import { ItemActionMenu } from '../../components/ItemActionMenu';
 import {
   MuiTextField,
@@ -354,6 +355,7 @@ export default function Transactions() {
         subtitle={`Theo dõi và đối soát ${data.transactions.length} giao dịch trong sổ tài chính cá nhân`}
         actions={
           <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center', flexWrap: 'wrap' }}>
+            <HelpButton pageKey="transactions" />
             <Button
               variant="outlined"
               color="inherit"
@@ -364,6 +366,7 @@ export default function Transactions() {
               Xuất CSV
             </Button>
             <Button
+              id="tour-tx-add-btn"
               variant="contained"
               color="primary"
               startIcon={<Plus size={15} />}
@@ -381,7 +384,7 @@ export default function Transactions() {
       />
 
       {/* Submenu Navigation: Sổ giao dịch (CRUD) vs Dòng thời gian & Hóa đơn */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2.5 }}>
+      <Box id="tour-tx-subtabs" sx={{ borderBottom: 1, borderColor: 'divider', mb: 2.5 }}>
         <Tabs
           value={activeSubTab}
           onChange={(_, v) => handleSubTabChange(v)}
@@ -413,13 +416,13 @@ export default function Transactions() {
       </Box>
 
       {/* Smart NLP Quick Entry Bar */}
-      <Box sx={{ mb: 3 }}>
+      <Box id="tour-tx-quick-bar" sx={{ mb: 3 }}>
         <SmartQuickEntry />
       </Box>
 
       {/* SUBMENU 1: Full CRUD Transaction Manager Table & Filters */}
       {activeSubTab === 'ledger' && (
-        <Box sx={{ mb: 3 }}>
+        <Box id="tour-tx-table" sx={{ mb: 3 }}>
           <TransactionManagerCRUD />
         </Box>
       )}

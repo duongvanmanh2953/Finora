@@ -27,7 +27,6 @@ import {
   Cloud,
   Banknote,
   Server,
-  FileSpreadsheet,
   Star
 } from 'lucide-react';
 import {
@@ -246,7 +245,7 @@ export function Layout() {
   const streak = data?.user.streakCount || 1;
   const isCheckedInToday = data?.user.lastCheckInDate === todayKey();
 
-  const renderNavItem = (item: NavItemConfig, isPinnedSection = false) => {
+    const renderNavItem = (item: NavItemConfig, isPinnedSection = false) => {
     const Icon = item.icon;
     const isLocked = item.isPro && !isPro;
     const isFav = favorites.includes(item.url);
@@ -271,67 +270,82 @@ export function Layout() {
               display: 'flex',
               alignItems: 'center',
               textDecoration: 'none',
-              paddingRight: 6
+              paddingRight: 6,
+              minWidth: 0
             }}
           >
-            <Icon size={18} />
-            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <Icon size={17} style={{ flexShrink: 0 }} />
+            <span
+              style={{
+                flex: 1,
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                fontSize: '13px',
+                fontWeight: 600
+              }}
+              title={item.label}
+            >
               {item.label}
             </span>
 
-            {/* VIP/PRO Crown Indicator (Icon only to prevent layout shift) */}
-            {isLocked && (
-              <Tooltip title="Tính năng VIP Gold / Pro - Nhấp để xem gói cước">
-                <Box
-                  component="span"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openPricing(item.label);
-                  }}
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 20,
-                    height: 20,
-                    minWidth: 20,
-                    borderRadius: '50%',
-                    bgcolor: 'rgba(217, 154, 54, 0.15)',
-                    border: '1px solid rgba(217, 154, 54, 0.4)',
-                    color: '#DFBA73',
-                    cursor: 'pointer',
-                    mr: 0.5,
-                    transition: 'all 0.15s ease',
-                    '&:hover': {
-                      transform: 'scale(1.15)',
-                      bgcolor: 'rgba(217, 154, 54, 0.3)',
-                      borderColor: '#DFBA73'
-                    }
-                  }}
-                  aria-label="Tính năng VIP Pro"
-                >
-                  <Crown size={11} color="#DFBA73" style={{ filter: 'drop-shadow(0 0 2px rgba(223, 186, 115, 0.5))' }} />
-                </Box>
-              </Tooltip>
-            )}
+            {/* Action items: Crown Indicator & Favorite Star */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0, ml: 'auto' }}>
+              {isLocked && (
+                <Tooltip title="Tính năng VIP Gold / Pro - Nhấp để xem gói cước">
+                  <Box
+                    component="span"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openPricing(item.label);
+                    }}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 18,
+                      height: 18,
+                      minWidth: 18,
+                      borderRadius: '50%',
+                      bgcolor: 'rgba(217, 154, 54, 0.15)',
+                      border: '1px solid rgba(217, 154, 54, 0.4)',
+                      color: '#DFBA73',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        transform: 'scale(1.15)',
+                        bgcolor: 'rgba(217, 154, 54, 0.3)',
+                        borderColor: '#DFBA73'
+                      }
+                    }}
+                    aria-label="Tính năng VIP Pro"
+                  >
+                    <Crown size={10} color="#DFBA73" style={{ filter: 'drop-shadow(0 0 2px rgba(223, 186, 115, 0.5))' }} />
+                  </Box>
+                </Tooltip>
+              )}
 
-            {/* Star Favorite Button */}
-            <IconButton
-              size="small"
-              onClick={(e) => toggleFavorite(e, item.url)}
-              title={isFav ? 'Bỏ ghim khỏi yêu thích (về mục gốc)' : 'Ghim vào mục yêu thích'}
-              sx={{
-                p: 0.35,
-                color: isFav ? '#F59E0B' : 'text.secondary',
-                opacity: isFav ? 1 : 0.35,
-                transition: 'all 0.15s ease',
-                '&:hover': { opacity: 1, color: '#F59E0B' }
-              }}
-              aria-label={isFav ? 'Bỏ ghim yêu thích' : 'Ghim tính năng yêu thích'}
-            >
-              <Star size={13} fill={isFav ? '#F59E0B' : 'currentColor'} stroke="none" strokeWidth={0} />
-            </IconButton>
+              {/* Star Favorite Button */}
+              <IconButton
+                size="small"
+                onClick={(e) => toggleFavorite(e, item.url)}
+                title={isFav ? 'Bỏ ghim khỏi yêu thích (về mục gốc)' : 'Ghim vào mục yêu thích'}
+                sx={{
+                  p: 0.25,
+                  width: 22,
+                  height: 22,
+                  color: isFav ? '#F59E0B' : 'text.secondary',
+                  opacity: isFav ? 1 : 0.35,
+                  transition: 'all 0.15s ease',
+                  '&:hover': { opacity: 1, color: '#F59E0B' }
+                }}
+                aria-label={isFav ? 'Bỏ ghim yêu thích' : 'Ghim tính năng yêu thích'}
+              >
+                <Star size={12} fill={isFav ? '#F59E0B' : 'currentColor'} stroke="none" strokeWidth={0} />
+              </IconButton>
+            </Box>
           </NavLink>
         </Box>
       </Box>
@@ -343,64 +357,69 @@ export function Layout() {
       <div className="app">
         <div className={`mobile-overlay ${open ? 'show' : ''}`} onClick={() => setOpen(false)} />
 
-        {/* Sidebar */}
+        {/* Sidebar: Fixed Header, Scrollable Navigation, Fixed Footer */}
         <aside className={`sidebar ${open ? 'open' : ''}`}>
-          <div className="brand">
-            <span className="brandmark">
-              <img src="/logo.png" alt="Logo Tích Sản" className="brandmark-img" />
-            </span>
-            <span style={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: 18, color: 'var(--text-primary)' }}>Tích Sản</span>
-            {isPro && (
-              <Chip
-                label="VIP GOLD"
-                size="small"
-                sx={{
-                  ml: 0.5,
-                  height: 18,
-                  fontSize: 9.5,
-                  fontWeight: 800,
-                  bgcolor: 'rgba(217, 119, 6, 0.15)',
-                  color: '#B45309',
-                  border: '1px solid rgba(217, 119, 6, 0.35)'
-                }}
-              />
+          {/* 1. Fixed Header (Brand & Pro Upgrade Button) */}
+          <div className="sidebar-header">
+            <div className="brand">
+              <span className="brandmark">
+                <img src="/logo.png" alt="Logo Tích Sản" className="brandmark-img" />
+              </span>
+              <span style={{ fontWeight: 800, letterSpacing: '-0.02em', fontSize: 18, color: 'var(--text-primary)' }}>Tích Sản</span>
+              {isPro && (
+                <Chip
+                  label="VIP GOLD"
+                  size="small"
+                  sx={{
+                    ml: 0.5,
+                    height: 18,
+                    fontSize: 9.5,
+                    fontWeight: 800,
+                    bgcolor: 'rgba(217, 119, 6, 0.15)',
+                    color: '#B45309',
+                    border: '1px solid rgba(217, 119, 6, 0.35)'
+                  }}
+                />
+              )}
+              <button
+                className="iconbtn mobile-toggle"
+                style={{ marginLeft: 'auto' }}
+                onClick={() => setOpen(false)}
+                aria-label="Đóng menu"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {!isPro && (
+              <Box sx={{ mt: 0.75 }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  startIcon={<Crown size={14} color="#D97706" />}
+                  onClick={() => openPricing('Mở khóa gói cước VIP Gold')}
+                  sx={{
+                    color: 'text.primary',
+                    borderColor: 'rgba(217, 119, 6, 0.4)',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    py: 0.7,
+                    borderRadius: '6px',
+                    '&:hover': {
+                      borderColor: '#D99A36',
+                      bgcolor: 'rgba(217, 154, 54, 0.05)'
+                    }
+                  }}
+                >
+                  Nâng cấp Pro
+                </Button>
+              </Box>
             )}
-            <button
-              className="iconbtn mobile-toggle"
-              style={{ marginLeft: 'auto' }}
-              onClick={() => setOpen(false)}
-              aria-label="Đóng menu"
-            >
-              <X size={16} />
-            </button>
           </div>
 
-          {!isPro && (
-            <Box sx={{ px: 1, mb: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                size="small"
-                startIcon={<Crown size={14} color="#D97706" />}
-                onClick={() => openPricing('Mở khóa gói cước VIP Gold')}
-                sx={{
-                  color: 'text.primary',
-                  borderColor: 'rgba(217, 119, 6, 0.4)',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  py: 0.7,
-                  '&:hover': {
-                    borderColor: '#D99A36',
-                    bgcolor: 'rgba(217, 154, 54, 0.05)'
-                  }
-                }}
-              >
-                Nâng cấp Pro
-              </Button>
-            </Box>
-          )}
-
-          <nav aria-label="Điều hướng chính">
+          {/* 2. Scrollable Middle Navigation */}
+          <nav className="sidebar-nav" aria-label="Điều hướng chính">
             {/* 0. MỤC YÊU THÍCH (PINNED FAVORITES) */}
             {favoriteNavItems.length > 0 && (
               <Box sx={{ mb: 1.5, pb: 1, borderBottom: '1px solid var(--border-subtle)' }}>
@@ -473,9 +492,10 @@ export function Layout() {
             )}
           </nav>
 
-          <div className="sidebottom">
-            {/* Tiện ích mở rộng trên Mobile (0đ check-in, Cloud Sync, Đổi chế độ Pro) */}
-            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1, mb: 2, pt: 1, borderTop: '1px solid var(--border-subtle)' }}>
+          {/* 3. Fixed Footer (Cloud Sync, Pro Toggle, Profile) */}
+          <div className="sidebar-footer">
+            {/* Tiện ích mở rộng trên Mobile (0đ check-in) */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1 }}>
               <Button
                 variant="outlined"
                 size="small"
@@ -486,99 +506,85 @@ export function Layout() {
                 }}
                 startIcon={<CheckCircle size={15} />}
                 sx={{
-                  minHeight: 44,
-                  fontSize: 12.5,
+                  minHeight: 38,
+                  fontSize: 12,
                   fontWeight: 650,
                   borderColor: 'var(--border-subtle)',
                   color: 'text.secondary',
                   justifyContent: 'flex-start',
-                  px: 1.5
+                  px: 1.5,
+                  borderRadius: '6px'
                 }}
               >
                 Hôm nay 0đ (Giữ chuỗi)
               </Button>
-
-              <Button
-                variant="outlined"
-                size="small"
-                fullWidth
-                onClick={() => {
-                  setCloudSyncOpen(true);
-                  setOpen(false);
-                }}
-                startIcon={<Cloud size={15} />}
-                sx={{
-                  minHeight: 44,
-                  fontSize: 12.5,
-                  fontWeight: 650,
-                  borderColor: 'var(--border-subtle)',
-                  color: 'text.secondary',
-                  justifyContent: 'flex-start',
-                  px: 1.5
-                }}
-              >
-                Đồng bộ dữ liệu Cloud
-              </Button>
-
-              <Box
-                onClick={handleTogglePro}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  px: 1.25,
-                  py: 0.75,
-                  borderRadius: 1.5,
-                  cursor: 'pointer',
-                  border: isPro ? '1px solid rgba(223, 186, 115, 0.4)' : '1px solid var(--border-subtle)',
-                  bgcolor: isPro ? 'rgba(223, 186, 115, 0.08)' : 'var(--bg-subtle)',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: isPro ? 'rgba(223, 186, 115, 0.7)' : 'text.secondary',
-                    bgcolor: isPro ? 'rgba(223, 186, 115, 0.14)' : 'action.hover'
-                  }
-                }}
-                title="Nhấn để bật/tắt nhanh chế độ Finora PRO"
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Crown size={14} color={isPro ? '#DFBA73' : 'var(--text-muted)'} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: isPro ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
-                    Chế độ PRO
-                  </span>
-                </Box>
-                <Chip
-                  label={isPro ? 'ĐANG BẬT' : 'TẮT'}
-                  size="small"
-                  sx={{
-                    height: 20,
-                    fontSize: 9.5,
-                    fontWeight: 800,
-                    letterSpacing: 0.5,
-                    bgcolor: isPro ? '#DFBA73' : 'action.disabledBackground',
-                    color: isPro ? '#1E1B13' : 'text.disabled',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                />
-              </Box>
             </Box>
 
-            <NavLink
-              to="/legal"
-              className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-              onClick={() => setOpen(false)}
+            <Button
+              variant="outlined"
+              size="small"
+              fullWidth
+              onClick={() => {
+                setCloudSyncOpen(true);
+                setOpen(false);
+              }}
+              startIcon={<Cloud size={15} />}
+              sx={{
+                minHeight: 36,
+                fontSize: 12,
+                fontWeight: 650,
+                borderColor: 'var(--border-subtle)',
+                color: 'text.secondary',
+                justifyContent: 'flex-start',
+                px: 1.5,
+                borderRadius: '6px'
+              }}
             >
-              <FileSpreadsheet size={18} />
-              <span>Chính sách & Pháp lý</span>
-            </NavLink>
-            <NavLink
-              to="/settings"
-              className={({ isActive }) => `navlink ${isActive ? 'active' : ''}`}
-              onClick={() => setOpen(false)}
+              Đồng bộ dữ liệu Cloud
+            </Button>
+
+            <Box
+              onClick={handleTogglePro}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                px: 1.25,
+                py: 0.6,
+                borderRadius: 1.5,
+                cursor: 'pointer',
+                border: isPro ? '1px solid rgba(223, 186, 115, 0.4)' : '1px solid var(--border-subtle)',
+                bgcolor: isPro ? 'rgba(223, 186, 115, 0.08)' : 'var(--bg-subtle)',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  borderColor: isPro ? 'rgba(223, 186, 115, 0.7)' : 'text.secondary',
+                  bgcolor: isPro ? 'rgba(223, 186, 115, 0.14)' : 'action.hover'
+                }
+              }}
+              title="Nhấn để bật/tắt nhanh chế độ Finora PRO"
             >
-              <Settings size={18} />
-              <span>Cài đặt</span>
-            </NavLink>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Crown size={14} color={isPro ? '#DFBA73' : 'var(--text-muted)'} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: isPro ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                  Chế độ PRO
+                </span>
+              </Box>
+              <Chip
+                label={isPro ? 'ĐANG BẬT' : 'TẮT'}
+                size="small"
+                sx={{
+                  height: 19,
+                  fontSize: 9,
+                  fontWeight: 800,
+                  letterSpacing: 0.5,
+                  bgcolor: isPro ? '#DFBA73' : 'action.disabledBackground',
+                  color: isPro ? '#1E1B13' : 'text.disabled',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              />
+            </Box>
+
             <Box
               className="profile"
               onClick={() => {

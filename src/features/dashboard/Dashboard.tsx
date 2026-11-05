@@ -389,9 +389,10 @@ export default function Dashboard() {
           <HelpButton pageKey="dashboard" />
 
           {/* + Thêm giao dịch Button */}
-          <Link to="/transactions?add=1" style={{ textDecoration: 'none' }}>
-            <FinoraButton
-              variant="primary"
+          <Box id="tour-dashboard-add-tx">
+            <Link to="/transactions?add=1" style={{ textDecoration: 'none' }}>
+              <FinoraButton
+                variant="primary"
               size="medium"
               startIcon={<Plus size={16} color="#FFFFFF" strokeWidth={2.5} />}
               sx={{
@@ -409,7 +410,8 @@ export default function Dashboard() {
             >
               Thêm giao dịch
             </FinoraButton>
-          </Link>
+            </Link>
+          </Box>
         </Box>
       </Box>
 

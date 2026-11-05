@@ -61,6 +61,7 @@ import {
 import { BankLogoBadge, CategoryAvatarBadge } from '../../lib/brandBadges';
 import { SmartQuickEntry } from '../../components/SmartQuickEntry';
 import { TransactionManagerCRUD } from '../../components/TransactionManagerCRUD';
+import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
 import type { Transaction, TxType } from '../../types';
 
 type FormValues = {
@@ -118,6 +119,7 @@ export default function Transactions() {
 
   // View mode: 'timeline' (revolutionary feed) vs 'table' (classic grid)
   const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
+  const [fullscreenTxTableOpen, setFullscreenTxTableOpen] = useState(false);
 
   // Filters
   const [search, setSearch] = useState(params.get('search') || '');
@@ -782,6 +784,13 @@ export default function Transactions() {
                 </ToggleButton>
               </Tooltip>
             </ToggleButtonGroup>
+
+            {viewMode === 'table' && (
+              <FullscreenButton
+                onClick={() => setFullscreenTxTableOpen(true)}
+                title="Xem bảng giao dịch toàn màn hình (Mặc định xoay ngang 90° trên Mobile)"
+              />
+            )}
           </Box>
         </Box>
 
@@ -2015,6 +2024,98 @@ export default function Transactions() {
           <Button onClick={() => setViewingReceipt(null)}>Đóng</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Fullscreen Table Modal (Defaults to 90deg Landscape on Mobile) */}
+      <FullscreenModal
+        open={fullscreenTxTableOpen}
+        onClose={() => setFullscreenTxTableOpen(false)}
+        title="Bảng Đối Soát Giao Dịch Chi Tiết"
+        subtitle="Khung nhìn toàn cảnh: Sổ cái giao dịch đa cột đầy đủ thông tin (Tự động xoay ngang 90° trên điện thoại)"
+      >
+        <TableContainer sx={{ width: '100%', height: '100%', overflowX: 'auto', flex: 1, p: { xs: 1, sm: 2 } }}>
+          <Table size="small" sx={{ minWidth: 700 }}>
+            <TableHead sx={{ bgcolor: 'action.hover' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 800 }}>Giao dịch</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Danh mục</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Tài khoản</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Ngày</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Trạng thái</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 800 }}>Số tiền</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 800 }}>Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedList.map(t => {
+                const cat = data.categories.find(c => c.id === t.categoryId);
+                const acc = data.accounts.find(a => a.id === t.accountId);
+                return (
+                  <TableRow key={`fs-${t.id}`} hover>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 750 }}>{t.name}</Typography>
+                      {t.note && <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{t.note}</Typography>}
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
+                        <Typography variant="body2">{cat?.name || 'Chung'}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
+                        <Typography variant="body2">{acc?.name || 'Ví chính'}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', color: 'text.secondary', fontSize: 12 }}>
+                      {dateLabel(t.date)}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ'}
+                        size="small"
+                        color={t.status === 'completed' ? 'success' : 'warning'}
+                        variant="outlined"
+                        sx={{ height: 20, fontSize: 10, fontWeight: 700 }}
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: 13.5,
+                          fontFeatureSettings: '"tnum"',
+                          fontVariantNumeric: 'tabular-nums',
+                          color:
+                            t.type === 'income'
+                              ? 'var(--accent-income)'
+                              : t.type === 'expense'
+                              ? 'var(--accent-expense)'
+                              : 'inherit'
+                        }}
+                      >
+                        {t.type === 'income' ? '+' : t.type === 'expense' ? '-' : ''}
+                        {money(t.amount)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
+                        <IconButton size="small" onClick={() => startEdit(t)} title="Sửa">
+                          <Pencil size={15} />
+                        </IconButton>
+                        <IconButton size="small" color="error" onClick={() => setDeleting(t)} title="Xóa">
+                          <Trash2 size={15} />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </FullscreenModal>
     </>
   );
 }

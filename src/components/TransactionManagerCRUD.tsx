@@ -333,8 +333,18 @@ export function TransactionManagerCRUD() {
         </Box>
       </Box>
 
-      {/* 2. Transaction Data Table */}
-      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+      {/* 2. Transaction Data Container: Responsive Desktop Table & Mobile Card List */}
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{
+          borderRadius: '6px',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          width: '100%',
+          display: { xs: 'none', md: 'block' }
+        }}
+      >
         <Table size="small" sx={{ minWidth: 640 }}>
           <TableHead>
             <TableRow>
@@ -430,7 +440,7 @@ export function TransactionManagerCRUD() {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={5} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+                <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
                   Không tìm thấy giao dịch nào phù hợp với bộ lọc.
                 </TableCell>
               </TableRow>
@@ -438,6 +448,162 @@ export function TransactionManagerCRUD() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Mobile Card List View (Ultra-Optimized for Handheld & Touch UX) */}
+      <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1.25 }}>
+        {filteredList.length > 0 ? (
+          filteredList.slice(0, 30).map(tx => {
+            const isIncome = tx.type === 'income';
+            const isInvest = tx.categoryId === 'invest' || tx.categoryId === 'investment';
+            const assetSymbol = isInvest && tx.name.split(' ')[1];
+
+            return (
+              <Paper
+                key={`mobile-${tx.id}`}
+                variant="outlined"
+                sx={{
+                  p: 1.5,
+                  borderRadius: '6px',
+                  bgcolor: 'background.paper',
+                  borderColor: 'var(--border-subtle)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                  transition: 'border-color 0.15s ease',
+                  '&:active': { bgcolor: 'action.hover' }
+                }}
+              >
+                {/* Top Row: Category Avatar + Name & Amount */}
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0, flex: 1 }}>
+                    <BudgetCategoryBadge categoryKey={tx.categoryId} showLabel={false} size={30} />
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        {assetSymbol && (
+                          <AssetLogoBadge symbol={assetSymbol} name={assetSymbol} size="small" />
+                        )}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 800,
+                            fontSize: '0.88rem',
+                            color: 'text.primary',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
+                        >
+                          {tx.name}
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                        {tx.date}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Amount */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 850,
+                      fontSize: '0.95rem',
+                      fontFeatureSettings: '"tnum"',
+                      fontVariantNumeric: 'tabular-nums',
+                      whiteSpace: 'nowrap',
+                      color: isIncome ? '#10B981' : isInvest ? '#2563EB' : '#EF4444'
+                    }}
+                  >
+                    {isIncome ? '+' : '-'}{money(tx.amount)}
+                  </Typography>
+                </Box>
+
+                {/* Optional Note */}
+                {tx.note && (
+                  <Box
+                    sx={{
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: '4px',
+                      bgcolor: 'action.hover',
+                      fontSize: '0.74rem',
+                      color: 'text.secondary',
+                      fontStyle: 'italic'
+                    }}
+                  >
+                    {tx.note}
+                  </Box>
+                )}
+
+                {/* Bottom Row: Status Badge + Action Buttons */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    pt: 0.75,
+                    borderTop: '1px dashed var(--border-subtle)'
+                  }}
+                >
+                  <StatusBadge
+                    label={tx.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'}
+                    status={tx.status === 'completed' ? 'success' : 'warning'}
+                    variant="soft"
+                    size="small"
+                  />
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleOpenEdit(tx)}
+                      startIcon={<EditRounded sx={{ fontSize: 14 }} />}
+                      sx={{
+                        minHeight: 28,
+                        py: 0.2,
+                        px: 1,
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        textTransform: 'none',
+                        borderRadius: '4px',
+                        color: 'text.secondary',
+                        borderColor: 'var(--border-subtle)'
+                      }}
+                    >
+                      Sửa
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="error"
+                      onClick={() => setDeletingTx(tx)}
+                      startIcon={<DeleteOutlineRounded sx={{ fontSize: 14 }} />}
+                      sx={{
+                        minHeight: 28,
+                        py: 0.2,
+                        px: 1,
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        textTransform: 'none',
+                        borderRadius: '4px'
+                      }}
+                    >
+                      Xóa
+                    </Button>
+                  </Box>
+                </Box>
+              </Paper>
+            );
+          })
+        ) : (
+          <Paper
+            variant="outlined"
+            sx={{ p: 4, textAlign: 'center', color: 'text.secondary', borderRadius: '6px' }}
+          >
+            Không tìm thấy giao dịch nào phù hợp với bộ lọc.
+          </Paper>
+        )}
+      </Box>
 
       {/* 3. Dialog Thêm Mới (Manual Add) */}
       <Dialog

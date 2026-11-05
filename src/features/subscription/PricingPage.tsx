@@ -34,6 +34,7 @@ import {
   isGoldUser
 } from '../../lib/subscription';
 import { PaymentCheckoutModal } from '../../components/subscription/PaymentCheckoutModal';
+import { TierBadgeIcon } from '../../components/subscription/TierBadgeIcon';
 import { money } from '../../lib/finance';
 
 export default function PricingPage() {
@@ -311,15 +312,15 @@ export default function PricingPage() {
               <Box>
                 {/* Header Row: Title & Clean Badge (No overlapping / sticking) */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1, mb: 1, minHeight: 28 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-                    {isGoldCard ? (
-                      <Crown size={20} color={GOLD_COLOR_TOKENS.main} style={{ flexShrink: 0 }} />
-                    ) : plan.tier === 'pro' ? (
-                      <Zap size={20} color="#2563EB" style={{ flexShrink: 0 }} />
-                    ) : (
-                      <ShieldCheck size={20} color="#64748B" style={{ flexShrink: 0 }} />
-                    )}
-                    <Typography variant="subtitle1" sx={{ fontWeight: 800, color: isGoldCard ? GOLD_COLOR_TOKENS.main : 'text.primary', lineHeight: 1.3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
+                    <TierBadgeIcon
+                      tier={plan.isGold ? 'gold' : plan.tier}
+                      isTrial={plan.id === 'plan-trial'}
+                      size={36}
+                      iconSize={19}
+                      showTooltip={false}
+                    />
+                    <Typography variant="subtitle1" sx={{ fontWeight: 850, color: isGoldCard ? GOLD_COLOR_TOKENS.main : plan.tier === 'pro' ? '#8B5CF6' : 'text.primary', lineHeight: 1.3 }}>
                       {plan.name}
                     </Typography>
                   </Box>

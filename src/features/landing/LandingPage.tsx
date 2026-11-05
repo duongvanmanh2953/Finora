@@ -36,6 +36,7 @@ import {
 } from '@mui/material';
 import { SemiCircleGauge } from '../../components/gauges/SemiCircleGauge';
 import { GOLD_COLOR_TOKENS } from '../../lib/subscription';
+import { TierBadgeIcon } from '../../components/subscription/TierBadgeIcon';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -955,9 +956,12 @@ export default function LandingPage() {
                   flexDirection: 'column'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
-                  Starter Miễn Phí
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                  <TierBadgeIcon tier="free" size={34} iconSize={18} showTooltip={false} />
+                  <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                    Starter Miễn Phí
+                  </Typography>
+                </Box>
                 <Typography variant="caption" sx={{ color: '#94A3B8', mb: 2.5 }}>
                   Cho nhu cầu ghi chép thu chi cá nhân cơ bản
                 </Typography>
@@ -1016,8 +1020,8 @@ export default function LandingPage() {
                   }}
                 />
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <Crown size={20} color={GOLD_COLOR_TOKENS.goldMetallic} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                  <TierBadgeIcon tier="gold" isTrial={true} size={34} iconSize={18} showTooltip={false} />
                   <Typography variant="h6" sx={{ fontWeight: 900, color: GOLD_COLOR_TOKENS.goldLight }}>
                     VIP Gold 30 Ngày
                   </Typography>
@@ -1075,9 +1079,12 @@ export default function LandingPage() {
                   flexDirection: 'column'
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
-                  Tích Sản VIP Gold (Năm)
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                  <TierBadgeIcon tier="gold" size={34} iconSize={18} showTooltip={false} />
+                  <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                    Tích Sản VIP Gold (Năm)
+                  </Typography>
+                </Box>
                 <Typography variant="caption" sx={{ color: '#94A3B8', mb: 2.5 }}>
                   Dành cho nhà đầu tư cá nhân & gia đình
                 </Typography>

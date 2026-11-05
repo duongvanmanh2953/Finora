@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useFinance } from '../store';
 import { PLAN_OPTIONS, type PlanOption } from '../lib/subscription';
+import { TierBadgeIcon } from './subscription/TierBadgeIcon';
 
 export function PricingDialog({
   open,
@@ -196,9 +197,17 @@ export function PricingDialog({
                       onClick={() => setSelectedPlan(plan)}
                       sx={{ p: 2.5, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
                     >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.secondary', mb: 0.5 }}>
-                        {plan.name}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <TierBadgeIcon
+                          tier={plan.id === 'lifetime' ? 'elite' : plan.id === 'year' ? 'gold' : 'pro'}
+                          size={32}
+                          iconSize={17}
+                          showTooltip={false}
+                        />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                          {plan.name}
+                        </Typography>
+                      </Box>
                       <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 0.5 }}>
                         {new Intl.NumberFormat('vi-VN').format(plan.price)} ₫
                       </Typography>

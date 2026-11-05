@@ -28,8 +28,7 @@ import {
   Banknote,
   Server,
   FileSpreadsheet,
-  Star,
-  Lock
+  Star
 } from 'lucide-react';
 import {
   Button,
@@ -52,6 +51,7 @@ import {
 import { updateStreak, autoExecuteRecurring } from '../lib/habit';
 import { todayKey, uid } from '../lib/finance';
 import { PricingDialog } from './PricingDialog';
+import { TierBadgeIcon } from './subscription/TierBadgeIcon';
 import { AiAssistantDrawer } from './AiAssistantDrawer';
 import { CloudSyncModal } from './CloudSyncModal';
 
@@ -124,6 +124,17 @@ export function Layout() {
   const isGold = data ? isGoldUser(data) : false;
   const trialActive = data ? isTrialActive(data.user) : false;
   const daysRemaining = data ? getTrialDaysRemaining(data.user) : 0;
+
+  // Lock body scroll when mobile sidebar drawer is open to prevent background bleed
+  useEffect(() => {
+    if (open) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [open]);
 
   // Favorite / Pinned Menu Items in Sidebar
   const DEFAULT_FAVORITES = ['/', '/transactions', '/budgets', '/reports'];
@@ -268,9 +279,9 @@ export function Layout() {
               {item.label}
             </span>
 
-            {/* Lock Icon for Advanced/PRO features */}
+            {/* VIP/PRO Crown Indicator (Icon only to prevent layout shift) */}
             {isLocked && (
-              <Tooltip title="Tính năng nâng cao (Gói Pro) - Bấm để xem gói cước">
+              <Tooltip title="Tính năng VIP Gold / Pro - Nhấp để xem gói cước">
                 <Box
                   component="span"
                   onClick={(e) => {
@@ -281,20 +292,26 @@ export function Layout() {
                   sx={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 0.25,
-                    px: 0.6,
-                    py: 0.2,
-                    borderRadius: '4px',
+                    justifyContent: 'center',
+                    width: 20,
+                    height: 20,
+                    minWidth: 20,
+                    borderRadius: '50%',
                     bgcolor: 'rgba(217, 154, 54, 0.15)',
-                    color: '#D99A36',
-                    fontSize: 10,
-                    fontWeight: 800,
+                    border: '1px solid rgba(217, 154, 54, 0.4)',
+                    color: '#DFBA73',
                     cursor: 'pointer',
-                    mr: 0.5
+                    mr: 0.5,
+                    transition: 'all 0.15s ease',
+                    '&:hover': {
+                      transform: 'scale(1.15)',
+                      bgcolor: 'rgba(217, 154, 54, 0.3)',
+                      borderColor: '#DFBA73'
+                    }
                   }}
+                  aria-label="Tính năng VIP Pro"
                 >
-                  <Lock size={11} />
-                  <span>PRO</span>
+                  <Crown size={11} color="#DFBA73" style={{ filter: 'drop-shadow(0 0 2px rgba(223, 186, 115, 0.5))' }} />
                 </Box>
               </Tooltip>
             )}
@@ -562,26 +579,69 @@ export function Layout() {
               <Settings size={18} />
               <span>Cài đặt</span>
             </NavLink>
-            <div className="profile">
-              <div className="avatar">
-                {isPro ? <Crown size={14} /> : 'FA'}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 12.5, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {data?.user.name}
-                  {isPro && <Crown size={12} color="#D99A36" />}
-                </div>
-                <div style={{ fontSize: 10.5, color: trialActive || isGold ? GOLD_COLOR_TOKENS.goldMetallic : 'var(--text-muted)', fontWeight: trialActive || isGold ? 700 : 400 }}>
+            <Box
+              className="profile"
+              onClick={() => {
+                navigate('/settings');
+                setOpen(false);
+              }}
+              sx={{
+                cursor: 'pointer',
+                p: 1,
+                borderRadius: '8px',
+                border: '1px solid',
+                borderColor: trialActive || isGold
+                  ? 'rgba(223, 186, 115, 0.4)'
+                  : isPro
+                  ? 'rgba(139, 92, 246, 0.4)'
+                  : 'var(--border-subtle)',
+                bgcolor: trialActive || isGold
+                  ? 'rgba(223, 186, 115, 0.08)'
+                  : isPro
+                  ? 'rgba(139, 92, 246, 0.08)'
+                  : 'var(--bg-subtle)',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                '&:hover': {
+                  borderColor: trialActive || isGold ? '#DFBA73' : isPro ? '#8B5CF6' : 'text.secondary'
+                }
+              }}
+              title="Nhấn để quản lý tài khoản & gói dịch vụ"
+            >
+              <TierBadgeIcon
+                tier={trialActive || isGold ? 'gold' : isPro ? 'pro' : 'free'}
+                isTrial={trialActive}
+                size={34}
+                iconSize={17}
+                showTooltip={false}
+              />
+              <Box sx={{ minWidth: 0, flex: 1 }}>
+                <Box sx={{ fontSize: 12.5, fontWeight: 750, display: 'flex', alignItems: 'center', gap: 0.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span>{data?.user.name}</span>
+                </Box>
+                <Box
+                  sx={{
+                    fontSize: 10.5,
+                    fontWeight: 700,
+                    color: trialActive || isGold
+                      ? '#DFBA73'
+                      : isPro
+                      ? '#A78BFA'
+                      : 'var(--text-muted)'
+                  }}
+                >
                   {trialActive
                     ? `VIP Gold Trial (${daysRemaining} ngày)`
                     : isGold
-                      ? 'Gói VIP Gold Cao Cấp'
-                      : isPro
-                        ? 'Gói Pro Cao Cấp'
-                        : 'Gói Cơ Bản (Free)'}
-                </div>
-              </div>
-            </div>
+                    ? 'VIP Gold Hoàng Gia'
+                    : isPro
+                    ? 'Wealth Pro Tím'
+                    : 'Cơ Bản (Free)'}
+                </Box>
+              </Box>
+            </Box>
           </div>
         </aside>
 

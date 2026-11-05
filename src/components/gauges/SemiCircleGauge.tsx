@@ -23,17 +23,17 @@ export interface SemiCircleGaugeProps {
   unitLabel?: string; // default '/100'
 }
 
-// 5 crisp status zones (Critical -> Poor -> Average -> Good -> Excellent)
+// 5 crisp status zones (Critical -> Poor -> Average -> Good -> Excellent/Tím Trần)
 const HEALTH_ZONES: GaugeZone[] = [
   { min: 0, max: 20, color: '#EF4444', label: 'Nguy cấp' },
   { min: 20, max: 40, color: '#F97316', label: 'Cần chú ý' },
   { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
   { min: 60, max: 80, color: '#10B981', label: 'Tốt' },
-  { min: 80, max: 100, color: '#06B6D4', label: 'Xuất sắc' }
+  { min: 80, max: 100, color: '#8B5CF6', label: 'Rất tốt' }
 ];
 
 const RISK_ZONES: GaugeZone[] = [
-  { min: 0, max: 20, color: '#06B6D4', label: 'Rất an toàn' },
+  { min: 0, max: 20, color: '#8B5CF6', label: 'Rất an toàn' },
   { min: 20, max: 40, color: '#10B981', label: 'An toàn' },
   { min: 40, max: 60, color: '#FBBF24', label: 'Trung bình' },
   { min: 60, max: 80, color: '#F97316', label: 'Rủi ro cao' },

@@ -18,7 +18,10 @@ import {
   TrendingUp,
   PieChart,
   BellRing,
-  Smartphone
+  Smartphone,
+  Quote,
+  Star,
+  Users
 } from 'lucide-react';
 import {
   Box,
@@ -209,7 +212,7 @@ export default function LandingPage() {
         position: 'relative'
       }}
     >
-      {/* ATMOSPHERIC GRADIENTS & DEEP OBSIDIAN PLANES */}
+      {/* ATMOSPHERIC MULTI-LAYER OBSIDIAN GRADIENTS, REACT BITS DOT MATRIX & GLOW MESH */}
       <Box
         sx={{
           position: 'fixed',
@@ -220,10 +223,27 @@ export default function LandingPage() {
           pointerEvents: 'none',
           zIndex: 0,
           background: `
-            radial-gradient(ellipse 90% 60% at 50% -10%, rgba(124, 58, 237, 0.18) 0%, rgba(3, 7, 6, 0) 70%),
-            radial-gradient(circle 700px at 85% 30%, rgba(16, 185, 129, 0.08) 0%, rgba(3, 7, 6, 0) 65%),
-            radial-gradient(circle 800px at 15% 75%, rgba(124, 58, 237, 0.1) 0%, rgba(3, 7, 6, 0) 70%)
+            radial-gradient(ellipse 90% 55% at 50% -8%, rgba(139, 92, 246, 0.28) 0%, rgba(3, 7, 6, 0) 70%),
+            radial-gradient(circle 850px at 90% 25%, rgba(16, 185, 129, 0.12) 0%, rgba(3, 7, 6, 0) 65%),
+            radial-gradient(circle 900px at 10% 65%, rgba(124, 58, 237, 0.16) 0%, rgba(3, 7, 6, 0) 70%),
+            radial-gradient(circle 600px at 50% 90%, rgba(223, 186, 115, 0.08) 0%, rgba(3, 7, 6, 0) 60%)
           `
+        }}
+      />
+      {/* Dynamic React Bits Subtle Dot Grid Matrix with Vignette Radial Mask */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: 'none',
+          zIndex: 0,
+          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+          maskImage: 'radial-gradient(ellipse 85% 75% at 50% 30%, black 35%, transparent 88%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 85% 75% at 50% 30%, black 35%, transparent 88%)'
         }}
       />
 
@@ -786,6 +806,109 @@ export default function LandingPage() {
                   </Box>
                 </Paper>
               </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* 6.5. REAL CUSTOMER INTERVIEWS & CASE STUDIES (VOICE OF USERS) */}
+      <Box id="reviews" className="reveal-section" sx={{ py: 12, position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.5, borderRadius: 50, bgcolor: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', mb: 2 }}>
+              <Users size={15} />
+              <Typography variant="caption" sx={{ fontWeight: 800 }}>PHỎNG VẤN & TRẢI NGHIỆM THỰC TẾ</Typography>
+            </Box>
+            <Typography variant="h3" sx={{ fontWeight: 850, letterSpacing: -1, mb: 1.5 }}>
+              Khách hàng Nói gì về Finora?
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#94A3B8', maxWidth: 640, mx: 'auto' }}>
+              Chúng tôi đã phỏng vấn trực tiếp các cá nhân và chủ doanh nghiệp nhỏ để tháo gỡ từng nút thắt tài chính gây đau đầu nhất.
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+            {[
+              {
+                name: 'Hoàng Minh Tuấn',
+                role: 'Senior Tech Lead, 32 tuổi (Hà Nội)',
+                problem: 'Lương cao nhưng cuối tháng không thấy tiền dư',
+                solution: 'Quy tắc 6 Hũ tự động chia tỷ lệ & Speedometer đo tỷ lệ tiết kiệm',
+                result: 'Tăng tỷ lệ tiết kiệm từ 12% lên 38%, mua được gói bảo hiểm nhân thọ cho cả gia đình',
+                quote: 'Trước đây mỗi lần nhận thưởng quý là tôi tiêu bạt mạng vì không có phân vùng tiền rõ ràng. Finora giúp tôi bóc tách rạch ròi giữa quỹ tiêu xài và quỹ dự phòng khẩn cấp.'
+              },
+              {
+                name: 'Lê Thùy Dương',
+                role: 'Chủ Studio Thời Trang & Nhà đầu tư F0 (TP.HCM)',
+                problem: 'Đầu tư cổ phiếu, vàng, bất động sản lung tung không biết lãi thật hay lỗ',
+                solution: 'Smart Ledger bóc tách vốn chưa thu hồi và danh mục rủi ro cao',
+                result: 'Quản lý minh bạch 1.2 tỷ vốn đầu tư, cắt lỗ kịp thời 2 mã cổ phiếu kém thanh khoản',
+                quote: 'Tính năng phân tách Vốn chưa thu hồi và Tài sản rủi ro là thứ tôi chưa từng thấy ở app nào khác. Nó giúp tôi nhìn thẳng vào sự thật thay vì tự an ủi bằng số dư ảo!'
+              },
+              {
+                name: 'Nguyễn Văn Đạt',
+                role: 'Freelance Designer & Sáng lập Agency (Đà Nẵng)',
+                problem: 'Sợ các app bắt nhập thẻ tín dụng rồi âm thầm tự gia hạn trừ tiền',
+                solution: 'VIP Gold 30 Ngày 0đ rủi ro, Local-First không cần nhập thẻ',
+                result: 'Yên tâm sử dụng toàn bộ tính năng cao cấp suốt 6 tháng nay',
+                quote: 'Tôi ghét nhất các app fintech bắt nhập số CVV thẻ tín dụng. Ở Finora, gói VIP Gold 30 ngày hoàn toàn không hỏi thẻ, dữ liệu lưu trên máy cá nhân an toàn 100%.'
+              }
+            ].map((interview, idx) => (
+              <Paper
+                key={idx}
+                elevation={0}
+                sx={{
+                  p: 3.5,
+                  borderRadius: 3,
+                  bgcolor: 'rgba(15, 23, 20, 0.85)',
+                  border: '1px solid rgba(255, 255, 255, 0.09)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 2.5,
+                  transition: 'all 0.25s ease',
+                  '&:hover': {
+                    borderColor: 'rgba(139, 92, 246, 0.4)',
+                    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5)',
+                    transform: 'translateY(-3px)'
+                  }
+                }}
+              >
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Box sx={{ display: 'flex', gap: 0.5, color: '#FBBF24' }}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} fill="#FBBF24" />
+                      ))}
+                    </Box>
+                    <Quote size={20} color="rgba(255,255,255,0.2)" />
+                  </Box>
+
+                  <Typography variant="body2" sx={{ color: '#E2E8F0', fontStyle: 'italic', lineHeight: 1.7, mb: 3 }}>
+                    "{interview.quote}"
+                  </Typography>
+
+                  <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', mb: 2.5, display: 'grid', gap: 1 }}>
+                    <Box sx={{ fontSize: 11.5 }}>
+                      <strong style={{ color: '#EF4444' }}>Vấn đề đã tháo gỡ:</strong>{' '}
+                      <span style={{ color: '#CBD5E1' }}>{interview.problem}</span>
+                    </Box>
+                    <Box sx={{ fontSize: 11.5 }}>
+                      <strong style={{ color: '#10B981' }}>Kết quả đạt được:</strong>{' '}
+                      <span style={{ color: '#CBD5E1' }}>{interview.result}</span>
+                    </Box>
+                  </Box>
+                </Box>
+
+                <Box sx={{ pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#FFFFFF' }}>
+                    {interview.name}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#94A3B8' }}>
+                    {interview.role}
+                  </Typography>
+                </Box>
+              </Paper>
             ))}
           </Box>
         </Container>

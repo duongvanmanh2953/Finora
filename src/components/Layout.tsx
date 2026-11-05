@@ -499,26 +499,47 @@ export function Layout() {
                 Đồng bộ dữ liệu Cloud
               </Button>
 
-              <Button
-                variant="outlined"
-                size="small"
-                fullWidth
-                onClick={() => {
-                  handleTogglePro();
-                }}
-                startIcon={<Crown size={15} color="#D99A36" />}
+              <Box
+                onClick={handleTogglePro}
                 sx={{
-                  minHeight: 44,
-                  fontSize: 12.5,
-                  fontWeight: 650,
-                  borderColor: 'rgba(217, 154, 54, 0.4)',
-                  color: 'text.primary',
-                  justifyContent: 'flex-start',
-                  px: 1.5
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  px: 1.25,
+                  py: 0.75,
+                  borderRadius: 1.5,
+                  cursor: 'pointer',
+                  border: isPro ? '1px solid rgba(223, 186, 115, 0.4)' : '1px solid var(--border-subtle)',
+                  bgcolor: isPro ? 'rgba(223, 186, 115, 0.08)' : 'var(--bg-subtle)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    borderColor: isPro ? 'rgba(223, 186, 115, 0.7)' : 'text.secondary',
+                    bgcolor: isPro ? 'rgba(223, 186, 115, 0.14)' : 'action.hover'
+                  }
                 }}
+                title="Nhấn để bật/tắt nhanh chế độ Finora PRO"
               >
-                Chế độ: {isPro ? 'Finora PRO (Bật)' : 'Bản FREE (Nhấn để thử Pro)'}
-              </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Crown size={14} color={isPro ? '#DFBA73' : 'var(--text-muted)'} />
+                  <span style={{ fontSize: 12, fontWeight: 700, color: isPro ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                    Chế độ PRO
+                  </span>
+                </Box>
+                <Chip
+                  label={isPro ? 'ĐANG BẬT' : 'TẮT'}
+                  size="small"
+                  sx={{
+                    height: 20,
+                    fontSize: 9.5,
+                    fontWeight: 800,
+                    letterSpacing: 0.5,
+                    bgcolor: isPro ? '#DFBA73' : 'action.disabledBackground',
+                    color: isPro ? '#1E1B13' : 'text.disabled',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                />
+              </Box>
             </Box>
 
             <NavLink
@@ -719,24 +740,31 @@ export function Layout() {
               ) : null}
 
               {/* Quick Pro Mode Switch */}
-              <Tooltip title="Chuyển nhanh Free <-> Pro để kiểm thử tính năng (Demo)">
-                <Chip
-                  label={isPro ? 'PRO' : 'FREE'}
-                  size="small"
+              <Tooltip title={isPro ? 'Chế độ PRO đang BẬT. Nhấp để chuyển về bản FREE (Thử nghiệm)' : 'Chế độ FREE. Nhấp để kích hoạt PRO (Thử nghiệm)'}>
+                <Box
                   onClick={handleTogglePro}
-                  color={isPro ? 'warning' : 'default'}
-                  clickable
                   sx={{
                     display: { xs: 'none', sm: 'inline-flex' },
-                    fontWeight: 800,
-                    fontSize: 11,
-                    height: 28,
-                    bgcolor: isPro ? 'rgba(245, 158, 11, 0.15)' : 'var(--bg-subtle)',
-                    color: isPro ? '#f59e0b' : 'var(--text-muted)',
+                    alignItems: 'center',
+                    gap: 0.6,
+                    height: 26,
+                    px: 1,
+                    borderRadius: '13px',
+                    cursor: 'pointer',
+                    bgcolor: isPro ? 'rgba(223, 186, 115, 0.15)' : 'var(--bg-subtle)',
                     border: '1px solid',
-                    borderColor: isPro ? 'rgba(245, 158, 11, 0.4)' : 'var(--border-subtle)'
+                    borderColor: isPro ? 'rgba(223, 186, 115, 0.5)' : 'var(--border-subtle)',
+                    transition: 'all 0.15s ease',
+                    '&:hover': {
+                      borderColor: isPro ? '#DFBA73' : 'text.secondary'
+                    }
                   }}
-                />
+                >
+                  <Crown size={12} color={isPro ? '#DFBA73' : 'var(--text-muted)'} />
+                  <span style={{ fontSize: 10.5, fontWeight: 800, color: isPro ? '#DFBA73' : 'var(--text-muted)' }}>
+                    {isPro ? 'PRO ACTIVE' : 'FREE'}
+                  </span>
+                </Box>
               </Tooltip>
 
               {/* AI Copilot (WebMCP Drawer) */}

@@ -856,9 +856,52 @@ td,
     font-size: clamp(18px, 5.2vw, 22px);
   }
 
+  .topbar {
+    padding: 0 8px;
+    gap: 4px;
+  }
+
   .topbar h1 {
-    font-size: 14px;
-    max-width: 140px;
+    font-size: 13.5px;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topactions {
+    gap: 2px;
+  }
+
+  .content {
+    padding: 10px 8px calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Prevent overflow on tables, grids, and metric pills */
+  .card {
+    border-radius: var(--radius-sm);
+  }
+
+  .pad {
+    padding: 14px;
+  }
+}
+
+/* Fix mobile float and overflow issues across cards and dialogs */
+@media (max-width: 768px) {
+  img, svg, canvas {
+    max-width: 100%;
+  }
+
+  .MuiTableContainer-root {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .MuiDialog-paper {
+    margin: 12px !important;
+    width: calc(100% - 24px) !important;
+    max-width: 100% !important;
   }
 }
 

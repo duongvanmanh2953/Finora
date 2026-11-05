@@ -743,32 +743,50 @@ export function Layout() {
                 </Tooltip>
               ) : null}
 
-              {/* Quick Pro Mode Switch */}
-              <Tooltip title={isPro ? 'Chế độ PRO đang BẬT. Nhấp để chuyển về bản FREE (Thử nghiệm)' : 'Chế độ FREE. Nhấp để kích hoạt PRO (Thử nghiệm)'}>
-                <Box
+              {/* Quick Pro Mode Switch - Compact Crown Only Icon */}
+              <Tooltip title={isPro ? 'Finora PRO: Đang BẬT (Bấm để chuyển về Free)' : 'Bản Free (Bấm để bật thử Finora Pro)'}>
+                <IconButton
+                  size="small"
                   onClick={handleTogglePro}
                   sx={{
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    alignItems: 'center',
-                    gap: 0.6,
-                    height: 26,
-                    px: 1,
-                    borderRadius: '13px',
-                    cursor: 'pointer',
+                    width: 34,
+                    height: 34,
+                    minWidth: 34,
+                    minHeight: 34,
+                    borderRadius: '8px',
+                    position: 'relative',
                     bgcolor: isPro ? 'rgba(223, 186, 115, 0.15)' : 'var(--bg-subtle)',
                     border: '1px solid',
-                    borderColor: isPro ? 'rgba(223, 186, 115, 0.5)' : 'var(--border-subtle)',
-                    transition: 'all 0.15s ease',
+                    borderColor: isPro ? 'rgba(223, 186, 115, 0.6)' : 'var(--border-subtle)',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: isPro ? '#DFBA73' : 'text.secondary'
+                      borderColor: isPro ? '#DFBA73' : 'text.secondary',
+                      bgcolor: isPro ? 'rgba(223, 186, 115, 0.25)' : 'action.hover'
                     }
                   }}
+                  aria-label="Chuyển chế độ Pro"
                 >
-                  <Crown size={12} color={isPro ? '#DFBA73' : 'var(--text-muted)'} />
-                  <span style={{ fontSize: 10.5, fontWeight: 800, color: isPro ? '#DFBA73' : 'var(--text-muted)' }}>
-                    {isPro ? 'PRO ACTIVE' : 'FREE'}
-                  </span>
-                </Box>
+                  <Crown
+                    size={17}
+                    color={isPro ? '#DFBA73' : 'var(--text-muted)'}
+                    style={{
+                      filter: isPro ? 'drop-shadow(0 0 4px rgba(223, 186, 115, 0.6))' : 'none'
+                    }}
+                  />
+                  {isPro && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 4,
+                        right: 4,
+                        width: 5,
+                        height: 5,
+                        borderRadius: '50%',
+                        bgcolor: '#DFBA73'
+                      }}
+                    />
+                  )}
+                </IconButton>
               </Tooltip>
 
               {/* AI Copilot (WebMCP Drawer) */}
@@ -985,14 +1003,45 @@ export function Layout() {
                 )}
               </Box>
 
-              {/* Add transaction quick button */}
+              {/* Add transaction quick button (Desktop: Full Pill, Mobile: Vivid Green Circle/Square with White Plus) */}
+              <Tooltip title="Thêm giao dịch mới">
+                <IconButton
+                  size="small"
+                  onClick={() => navigate('/transactions?add=1')}
+                  sx={{
+                    display: { xs: 'inline-flex', sm: 'none' },
+                    width: 34,
+                    height: 34,
+                    minWidth: 34,
+                    minHeight: 34,
+                    borderRadius: '8px',
+                    bgcolor: '#10B981',
+                    color: '#FFFFFF',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)',
+                    transition: 'all 0.15s ease',
+                    '&:hover': {
+                      bgcolor: '#059669',
+                      transform: 'scale(1.05)'
+                    }
+                  }}
+                  aria-label="Thêm giao dịch mới nhanh"
+                >
+                  <Plus size={18} strokeWidth={2.8} color="#FFFFFF" />
+                </IconButton>
+              </Tooltip>
+
               <Button
                 variant="contained"
                 size="small"
                 color="primary"
                 startIcon={<Plus size={14} />}
                 onClick={() => navigate('/transactions?add=1')}
-                sx={{ display: { xs: 'none', sm: 'inline-flex' }, height: 32, px: 1.5 }}
+                sx={{
+                  display: { xs: 'none', sm: 'inline-flex' },
+                  height: 32,
+                  px: 1.5,
+                  fontWeight: 700
+                }}
               >
                 Giao dịch
               </Button>

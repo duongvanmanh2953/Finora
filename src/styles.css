@@ -837,26 +837,31 @@ td,
     transform: translateY(-1px);
   }
 
-  /* Center Floating Add Button in Bottom Nav */
+  /* Center Floating Add Button in Bottom Nav - Vivid Green with White Icon */
   .mobile-bottom-add-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
-    min-height: 46px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--brand-primary), var(--primary-800));
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
     color: #ffffff !important;
-    border: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(18, 61, 53, 0.35);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
     transform: translateY(-8px);
     margin: 0 2px;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     flex-shrink: 0;
     text-decoration: none;
+  }
+
+  .mobile-bottom-add-btn svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
   }
 
   .mobile-bottom-add-btn:active {

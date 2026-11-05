@@ -393,8 +393,19 @@ export default function Dashboard() {
             <FinoraButton
               variant="primary"
               size="medium"
-              startIcon={<Plus size={16} />}
-              sx={{ minHeight: 38, fontSize: { xs: 12, sm: 13 }, px: { xs: 1.5, sm: 2 } }}
+              startIcon={<Plus size={16} color="#FFFFFF" strokeWidth={2.5} />}
+              sx={{
+                minHeight: 38,
+                fontSize: { xs: 12, sm: 13 },
+                px: { xs: 1.5, sm: 2 },
+                bgcolor: '#10B981',
+                color: '#FFFFFF',
+                fontWeight: 750,
+                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.35)',
+                '&:hover': {
+                  bgcolor: '#059669'
+                }
+              }}
             >
               Thêm giao dịch
             </FinoraButton>

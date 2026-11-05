@@ -1172,7 +1172,7 @@ export default function Dashboard() {
         title="Biểu đồ Dòng Tiền Hợp Nhất (Thu Nhập vs Chi Tiêu)"
         subtitle="Phân tích tổng hợp: Cột Thu/Chi và Đường cong Thặng dư ròng theo chu kỳ thời gian"
       >
-        <Box sx={{ width: '100%', height: 'calc(100vh - 160px)', minHeight: 400 }}>
+        <Box sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380 }}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={cashflowDataset} margin={{ top: 20, right: 30, left: 10, bottom: 30 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
@@ -1227,7 +1227,7 @@ export default function Dashboard() {
         title="Sổ Nhật Ký Giao Dịch Gần Đây"
         subtitle="Danh sách đối soát các khoản chi tiêu và nguồn tài khoản tương ứng"
       >
-        <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+        <TableContainer sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, overflow: 'auto' }}>
           <Table size="medium" sx={{ minWidth: 640 }}>
             <TableHead sx={{ bgcolor: 'action.hover' }}>
               <TableRow>

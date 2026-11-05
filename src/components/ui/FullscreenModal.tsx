@@ -29,17 +29,33 @@ export function FullscreenModal({
   badge = 'Toàn màn hình',
   children
 }: FullscreenModalProps) {
+  // Always default to normal fullscreen so charts and tables never collapse or turn black on load.
+  // User can click "Xoay ngang 90°" button anytime to toggle landscape simulation.
   const [isLandscape90, setIsLandscape90] = useState(false);
+  const [viewport, setViewport] = useState({
+    w: typeof window !== 'undefined' ? window.innerWidth : 800,
+    h: typeof window !== 'undefined' ? window.innerHeight : 600
+  });
 
-  // User request: Default to 90deg rotated landscape mode when opened on mobile (< 768px)
   useEffect(() => {
-    if (open) {
-      if (typeof window !== 'undefined' && window.innerWidth < 768) {
-        setIsLandscape90(true);
-      } else {
-        setIsLandscape90(false);
-      }
-    } else {
+    const updateDimensions = () => {
+      setViewport({
+        w: window.innerWidth,
+        h: window.innerHeight
+      });
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    window.addEventListener('orientationchange', updateDimensions);
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener('orientationchange', updateDimensions);
+    };
+  }, []);
+
+  // Reset rotation when modal closes
+  useEffect(() => {
+    if (!open) {
       setIsLandscape90(false);
     }
   }, [open]);
@@ -50,12 +66,17 @@ export function FullscreenModal({
       onClose={onClose}
       fullScreen
       sx={{
+        zIndex: 1300,
         '& .MuiDialog-paper': {
           bgcolor: 'background.default',
           backgroundImage: 'none',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          width: '100vw',
+          height: '100vh',
+          m: 0,
+          p: 0
         }
       }}
     >
@@ -66,8 +87,8 @@ export function FullscreenModal({
                 position: 'fixed',
                 top: '50%',
                 left: '50%',
-                width: '100vh',
-                height: '100vw',
+                width: `${viewport.h}px`,
+                height: `${viewport.w}px`,
                 transform: 'translate(-50%, -50%) rotate(90deg)',
                 transformOrigin: 'center center',
                 display: 'flex',
@@ -79,9 +100,12 @@ export function FullscreenModal({
             : {
                 display: 'flex',
                 flexDirection: 'column',
+                width: '100%',
+                height: '100%',
                 flex: 1,
                 minHeight: 0,
-                overflow: 'hidden'
+                overflow: 'hidden',
+                bgcolor: 'background.default'
               }
         }
       >
@@ -97,14 +121,15 @@ export function FullscreenModal({
             flexShrink: 0
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1, mr: 1 }}>
             <Box sx={{ minWidth: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 800,
-                    fontSize: { xs: '0.95rem', sm: '1.2rem' },
+                    fontSize: { xs: '0.92rem', sm: '1.15rem' },
+                    color: 'text.primary',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
@@ -140,7 +165,8 @@ export function FullscreenModal({
                   sx={{
                     color: 'text.secondary',
                     display: { xs: 'none', sm: 'block' },
-                    mt: 0.25
+                    mt: 0.25,
+                    fontSize: '0.78rem'
                   }}
                 >
                   {subtitle}
@@ -178,7 +204,11 @@ export function FullscreenModal({
                 sx={{
                   bgcolor: 'action.hover',
                   borderRadius: '8px',
-                  p: 0.9
+                  p: 0.9,
+                  color: 'text.primary',
+                  '&:hover': {
+                    bgcolor: 'action.selected'
+                  }
                 }}
                 aria-label="Đóng toàn màn hình"
               >
@@ -190,12 +220,15 @@ export function FullscreenModal({
 
         <DialogContent
           sx={{
-            p: { xs: 1.5, sm: 2.5 },
+            p: { xs: 1.25, sm: 2.5 },
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
             overflow: 'auto',
-            bgcolor: 'background.default'
+            bgcolor: 'background.default',
+            width: '100%',
+            height: '100%',
+            minHeight: { xs: 350, sm: 480 }
           }}
         >
           {children}

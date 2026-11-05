@@ -2025,14 +2025,14 @@ export default function Transactions() {
         </DialogActions>
       </Dialog>
 
-      {/* Fullscreen Table Modal (Defaults to 90deg Landscape on Mobile) */}
+      {/* Fullscreen Table Modal */}
       <FullscreenModal
         open={fullscreenTxTableOpen}
         onClose={() => setFullscreenTxTableOpen(false)}
         title="Bảng Đối Soát Giao Dịch Chi Tiết"
-        subtitle="Khung nhìn toàn cảnh: Sổ cái giao dịch đa cột đầy đủ thông tin (Tự động xoay ngang 90° trên điện thoại)"
+        subtitle="Khung nhìn toàn cảnh: Sổ cái giao dịch đa cột đầy đủ thông tin"
       >
-        <TableContainer sx={{ width: '100%', height: '100%', overflowX: 'auto', flex: 1, p: { xs: 1, sm: 2 } }}>
+        <TableContainer sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, overflow: 'auto', flex: 1, p: { xs: 0.5, sm: 1.5 } }}>
           <Table size="small" sx={{ minWidth: 700 }}>
             <TableHead sx={{ bgcolor: 'action.hover' }}>
               <TableRow>

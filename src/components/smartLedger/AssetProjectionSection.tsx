@@ -110,39 +110,41 @@ export function AssetProjectionSection({
   };
 
   const renderProjectionChart = (height: number | `${number}%` = 280) => (
-    <ResponsiveContainer width="100%" height={height}>
-      <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-        <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 600 }} />
-        <YAxis
-          tickFormatter={v => `${(v / 1000000).toFixed(0)}tr`}
-          tick={{ fontSize: 10 }}
-          width={52}
-        />
-        <RechartsTooltip content={<CustomTooltip />} />
-        <Legend
-          wrapperStyle={{ fontSize: '0.74rem', fontWeight: 600, paddingTop: '8px' }}
-          formatter={value => (
-            <span style={{ color: 'inherit' }}>
-              {value === 'vonTichLuy'
-                ? 'Vốn tự tích lũy'
-                : value === 'thanTrong'
-                ? 'Kịch bản Thận trọng'
-                : value === 'coSo'
-                ? `Kịch bản Cơ sở (${expectedRate}%)`
-                : value === 'tichCuc'
-                ? 'Kịch bản Tích cực'
-                : 'Sức mua sau lạm phát'}
-            </span>
-          )}
-        />
-        <Line type="monotone" dataKey="vonTichLuy" stroke="#64748B" strokeDasharray="4 4" strokeWidth={1.5} dot={false} />
-        <Line type="monotone" dataKey="thanTrong" stroke="#3B82F6" strokeWidth={2} dot={{ r: 3 }} />
-        <Line type="monotone" dataKey="coSo" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
-        <Line type="monotone" dataKey="tichCuc" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
-        <Line type="monotone" dataKey="sucMuaThucTe" stroke="#D97706" strokeDasharray="3 3" strokeWidth={1.5} dot={false} />
-      </LineChart>
-    </ResponsiveContainer>
+    <Box sx={{ width: '100%', height: height, minHeight: typeof height === 'number' ? height : 300, minWidth: 0, overflow: 'hidden' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 600 }} />
+          <YAxis
+            tickFormatter={v => `${(v / 1000000).toFixed(0)}tr`}
+            tick={{ fontSize: 10 }}
+            width={52}
+          />
+          <RechartsTooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ fontSize: '0.74rem', fontWeight: 600, paddingTop: '8px' }}
+            formatter={value => (
+              <span style={{ color: 'inherit' }}>
+                {value === 'vonTichLuy'
+                  ? 'Vốn tự tích lũy'
+                  : value === 'thanTrong'
+                  ? 'Kịch bản Thận trọng'
+                  : value === 'coSo'
+                  ? `Kịch bản Cơ sở (${expectedRate}%)`
+                  : value === 'tichCuc'
+                  ? 'Kịch bản Tích cực'
+                  : 'Sức mua sau lạm phát'}
+              </span>
+            )}
+          />
+          <Line type="monotone" dataKey="vonTichLuy" stroke="#64748B" strokeDasharray="4 4" strokeWidth={1.5} dot={false} />
+          <Line type="monotone" dataKey="thanTrong" stroke="#3B82F6" strokeWidth={2} dot={{ r: 3 }} />
+          <Line type="monotone" dataKey="coSo" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
+          <Line type="monotone" dataKey="tichCuc" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
+          <Line type="monotone" dataKey="sucMuaThucTe" stroke="#D97706" strokeDasharray="3 3" strokeWidth={1.5} dot={false} />
+        </LineChart>
+      </ResponsiveContainer>
+    </Box>
   );
 
   return (
@@ -325,15 +327,15 @@ export function AssetProjectionSection({
         <strong>Khuyến cáo pháp lý:</strong> Đây là kết quả mô phỏng toán học dựa trên các giả định đầu vào do bạn thiết lập. Số liệu mang tính tham khảo dự phóng, không phải cam kết lợi nhuận thực tế.
       </Alert>
 
-      {/* Fullscreen Chart Modal (Defaults to 90deg Landscape on Mobile) */}
+      {/* Fullscreen Chart Modal */}
       <FullscreenModal
         open={fullscreenOpen}
         onClose={() => setFullscreenOpen(false)}
         title="Phóng Chiếu Tài Sản & Dòng Tiền Tương Lai (3 Kịch Bản)"
-        subtitle="Mô hình lãi kép 3 kịch bản: Thận trọng, Cơ sở và Tích cực, bù trừ theo tỷ lệ lạm phát (Hỗ trợ xoay ngang 90°)"
+        subtitle="Mô hình lãi kép 3 kịch bản: Thận trọng, Cơ sở và Tích cực, bù trừ theo tỷ lệ lạm phát"
       >
-        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', p: { xs: 1, sm: 2 } }}>
-          <Box sx={{ flex: 1, minHeight: 0 }}>
+        <Box sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, display: 'flex', flexDirection: 'column', p: { xs: 0.5, sm: 1.5 } }}>
+          <Box sx={{ flex: 1, width: '100%', height: '100%', minHeight: 350 }}>
             {renderProjectionChart('100%')}
           </Box>
         </Box>

@@ -775,7 +775,7 @@ export function TransactionManagerCRUD() {
         title="Sổ Giao Dịch Chi Tiết (Toàn Màn Hình)"
         subtitle="Xem và quản lý toàn bộ các giao dịch tài chính với đầy đủ cột dữ liệu và đối soát"
       >
-        <TableContainer sx={{ width: '100%', overflowX: 'auto', flex: 1 }}>
+        <TableContainer sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, overflow: 'auto', flex: 1 }}>
           <Table size="small" sx={{ minWidth: 700 }}>
             <TableHead>
               <TableRow>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Card,
+  Paper,
   Typography,
   Chip,
   Button,
@@ -170,90 +171,249 @@ export const SixJarsView: React.FC = () => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      {/* Head Action Bar */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, flexWrap: 'wrap', gap: 1.5 }}>
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800 }}>
+      {/* 1. Executive Hero Header Banner (Beautifully spaced, high visual hierarchy) */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.25, sm: 3 },
+          borderRadius: '8px',
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          mb: 3,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'flex-start', md: 'center' },
+          gap: 2.5,
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundImage: 'radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.08), transparent 70%)'
+        }}
+      >
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25, flexWrap: 'wrap' }}>
+            <Chip
+              label="T. HARV EKER METHOD"
+              size="small"
+              sx={{
+                height: 22,
+                fontSize: '0.68rem',
+                fontWeight: 800,
+                letterSpacing: '0.04em',
+                bgcolor: 'rgba(16, 185, 129, 0.12)',
+                color: '#10B981',
+                border: '1px solid rgba(16, 185, 129, 0.3)'
+              }}
+            />
+            <Chip
+              label="Zero-based Budgeting (ZBB)"
+              size="small"
+              sx={{
+                height: 22,
+                fontSize: '0.68rem',
+                fontWeight: 800,
+                bgcolor: 'action.hover',
+                color: 'text.secondary',
+                border: '1px solid var(--border-subtle)'
+              }}
+            />
+          </Box>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 850,
+              fontSize: { xs: '1.05rem', sm: '1.25rem' },
+              lineHeight: 1.35,
+              color: 'text.primary',
+              mb: 0.75
+            }}
+          >
             Phương pháp 6 chiếc hũ (6 Jars) & Zero-based Budgeting
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Phân bổ thu nhập vào 6 quỹ thông minh theo phương pháp quản lý tài chính kinh điển của T. Harv Eker.
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              fontSize: { xs: '0.82rem', sm: '0.875rem' },
+              lineHeight: 1.6,
+              maxWidth: 720
+            }}
+          >
+            Phân bổ thu nhập vào 6 quỹ thông minh theo phương pháp quản lý tài chính kinh điển của T. Harv Eker. Mỗi đồng tiền làm ra đều được định danh rõ ràng, không để tiền nằm chết hoặc thất thoát vô định.
           </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-          <MuiMonthPicker label="Tháng" value={month} onChange={setMonth} />
+        <Box sx={{ display: 'flex', gap: 1.25, alignItems: 'center', width: { xs: '100%', sm: 'auto' }, flexWrap: 'wrap', flexShrink: 0 }}>
+          <MuiMonthPicker label="Kỳ ngân sách" value={month} onChange={setMonth} />
           <Button
             variant="outlined"
             color="inherit"
-            startIcon={<Sliders size={14} />}
+            startIcon={<Sliders size={15} />}
             onClick={() => setConfigOpen(true)}
+            sx={{
+              fontWeight: 750,
+              fontSize: '0.82rem',
+              textTransform: 'none',
+              borderRadius: '6px',
+              px: 1.75,
+              py: 0.85,
+              borderColor: 'var(--border-subtle)',
+              whiteSpace: 'nowrap'
+            }}
           >
             Tùy chỉnh % hũ
           </Button>
         </Box>
-      </Box>
+      </Paper>
 
-      {/* Income & Zero-based summary banner */}
-      <Card
-        variant="outlined"
+      {/* 2. Three Harmonized Executive KPI Metric Cards */}
+      <Box
         sx={{
-          p: 2.5,
-          borderRadius: '6px',
-          mb: 3,
-          bgcolor: 'action.hover',
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1.2fr 1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
           gap: 2,
-          alignItems: 'center'
+          mb: 3.5
         }}
       >
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            THU NHẬP ĐỂ PHÂN BỔ VÀO 6 HŨ
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        {/* Card 1: Target Allocatable Income */}
+        <Card
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: '8px',
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: 1.5,
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.04em' }}>
+                THU NHẬP ĐỂ PHÂN BỔ VÀO 6 HŨ
+              </Typography>
+              <Chip
+                label={`Tháng ${month}`}
+                size="small"
+                sx={{ height: 20, fontSize: '0.68rem', fontWeight: 700 }}
+              />
+            </Box>
             <MuiCurrencyInput
-              label="Thu nhập tháng này (₫)"
+              label="Mức thu nhập phân bổ (₫)"
               value={customIncome}
               onChange={val => setCustomIncome(val)}
-              helperText="Có thể chỉnh theo lương tháng hoặc dòng tiền thực tế"
+              helperText="Tùy biến theo lương tháng thực nhận"
             />
           </Box>
-        </Box>
-
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            TRIẾT LÝ ZERO-BASED BUDGETING (ZBB)
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem' }}>
+            Toàn bộ số tiền này sẽ được tự động chia tỷ lệ cho 6 quỹ bên dưới.
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CheckCircle2 size={20} color="#059669" />
-            <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                {money(totalIncomeForJars)} = 100% ĐÃ CÓ NHIỆM VỤ
+        </Card>
+
+        {/* Card 2: ZBB 100% Status */}
+        <Card
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: '8px',
+            bgcolor: 'background.paper',
+            borderColor: totalAllocated === 100 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: 1.5
+          }}
+        >
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.25 }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.04em' }}>
+                TRIẾT LÝ ZERO-BASED (ZBB)
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Mỗi đồng tiền làm ra đều được định hướng rõ ràng.
-              </Typography>
+              <Chip
+                label={totalAllocated === 100 ? '100% ĐÃ GÁN MỤC TIÊU' : `TỔNG TỶ LỆ ${totalAllocated}%`}
+                size="small"
+                color={totalAllocated === 100 ? 'success' : 'error'}
+                variant="outlined"
+                sx={{ height: 20, fontSize: '0.68rem', fontWeight: 800 }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mt: 0.5 }}>
+              <CheckCircle2 size={24} style={{ color: totalAllocated === 100 ? '#10B981' : '#EF4444', flexShrink: 0 }} />
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 850, fontSize: '1.05rem', color: 'text.primary', lineHeight: 1.3 }}>
+                  {money(totalIncomeForJars)}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem' }}>
+                  {totalAllocated === 100 ? '6/6 hũ phân bổ cân bằng tuyệt đối' : 'Cần điều chỉnh tỷ lệ về đúng 100%'}
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-
-        <Box>
-          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', display: 'block', mb: 0.5 }}>
-            THỰC CHI THÁNG {month}
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem', pt: 1, borderTop: '1px solid var(--border-subtle)' }}>
+            Nguyên tắc cốt lõi: Thu nhập - Phân bổ = 0 ₫ (Không để đồng nào trôi nổi).
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 800 }}>
-            {money(monthExpense)}{' '}
-            <Typography component="span" variant="caption" sx={{ color: 'text.secondary' }}>
-              ({totalIncomeForJars > 0 ? Math.round((monthExpense / totalIncomeForJars) * 100) : 0}% thu nhập)
+        </Card>
+
+        {/* Card 3: Actual Spending Velocity */}
+        <Card
+          variant="outlined"
+          sx={{
+            p: 2.25,
+            borderRadius: '8px',
+            bgcolor: 'background.paper',
+            borderColor: 'var(--border-subtle)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: 1.5
+          }}
+        >
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', letterSpacing: '0.04em' }}>
+                THỰC CHI THÁNG {month}
+              </Typography>
+              <Chip
+                label={`${totalIncomeForJars > 0 ? Math.round((monthExpense / totalIncomeForJars) * 100) : 0}% thu nhập`}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  bgcolor: (monthExpense > totalIncomeForJars && totalIncomeForJars > 0) ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                  color: (monthExpense > totalIncomeForJars && totalIncomeForJars > 0) ? '#EF4444' : '#10B981'
+                }}
+              />
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 850, color: 'text.primary', mb: 0.5, fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums' }}>
+              {money(monthExpense)}
             </Typography>
-          </Typography>
-        </Box>
-      </Card>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem' }}>
+              Còn lại khả dụng: <strong>{money(Math.max(0, totalIncomeForJars - monthExpense))}</strong>
+            </Typography>
+          </Box>
+          <Box sx={{ pt: 1, borderTop: '1px solid var(--border-subtle)' }}>
+            <Progress
+              value={totalIncomeForJars > 0 ? Math.min(100, Math.round((monthExpense / totalIncomeForJars) * 100)) : 0}
+              color={monthExpense > totalIncomeForJars ? '#EF4444' : '#10B981'}
+            />
+          </Box>
+        </Card>
+      </Box>
 
-      {/* 6 Jars Tiles: 3 to 6 square rounded tiles */}
-      <div className="tiles">
+      {/* 3. The 6 Jars Modern Responsive Grid */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+          gap: 2.25
+        }}
+      >
         {JARS_DATA.map(jar => {
           const pct = percentages[jar.key] || jar.defaultPct;
           const allocatedMoney = Math.round((totalIncomeForJars * pct) / 100);
@@ -264,68 +424,97 @@ export const SixJarsView: React.FC = () => {
           return (
             <Card
               variant="outlined"
-              className="card tile"
               key={jar.key}
-              sx={{ borderRadius: '6px', p: 2.5 }}
+              sx={{
+                borderRadius: '8px',
+                p: 2.5,
+                bgcolor: 'background.paper',
+                borderColor: 'var(--border-subtle)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                '&:hover': {
+                  borderColor: jar.color,
+                  boxShadow: `0 4px 16px ${jar.color}15`
+                }
+              }}
             >
-              {/* Top info */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                <FundLogoBadge name={jar.name} kind={jar.key} size="medium" />
-                <Chip
-                  label={`${pct}% Thu nhập`}
-                  size="small"
-                  sx={{
-                    fontWeight: 800,
-                    fontSize: 11,
-                    bgcolor: `${jar.color}15`,
-                    color: jar.color
-                  }}
+              <Box>
+                {/* Top Row: Brand Badge + Percentage Chip */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                  <FundLogoBadge name={jar.name} kind={jar.key} size="medium" />
+                  <Chip
+                    label={`${pct}% Thu nhập`}
+                    size="small"
+                    sx={{
+                      fontWeight: 850,
+                      fontSize: '0.72rem',
+                      bgcolor: `${jar.color}15`,
+                      color: jar.color,
+                      border: `1px solid ${jar.color}30`
+                    }}
+                  />
+                </Box>
+
+                {/* Name & Description */}
+                <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1rem', mb: 0.5, color: 'text.primary' }}>
+                  {jar.name}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2, minHeight: 36, lineHeight: 1.5 }}>
+                  {jar.description}
+                </Typography>
+
+                {/* Target Allocated Limit */}
+                <Box sx={{ mb: 1.75 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 900,
+                      fontSize: '1.3rem',
+                      fontFeatureSettings: '"tnum"',
+                      fontVariantNumeric: 'tabular-nums',
+                      color: 'text.primary',
+                      mb: 0.25
+                    }}
+                  >
+                    {money(allocatedMoney)}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', fontSize: '0.74rem' }}>
+                    Hạn mức phân bổ tháng {month}
+                  </Typography>
+                </Box>
+
+                {/* Visual Progress Bar */}
+                <Progress
+                  value={spentPct}
+                  color={spentPct >= 100 ? '#dc2626' : spentPct >= 80 ? '#d97706' : jar.color}
                 />
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: 11.5, color: 'text.secondary' }}>
+                  <span>Đã chi: <strong>{money(spentMoney)}</strong> ({spentPct}%)</span>
+                  <span>Còn: <strong>{money(remainingMoney)}</strong></span>
+                </Box>
               </Box>
 
-              <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
-                {jar.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5, minHeight: 32 }}>
-                {jar.description}
-              </Typography>
-
-              {/* Allocated Target */}
-              <Typography variant="h5" sx={{ fontWeight: 900, mb: 0.5 }}>
-                {money(allocatedMoney)}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                Hạn mức phân bổ tháng {month}
-              </Typography>
-
-              {/* Progress */}
-              <Progress
-                value={spentPct}
-                color={spentPct >= 100 ? '#dc2626' : spentPct >= 80 ? '#d97706' : jar.color}
-              />
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: 11, color: 'text.secondary' }}>
-                <span>Đã chi: {money(spentMoney)} ({spentPct}%)</span>
-                <span>Còn: {money(remainingMoney)}</span>
-              </Box>
-
-              {/* Status Note */}
-              <Box sx={{ mt: 1.5, pt: 1, borderTop: '1px solid var(--border-subtle)' }}>
+              {/* Status Note Footer */}
+              <Box sx={{ mt: 2, pt: 1.25, borderTop: '1px solid var(--border-subtle)' }}>
                 {spentPct > 100 ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#dc2626', fontSize: 11, fontWeight: 700 }}>
-                    <AlertTriangle size={13} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: '#dc2626', fontSize: 11.5, fontWeight: 750 }}>
+                    <AlertTriangle size={14} />
                     <span>Đã vượt hũ {money(spentMoney - allocatedMoney)}</span>
                   </Box>
                 ) : (
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-                    Hũ hoạt động an toàn
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: '#10B981', fontSize: 11.5, fontWeight: 700 }}>
+                    <CheckCircle2 size={14} />
+                    <span>Hũ hoạt động an toàn ({100 - spentPct}% khả dụng)</span>
+                  </Box>
                 )}
               </Box>
             </Card>
           );
         })}
-      </div>
+      </Box>
 
       {/* Percentage Customization Dialog */}
       <Dialog open={configOpen} onClose={() => setConfigOpen(false)} maxWidth="xs" fullWidth>
@@ -333,7 +522,7 @@ export const SixJarsView: React.FC = () => {
           Tùy chỉnh tỷ lệ 6 chiếc hũ (%)
         </DialogTitle>
         <DialogContent dividers sx={{ display: 'grid', gap: 2.5, pt: '16px !important' }}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.5 }}>
             Tổng tỷ lệ các hũ phải bằng 100%. Tỷ lệ mặc định chuẩn là: Thiết yếu 55%, Tiết kiệm 10%, Giáo dục 10%, Hưởng thụ 10%, Tự do 10%, Cho đi 5%.
           </Typography>
 
@@ -358,9 +547,9 @@ export const SixJarsView: React.FC = () => {
             </Box>
           ))}
 
-          <Box sx={{ p: 1.5, borderRadius: '4px', bgcolor: totalAllocated === 100 ? '#e9f9f2' : '#fef0ef', textAlign: 'center' }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: totalAllocated === 100 ? '#059669' : '#dc2626' }}>
-              Tổng tỷ lệ: {totalAllocated}% {totalAllocated === 100 ? '(Hợp lệ)' : '(Cần điều chỉnh về đúng 100%)'}
+          <Box sx={{ p: 1.5, borderRadius: '6px', bgcolor: totalAllocated === 100 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', textAlign: 'center', border: '1px solid', borderColor: totalAllocated === 100 ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)' }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: totalAllocated === 100 ? '#10B981' : '#dc2626' }}>
+              Tổng tỷ lệ: {totalAllocated}% {totalAllocated === 100 ? '(Hợp lệ 100%)' : '(Cần điều chỉnh về đúng 100%)'}
             </Typography>
           </Box>
         </DialogContent>

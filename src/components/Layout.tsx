@@ -375,7 +375,7 @@ export function Layout() {
         <aside className={`sidebar ${open ? 'open' : ''}`}>
           {/* 1. Fixed Header (Brand & Pro Upgrade Button) */}
           <div className="sidebar-header">
-            <div className="brand" style={{ alignItems: 'flex-start' }}>
+            <div className="brand" style={{ alignItems: 'center' }}>
               <span className="brandmark" style={{ marginTop: 2 }}>
                 <img src="/logo.png?v=20261105" alt="Logo Tích Sản" className="brandmark-img" />
               </span>

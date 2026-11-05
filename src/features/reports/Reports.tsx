@@ -1090,14 +1090,14 @@ export default function Reports() {
         </Paper>
       </Box>
 
-      {/* Fullscreen Chart Modal with 90deg Landscape Rotation */}
+      {/* Fullscreen Chart Modal */}
       <FullscreenModal
         open={fullscreenChartOpen}
         onClose={() => setFullscreenChartOpen(false)}
         title="Biểu đồ Dòng tiền & Tài sản Hợp nhất"
-        subtitle="Khung nhìn toàn cảnh: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản (Hỗ trợ xoay ngang 90°)"
+        subtitle="Khung nhìn toàn cảnh: Cột kép Thu/Chi, Đường cong Thặng dư ròng và Quỹ đạo Tài sản"
       >
-        <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ width: '100%', height: { xs: 'calc(100vh - 130px)', sm: 'calc(100vh - 150px)' }, minHeight: 380, display: 'flex', flexDirection: 'column' }}>
           {renderHeroComposedChart('100%')}
         </Box>
       </FullscreenModal>

@@ -24,6 +24,7 @@ import {
 import { useFinance } from '../../store';
 import { money, todayKey, uid } from '../../lib/finance';
 import { PageHead } from '../../components/ui';
+import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
 import { MuiCurrencyInput, MuiTextField } from '../../components/mui/MuiInputs';
 import {
   calculatePayroll,
@@ -36,6 +37,7 @@ export default function Payroll() {
   const [selectedMonth, setSelectedMonth] = useState('2026-11');
   const [activeTab, setActiveTab] = useState<'records' | 'calculator'>('records');
   const [openNewSlipModal, setOpenNewSlipModal] = useState(false);
+  const [fullscreenSlipOpen, setFullscreenSlipOpen] = useState(false);
 
   // Form state for creating/editing payroll
   const [form, setForm] = useState({
@@ -148,31 +150,35 @@ export default function Payroll() {
         title="Quản lý Lương & Thuế Động"
         subtitle="Bảng lương linh hoạt chuẩn Bộ luật Lao động 2019, tự động tính bảo hiểm 10.5% có trần và thuế TNCN 7 bậc lũy tiến"
         actions={
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+            <FullscreenButton onClick={() => setFullscreenSlipOpen(true)} title="Xem toàn màn hình phiếu lương" />
             <Button
               variant={activeTab === 'records' ? 'contained' : 'outlined'}
-              startIcon={<FileText size={18} />}
+              startIcon={<FileText size={16} />}
               onClick={() => setActiveTab('records')}
               size="small"
+              sx={{ minHeight: 32, fontSize: { xs: 12, sm: 13 }, px: { xs: 1, sm: 1.5 } }}
             >
-              Phiếu lương tháng
+              Phiếu lương
             </Button>
             <Button
               variant={activeTab === 'calculator' ? 'contained' : 'outlined'}
-              startIcon={<Calculator size={18} />}
+              startIcon={<Calculator size={16} />}
               onClick={() => setActiveTab('calculator')}
               size="small"
+              sx={{ minHeight: 32, fontSize: { xs: 12, sm: 13 }, px: { xs: 1, sm: 1.5 } }}
             >
-              Tính nhanh Gross ⇄ Net
+              Gross ⇄ Net
             </Button>
             <Button
               variant="contained"
               color="primary"
-              startIcon={<Plus size={18} />}
+              startIcon={<Plus size={16} />}
               onClick={() => setOpenNewSlipModal(true)}
               size="small"
+              sx={{ minHeight: 32, fontSize: { xs: 12, sm: 13 }, px: { xs: 1.25, sm: 1.5 }, bgcolor: '#10B981', '&:hover': { bgcolor: '#059669' } }}
             >
-              Lập phiếu lương mới
+              Lập phiếu mới
             </Button>
           </Box>
         }
@@ -215,7 +221,7 @@ export default function Payroll() {
                   />
                 </Box>
 
-                <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main', my: 1 }}>
+                <Typography variant="h3" sx={{ fontWeight: 800, color: 'primary.main', my: 1, fontSize: { xs: '1.65rem', sm: '2.2rem', md: '2.8rem' }, lineHeight: 1.2 }}>
                   {money(currentRecord.netSalary)}
                 </Typography>
 
@@ -337,7 +343,7 @@ export default function Payroll() {
                     <Receipt size={20} /> Chi tiết Bảng Lương Tháng {currentRecord.month}
                   </Typography>
 
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' }, gap: 2 }}>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1.5 }}>
                     <Box>
                       <Typography variant="caption" sx={{ color: 'text.secondary' }}>Lương Hợp đồng</Typography>
                       <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{money(currentRecord.contractSalary)}</Typography>
@@ -396,7 +402,7 @@ export default function Payroll() {
                 onChange={v => setForm({ ...form, contractSalary: Number(v) || 0 })}
               />
 
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
                 <MuiTextField
                   label="Ngày công chuẩn"
                   type="number"
@@ -413,7 +419,7 @@ export default function Payroll() {
                 />
               </Box>
 
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
                 <MuiTextField
                   label="Giờ OT Ngày thường (150%)"
                   type="number"
@@ -430,7 +436,7 @@ export default function Payroll() {
                 />
               </Box>
 
-              <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
                 <MuiCurrencyInput
                   label="Thưởng KPI / Doanh số"
                   value={form.performanceBonus}
@@ -515,6 +521,68 @@ export default function Payroll() {
           <Button variant="contained" onClick={handleSavePayroll}>Lưu Phiếu Lương</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Fullscreen Viewer for Payroll Slip */}
+      <FullscreenModal
+        open={fullscreenSlipOpen}
+        onClose={() => setFullscreenSlipOpen(false)}
+        title={currentRecord ? `Phiếu Lương Tháng ${currentRecord.month} (Chi Tiết)` : 'Bảng Lương'}
+        subtitle="Chi tiết các khoản thu nhập gross, trích nộp bảo hiểm bắt buộc và biểu thuế TNCN 7 bậc"
+      >
+        {currentRecord && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <Paper variant="outlined" sx={{ p: 2.5, bgcolor: 'background.paper', borderRadius: '8px' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>Lương Thực Nhận (NET Take-Home)</Typography>
+                <Chip
+                  size="small"
+                  label={currentRecord.status === 'paid' ? 'ĐÃ NHẬN TIỀN' : 'CHỜ THANH TOÁN'}
+                  color={currentRecord.status === 'paid' ? 'success' : 'warning'}
+                />
+              </Box>
+              <Typography variant="h3" sx={{ fontWeight: 900, color: 'primary.main', mb: 1 }}>
+                {money(currentRecord.netSalary)}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Tổng Gross: <strong>{money(currentRecord.grossIncome)}</strong> · Tổng trích trừ:{' '}
+                <strong style={{ color: '#ef4444' }}>-{money(currentRecord.totalInsuranceEmployee + currentRecord.pitWithheld)}</strong>
+              </Typography>
+            </Paper>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+              <Paper variant="outlined" sx={{ p: 2.5, borderRadius: '8px' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1.5 }}>Bảo Hiểm Bắt Buộc (10.5%)</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• BHXH (8%):</span><strong>{money(currentRecord.socialInsuranceEmployee)}</strong>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• BHYT (1.5%):</span><strong>{money(currentRecord.healthInsuranceEmployee)}</strong>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• BHTN (1%):</span><strong>{money(currentRecord.unemploymentInsuranceEmployee)}</strong>
+                  </Box>
+                </Box>
+              </Paper>
+
+              <Paper variant="outlined" sx={{ p: 2.5, borderRadius: '8px' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1.5 }}>Thuế Thu Nhập Cá Nhân (PIT)</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• Giảm trừ bản thân:</span><strong>11.000.000 ₫</strong>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• Giảm trừ người phụ thuộc:</span><strong>{money(currentRecord.dependentDeductionTotal)}</strong>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>• Thuế TNCN khấu trừ:</span><strong style={{ color: '#ef4444' }}>-{money(currentRecord.pitWithheld)}</strong>
+                  </Box>
+                </Box>
+              </Paper>
+            </Box>
+          </Box>
+        )}
+      </FullscreenModal>
     </Box>
   );
 }

@@ -686,11 +686,10 @@ export function Layout() {
                 />
               </Box>
 
-              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+              <Box sx={{ minWidth: 0, overflow: 'hidden', display: { xs: 'none', sm: 'block' } }}>
                 <Box
                   component="div"
                   className="crumb"
-                  sx={{ display: { xs: 'none', sm: 'block' } }}
                 >
                   Tích Sản / Sổ tài chính
                 </Box>
@@ -704,7 +703,7 @@ export function Layout() {
                 }}>
                   {title}
                 </h1>
-              </div>
+              </Box>
             </div>
 
             <div className="topactions">
@@ -861,13 +860,14 @@ export function Layout() {
                   size="small"
                   onClick={() => setAiDrawerOpen(true)}
                   sx={{
+                    display: { xs: 'none', sm: 'inline-flex' },
                     color: 'primary.main',
                     bgcolor: 'var(--brand-primary-tint)',
                     border: '1px solid var(--border-subtle)',
-                    width: { xs: 40, sm: 34 },
-                    height: { xs: 40, sm: 34 },
-                    minWidth: { xs: 40, sm: 34 },
-                    minHeight: { xs: 40, sm: 34 },
+                    width: 34,
+                    height: 34,
+                    minWidth: 34,
+                    minHeight: 34,
                     p: 0.75
                   }}
                   aria-label="Trợ lý AI"
@@ -1160,6 +1160,37 @@ export function Layout() {
               <span>Menu</span>
             </button>
           </nav>
+
+          {/* Dedicated Floating AI Chatbot Button (Mobile) - Fixed above bottom bar on right */}
+          <Tooltip title="Mở Trợ lý AI Tích Sản (WebMCP)">
+            <Box
+              onClick={() => setAiDrawerOpen(true)}
+              sx={{
+                display: { xs: 'flex', md: 'none' },
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'fixed',
+                bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))',
+                right: 14,
+                width: 38,
+                height: 38,
+                borderRadius: '50%',
+                bgcolor: '#10B981',
+                color: '#FFFFFF',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.45)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                cursor: 'pointer',
+                zIndex: 95,
+                transition: 'all 0.15s ease',
+                '&:active': {
+                  transform: 'scale(0.92)'
+                }
+              }}
+              aria-label="Mở Trợ lý AI Tích Sản"
+            >
+              <Bot size={19} color="#FFFFFF" />
+            </Box>
+          </Tooltip>
         </div>
 
         {/* Global Snackbar with Undo */}

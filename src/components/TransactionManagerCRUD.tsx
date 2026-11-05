@@ -36,6 +36,7 @@ import { MuiCurrencyInput, MuiSelect, MuiTextField } from './mui/MuiInputs';
 import { Confirm } from './ui';
 import { StatusBadge } from './ui/StatusBadge';
 import { FinoraButton } from './ui/FinoraButton';
+import { FullscreenModal, FullscreenButton } from './ui/FullscreenModal';
 import type { Transaction, TxType } from '../types';
 
 export function TransactionManagerCRUD() {
@@ -48,6 +49,7 @@ export function TransactionManagerCRUD() {
 
   // Modal State
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [fullscreenTableOpen, setFullscreenTableOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [deletingTx, setDeletingTx] = useState<Transaction | null>(null);
   const [undoToastOpen, setUndoToastOpen] = useState(false);
@@ -286,13 +288,14 @@ export function TransactionManagerCRUD() {
                 ...categories.map(c => ({ value: c.id, label: c.name }))
               ]}
             />
+            <FullscreenButton onClick={() => setFullscreenTableOpen(true)} title="Xem toàn màn hình bảng giao dịch" />
           </Box>
         </Box>
       </Box>
 
       {/* 2. Transaction Data Table */}
-      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px' }}>
-        <Table size="small">
+      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+        <Table size="small" sx={{ minWidth: 640 }}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 700, width: 110 }}>Ngày</TableCell>
@@ -558,6 +561,54 @@ export function TransactionManagerCRUD() {
           Đã xóa giao dịch thành công.
         </Alert>
       </Snackbar>
+
+      {/* 7. Fullscreen Modal for Table */}
+      <FullscreenModal
+        open={fullscreenTableOpen}
+        onClose={() => setFullscreenTableOpen(false)}
+        title="Sổ Giao Dịch Chi Tiết (Toàn Màn Hình)"
+        subtitle="Xem và quản lý toàn bộ các giao dịch tài chính với đầy đủ cột dữ liệu và đối soát"
+      >
+        <TableContainer sx={{ width: '100%', overflowX: 'auto', flex: 1 }}>
+          <Table size="medium" sx={{ minWidth: 700 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 800, width: 120 }}>Ngày</TableCell>
+                <TableCell sx={{ fontWeight: 800, width: 180 }}>Danh mục</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Mô tả & Ghi chú</TableCell>
+                <TableCell sx={{ fontWeight: 800, width: 120 }}>Trạng thái</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 800, width: 150 }}>Số tiền (₫)</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 800, width: 110 }}>Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredList.map(tx => {
+                const isIncome = tx.type === 'income';
+                return (
+                  <TableRow key={tx.id} hover>
+                    <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>{tx.date}</TableCell>
+                    <TableCell><BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={32} /></TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>{tx.name}</Typography>
+                      {tx.note && <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{tx.note}</Typography>}
+                    </TableCell>
+                    <TableCell><StatusBadge label={tx.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'} status={tx.status === 'completed' ? 'success' : 'warning'} variant="soft" size="small" /></TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2" sx={{ fontWeight: 800, color: isIncome ? 'success.main' : 'text.primary' }}>
+                        {isIncome ? '+' : '-'}{money(tx.amount)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <IconButton size="small" onClick={() => handleOpenEdit(tx)} title="Sửa"><EditRounded fontSize="small" /></IconButton>
+                      <IconButton size="small" onClick={() => setDeletingTx(tx)} title="Xóa" sx={{ color: 'error.main' }}><DeleteOutlineRounded fontSize="small" /></IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </FullscreenModal>
     </Card>
   );
 }

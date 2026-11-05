@@ -954,8 +954,15 @@ td,
   }
 
   .MuiTableContainer-root {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    scrollbar-width: thin;
+  }
+
+  .MuiTableContainer-root .MuiTable-root {
+    min-width: 580px;
   }
 
   .MuiDialog-paper {

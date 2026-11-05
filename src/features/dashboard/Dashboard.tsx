@@ -71,6 +71,7 @@ import { BankLogoBadge, CategoryAvatarBadge, FundLogoBadge } from '../../lib/bra
 import { FinancialHealthGaugeCluster } from '../../components/gauges/FinancialHealthGaugeCluster';
 import { FinancialOverviewCards } from '../../components/dashboard/FinancialOverviewCards';
 import { HelpButton } from '../../components/HelpButton';
+import { FullscreenModal, FullscreenButton } from '../../components/ui/FullscreenModal';
 
 type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
@@ -90,6 +91,9 @@ export default function Dashboard() {
 
   // Search filter for recent transactions
   const [txSearch, setTxSearch] = useState<string>('');
+  const [fullscreenCashflowOpen, setFullscreenCashflowOpen] = useState(false);
+  const [fullscreenExpenseOpen, setFullscreenExpenseOpen] = useState(false);
+  const [fullscreenTxOpen, setFullscreenTxOpen] = useState(false);
 
   // Month Navigation Handlers
   const handlePrevMonth = () => setSelectedMonthDate(prev => subMonths(prev, 1));
@@ -486,13 +490,16 @@ export default function Dashboard() {
               mb: 2
             }}
           >
-            <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
-                Dòng tiền Hợp nhất
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
-                Biểu đồ kết hợp: Cột Thu/Chi và Đường cong Thặng dư ròng
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                  Dòng tiền Hợp nhất
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                  Biểu đồ kết hợp: Cột Thu/Chi và Đường cong Thặng dư ròng
+                </Typography>
+              </Box>
+              <FullscreenButton onClick={() => setFullscreenCashflowOpen(true)} title="Xem biểu đồ dòng tiền toàn màn hình" />
             </Box>
 
             {/* Time Controls */}
@@ -646,9 +653,12 @@ export default function Dashboard() {
                 Tháng {format(selectedMonthDate, 'MM/yyyy')}
               </Typography>
             </Box>
-            <Link to="/reports" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
-              Chi tiết →
-            </Link>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <FullscreenButton onClick={() => setFullscreenExpenseOpen(true)} title="Xem cơ cấu chi tiêu toàn màn hình" />
+              <Link to="/reports" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                Chi tiết →
+              </Link>
+            </Box>
           </Box>
 
           {expenseCategories.length ? (
@@ -783,6 +793,7 @@ export default function Dashboard() {
                 />
               </Box>
 
+              <FullscreenButton onClick={() => setFullscreenTxOpen(true)} title="Xem bảng giao dịch toàn màn hình" />
               <Link
                 to="/transactions"
                 style={{
@@ -798,8 +809,8 @@ export default function Dashboard() {
           </Box>
 
           {/* Desktop Table View */}
-          <TableContainer sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Table size="small">
+          <TableContainer sx={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+            <Table size="small" sx={{ minWidth: 540 }}>
               <TableHead sx={{ bgcolor: 'action.hover' }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 800, fontSize: 12 }}>Giao dịch</TableCell>
@@ -885,8 +896,8 @@ export default function Dashboard() {
             </Table>
           </TableContainer>
 
-          {/* Mobile Card Row Fallback */}
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1 }}>
+          {/* Mobile Card Row Fallback (hidden in favor of responsive scrollable table) */}
+          <Box sx={{ display: 'none', flexDirection: 'column', gap: 1 }}>
             {recentTransactions.map(t => {
               const cat = data.categories.find(c => c.id === t.categoryId);
               const acc = data.accounts.find(a => a.id === t.accountId);
@@ -1152,6 +1163,112 @@ export default function Dashboard() {
           </Paper>
         </Box>
       </Box>
+
+      {/* 1. Fullscreen Modal for Cashflow Chart */}
+      <FullscreenModal
+        open={fullscreenCashflowOpen}
+        onClose={() => setFullscreenCashflowOpen(false)}
+        title="Biểu đồ Dòng Tiền Hợp Nhất (Thu Nhập vs Chi Tiêu)"
+        subtitle="Phân tích tổng hợp: Cột Thu/Chi và Đường cong Thặng dư ròng theo chu kỳ thời gian"
+      >
+        <Box sx={{ width: '100%', height: 'calc(100vh - 160px)', minHeight: 400 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={cashflowDataset} margin={{ top: 20, right: 30, left: 10, bottom: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
+              <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={12} tickLine={false} />
+              <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={val => shortMoney(val)} />
+              <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
+              <Bar dataKey="income" name="Thu nhập" fill="var(--accent-income)" radius={[4, 4, 0, 0]} maxBarSize={45} />
+              <Bar dataKey="expense" name="Chi tiêu" fill="var(--accent-expense)" radius={[4, 4, 0, 0]} maxBarSize={45} />
+              <Line type="monotone" dataKey="net" name="Thặng dư ròng" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 7 }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </Box>
+      </FullscreenModal>
+
+      {/* 2. Fullscreen Modal for Expense Categories Donut */}
+      <FullscreenModal
+        open={fullscreenExpenseOpen}
+        onClose={() => setFullscreenExpenseOpen(false)}
+        title="Cơ Cấu Chi Tiêu Theo Danh Mục"
+        subtitle="Phân bổ tỷ trọng và xếp hạng các khoản chi lớn nhất trong tháng"
+      >
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, alignItems: 'center' }}>
+          <Box sx={{ width: '100%', height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsPieChart>
+                <Pie data={expenseCategories} dataKey="value" nameKey="name" innerRadius={80} outerRadius={130} paddingAngle={3}>
+                  {expenseCategories.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </RechartsPieChart>
+            </ResponsiveContainer>
+          </Box>
+          <Box sx={{ display: 'grid', gap: 1.5, maxHeight: '60vh', overflowY: 'auto' }}>
+            {expenseCategories.map((c, i) => (
+              <Box key={c.name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, borderRadius: '6px', bgcolor: 'action.hover' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: c.color }} />
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>{i + 1}. {c.name}</Typography>
+                </Box>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{money(c.value)}</Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </FullscreenModal>
+
+      {/* 3. Fullscreen Modal for Recent Transactions */}
+      <FullscreenModal
+        open={fullscreenTxOpen}
+        onClose={() => setFullscreenTxOpen(false)}
+        title="Sổ Nhật Ký Giao Dịch Gần Đây"
+        subtitle="Danh sách đối soát các khoản chi tiêu và nguồn tài khoản tương ứng"
+      >
+        <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+          <Table size="medium" sx={{ minWidth: 640 }}>
+            <TableHead sx={{ bgcolor: 'action.hover' }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 800 }}>Giao dịch</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Tài khoản nguồn</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Ngày</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 800 }}>Số tiền</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 800 }}>Trạng thái</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {recentTransactions.map(t => {
+                const cat = data.categories.find(c => c.id === t.categoryId);
+                const acc = data.accounts.find(a => a.id === t.accountId);
+                return (
+                  <TableRow key={t.id} hover>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 750 }}>{t.name}</Typography>
+                          {t.note && <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>{t.note}</Typography>}
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{acc?.name}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary' }}>{dateLabel(t.date)}</TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2" sx={{ fontWeight: 800, color: t.type === 'income' ? 'var(--accent-income)' : 'text.primary' }}>
+                        {t.type === 'income' ? '+' : '-'}{money(t.amount)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip label={t.status === 'completed' ? 'Hoàn tất' : 'Chờ xử lý'} size="small" color={t.status === 'completed' ? 'success' : 'default'} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </FullscreenModal>
     </Box>
   );
 }

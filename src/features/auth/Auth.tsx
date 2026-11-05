@@ -151,7 +151,7 @@ export default function Auth() {
               }}
             >
               <img
-                src="/logo.png"
+                src="/logo.png?v=20261105"
                 alt="Tích Sản"
                 style={{
                   width: 38,

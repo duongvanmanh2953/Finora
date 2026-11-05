@@ -377,7 +377,7 @@ export function Layout() {
           <div className="sidebar-header">
             <div className="brand" style={{ alignItems: 'flex-start' }}>
               <span className="brandmark" style={{ marginTop: 2 }}>
-                <img src="/logo.png" alt="Logo Tích Sản" className="brandmark-img" />
+                <img src="/logo.png?v=20261105" alt="Logo Tích Sản" className="brandmark-img" />
               </span>
               <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -707,7 +707,7 @@ export function Layout() {
                 }}
               >
                 <img
-                  src="/logo.png"
+                  src="/logo.png?v=20261105"
                   alt="Logo Tích Sản"
                   style={{
                     width: 28,

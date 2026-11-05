@@ -51,12 +51,14 @@ fi
 echo ""
 echo ">>> [4/4] Tiến hành Build Docker Image và Khởi chạy Container..."
 if command -v docker-compose >/dev/null 2>&1; then
-  docker-compose up -d --build
+  docker-compose build --no-cache
+  docker-compose up -d
 elif docker compose version >/dev/null 2>&1; then
-  docker compose up -d --build
+  docker compose build --no-cache
+  docker compose up -d
 else
-  echo "    Đang build image finora-app..."
-  docker build -t finora-app .
+  echo "    Đang build image finora-app (no-cache)..."
+  docker build --no-cache -t finora-app .
   echo "    Đang chạy container finora-app trên cổng 8080..."
   docker run -d --name finora-app -p 8080:80 --restart unless-stopped finora-app
 fi

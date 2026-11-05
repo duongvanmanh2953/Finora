@@ -264,7 +264,7 @@ export default function LandingPage() {
       >
         <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <img src="/logo.png" alt="Tích Sản" style={{ width: 34, height: 34, borderRadius: 8, boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)', objectFit: 'contain' }} />
+            <img src="/logo.png?v=20261105" alt="Tích Sản" style={{ width: 34, height: 34, borderRadius: 8, boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)', objectFit: 'contain' }} />
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: -0.5, color: '#FFFFFF', lineHeight: 1.1 }}>
                 Tích Sản

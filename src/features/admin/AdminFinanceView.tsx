@@ -63,7 +63,17 @@ export function AdminFinanceView() {
 
       {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)}>
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{
+            '& .MuiTabs-scroller': { overflowX: 'auto !important' },
+            '& .MuiTab-root': { whiteSpace: 'nowrap', flexShrink: 0 }
+          }}
+        >
           <Tab value="invoices" label="Hóa đơn Điện tử MISA (e-Invoices)" />
           <Tab value="expenses" label="Quản lý Chi phí Bên Thứ Ba (Server, Domain, AI...)" />
           <Tab value="tax" label="Kê khai Thuế & Đối soát Kế toán" />

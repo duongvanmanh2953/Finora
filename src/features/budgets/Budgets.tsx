@@ -154,11 +154,23 @@ export default function Budgets() {
         <Tabs
           value={activeTab}
           onChange={(_, val) => { setActiveTab(val); setPage(0); }}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           textColor="primary"
           indicatorColor="primary"
+          sx={{
+            '& .MuiTabs-scroller': {
+              overflowX: 'auto !important'
+            },
+            '& .MuiTab-root': {
+              whiteSpace: 'nowrap',
+              flexShrink: 0
+            }
+          }}
         >
-          <Tab value="categories" label="Ngân sách danh mục" sx={{ fontWeight: 700, textTransform: 'none' }} />
-          <Tab value="jars" label="Phương pháp 6 chiếc hũ (6 Jars & ZBB)" sx={{ fontWeight: 700, textTransform: 'none' }} />
+          <Tab value="categories" label="Ngân sách danh mục" sx={{ fontWeight: 750, textTransform: 'none' }} />
+          <Tab value="jars" label="Phương pháp 6 chiếc hũ (6 Jars & ZBB)" sx={{ fontWeight: 750, textTransform: 'none' }} />
         </Tabs>
 
         {activeTab === 'categories' && (

@@ -189,9 +189,21 @@ export default function Payroll() {
 
       {activeTab === 'records' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* Month Selector Pills */}
-          <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Month Selector Pills: Scrollable on mobile */}
+          <Paper
+            sx={{
+              p: 1.5,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              overflowX: 'auto',
+              flexWrap: 'nowrap',
+              WebkitOverflowScrolling: 'touch',
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' }
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 1, whiteSpace: 'nowrap', flexShrink: 0 }}>
               <Calendar size={16} /> Chọn kỳ lương:
             </Typography>
             {payrolls.map(p => (
@@ -203,6 +215,7 @@ export default function Payroll() {
                 variant={selectedMonth === p.month ? 'filled' : 'outlined'}
                 onClick={() => setSelectedMonth(p.month)}
                 icon={p.status === 'paid' ? <CheckCircle2 size={14} /> : undefined}
+                sx={{ flexShrink: 0 }}
               />
             ))}
           </Paper>

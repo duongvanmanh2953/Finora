@@ -35,7 +35,6 @@ import { AssetLogoBadge } from '../lib/brandBadges';
 import { MuiCurrencyInput, MuiSelect, MuiTextField } from './mui/MuiInputs';
 import { Confirm } from './ui';
 import { StatusBadge } from './ui/StatusBadge';
-import { FinoraButton } from './ui/FinoraButton';
 import { FullscreenModal, FullscreenButton } from './ui/FullscreenModal';
 import type { Transaction, TxType } from '../types';
 

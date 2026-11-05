@@ -75,7 +75,17 @@ export function AdminReportsView() {
 
       {/* Tabs */}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={reportCategory} onChange={(_, v) => setReportCategory(v)}>
+        <Tabs
+          value={reportCategory}
+          onChange={(_, v) => setReportCategory(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{
+            '& .MuiTabs-scroller': { overflowX: 'auto !important' },
+            '& .MuiTab-root': { whiteSpace: 'nowrap', flexShrink: 0 }
+          }}
+        >
           <Tab value="business" label="1. Báo cáo Tăng trưởng & Khách hàng" />
           <Tab value="financial" label="2. Báo cáo Doanh thu & MRR / ARR" />
           <Tab value="accounting" label="3. Kế toán, Hóa đơn & Thuế VAT" />

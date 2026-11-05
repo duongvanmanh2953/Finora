@@ -312,12 +312,13 @@ td,
   overflow: hidden;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(18, 61, 53, 0.12);
+  background: transparent;
 }
 
 .brandmark-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 

@@ -157,7 +157,8 @@ export default function Auth() {
                   width: 38,
                   height: 38,
                   borderRadius: 10,
-                  boxShadow: '0 6px 16px rgba(0,0,0,0.3)'
+                  boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
+                  objectFit: 'contain'
                 }}
               />
               <Box>

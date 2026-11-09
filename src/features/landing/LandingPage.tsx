@@ -1313,21 +1313,65 @@ export default function LandingPage() {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           {/* Header */}
           <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 7 } }}>
-            <Chip
-              icon={<Smartphone size={16} color="#34D399" />}
-              label="ỨNG DỤNG ANDROID CHÍNH THỨC · v1.0.0"
-              sx={{
-                bgcolor: 'rgba(16, 185, 129, 0.12)',
-                color: '#34D399',
-                border: '1px solid rgba(16, 185, 129, 0.35)',
-                fontWeight: 700,
-                letterSpacing: 0.8,
-                px: 1.5,
-                py: 2.2,
-                borderRadius: '999px',
-                mb: 2.5
-              }}
-            />
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5, flexWrap: 'wrap', mb: 2.5 }}>
+              <Chip
+                icon={<Smartphone size={16} color="#34D399" />}
+                label="ỨNG DỤNG DI ĐỘNG CHÍNH THỨC · v1.0.0"
+                sx={{
+                  bgcolor: 'rgba(16, 185, 129, 0.12)',
+                  color: '#34D399',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  fontWeight: 700,
+                  letterSpacing: 0.8,
+                  px: 1.5,
+                  py: 2.2,
+                  borderRadius: '999px'
+                }}
+              />
+            </Box>
+
+            {/* Platform Toggle Pills */}
+            <Box sx={{ display: 'inline-flex', p: 0.6, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', mb: 3 }}>
+              <Button
+                size="small"
+                onClick={() => setDownloadPlatform('android')}
+                startIcon={<AndroidSvgIcon size={18} color={downloadPlatform === 'android' ? '#FFFFFF' : '#34D399'} />}
+                sx={{
+                  borderRadius: '12px',
+                  px: { xs: 2, sm: 2.5 },
+                  py: 0.8,
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  textTransform: 'none',
+                  bgcolor: downloadPlatform === 'android' ? '#059669' : 'transparent',
+                  color: downloadPlatform === 'android' ? '#FFFFFF' : '#94A3B8',
+                  boxShadow: downloadPlatform === 'android' ? '0 4px 15px rgba(5, 150, 105, 0.4)' : 'none',
+                  '&:hover': { bgcolor: downloadPlatform === 'android' ? '#047857' : 'rgba(255,255,255,0.06)' }
+                }}
+              >
+                Bản Android (.APK)
+              </Button>
+              <Button
+                size="small"
+                onClick={() => setDownloadPlatform('ios')}
+                startIcon={<AppleSvgIcon size={18} color={downloadPlatform === 'ios' ? '#FFFFFF' : '#CBD5E1'} />}
+                sx={{
+                  borderRadius: '12px',
+                  px: { xs: 2, sm: 2.5 },
+                  py: 0.8,
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  textTransform: 'none',
+                  bgcolor: downloadPlatform === 'ios' ? '#334155' : 'transparent',
+                  color: downloadPlatform === 'ios' ? '#FFFFFF' : '#94A3B8',
+                  boxShadow: downloadPlatform === 'ios' ? '0 4px 15px rgba(51, 65, 85, 0.4)' : 'none',
+                  '&:hover': { bgcolor: downloadPlatform === 'ios' ? '#1E293B' : 'rgba(255,255,255,0.06)' }
+                }}
+              >
+                Bản iOS (iPhone / iPad)
+              </Button>
+            </Box>
+
             <Typography
               variant="h2"
               sx={{
@@ -1435,11 +1479,23 @@ export default function LandingPage() {
                       />
                     </Box>
                     <Typography variant="body2" sx={{ color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      <span>Dung lượng: <strong>~13.2 MB</strong></span>
-                      <span>•</span>
-                      <span>Yêu cầu: <strong>Android 7.0+</strong></span>
-                      <span>•</span>
-                      <span style={{ color: '#34D399', fontWeight: 600 }}>Miễn phí 100%</span>
+                      {downloadPlatform === 'android' ? (
+                        <>
+                          <span>Dung lượng: <strong>~24 MB</strong></span>
+                          <span>•</span>
+                          <span>Yêu cầu: <strong>Android 7.0+</strong></span>
+                          <span>•</span>
+                          <span style={{ color: '#34D399', fontWeight: 600 }}>Miễn phí 100%</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Chuẩn: <strong>PWA Web App</strong></span>
+                          <span>•</span>
+                          <span>Yêu cầu: <strong>iOS 15+ (Safari)</strong></span>
+                          <span>•</span>
+                          <span style={{ color: '#38BDF8', fontWeight: 600 }}>Zero Cài Đặt · Không Tốn Bộ Nhớ</span>
+                        </>
+                      )}
                     </Typography>
                   </Box>
                 </Box>
@@ -1450,7 +1506,7 @@ export default function LandingPage() {
                     {
                       icon: Zap,
                       title: 'Khởi động 0.2s',
-                      desc: 'Không cần load trình duyệt, mở là ghi nhận thu chi ngay lập tức.',
+                      desc: downloadPlatform === 'android' ? 'Không cần load trình duyệt, mở là ghi nhận thu chi ngay.' : 'Khởi chạy toàn màn hình từ Home Screen như ứng dụng Native.',
                       color: '#F59E0B'
                     },
                     {
@@ -1526,56 +1582,118 @@ export default function LandingPage() {
                   borderTop: '1px solid rgba(255, 255, 255, 0.08)'
                 }}
               >
-                <Button
-                  component="a"
-                  href="/downloads/finora-latest.apk"
-                  download="Finora-TichSan.apk"
-                  variant="contained"
-                  startIcon={<DownloadCloud size={20} />}
-                  sx={{
-                    flex: 1.3,
-                    py: 1.8,
-                    px: 3,
-                    borderRadius: '14px',
-                    fontWeight: 800,
-                    fontSize: '1rem',
-                    textTransform: 'none',
-                    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)',
-                    color: '#FFFFFF',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
-                      boxShadow: '0 12px 30px rgba(16, 185, 129, 0.55)',
-                      transform: 'translateY(-2px)'
-                    },
-                    transition: 'all 0.25s ease'
-                  }}
-                >
-                  TẢI FINORA CHO ANDROID (.APK)
-                </Button>
+                {downloadPlatform === 'android' ? (
+                  <>
+                    <Button
+                      component="a"
+                      href="/downloads/finora-latest.apk"
+                      download="Finora-TichSan.apk"
+                      variant="contained"
+                      startIcon={<DownloadCloud size={20} />}
+                      sx={{
+                        flex: 1.3,
+                        py: 1.8,
+                        px: 3,
+                        borderRadius: '14px',
+                        fontWeight: 800,
+                        fontSize: '1rem',
+                        textTransform: 'none',
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)',
+                        color: '#FFFFFF',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
+                          boxShadow: '0 12px 30px rgba(16, 185, 129, 0.55)',
+                          transform: 'translateY(-2px)'
+                        },
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      TẢI FINORA CHO ANDROID (.APK)
+                    </Button>
 
-                <Button
-                  variant="outlined"
-                  onClick={() => setInstallGuideOpen(true)}
-                  startIcon={<HelpCircle size={18} />}
-                  sx={{
-                    flex: 1,
-                    py: 1.8,
-                    px: 2.5,
-                    borderRadius: '14px',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    textTransform: 'none',
-                    borderColor: 'rgba(255, 255, 255, 0.15)',
-                    color: '#E2E8F0',
-                    '&:hover': {
-                      borderColor: '#34D399',
-                      bgcolor: 'rgba(52, 211, 153, 0.08)'
-                    }
-                  }}
-                >
-                  Cách Cài Đặt APK
-                </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setGuideModalPlatform('android');
+                        setInstallGuideOpen(true);
+                      }}
+                      startIcon={<HelpCircle size={18} />}
+                      sx={{
+                        flex: 1,
+                        py: 1.8,
+                        px: 2.5,
+                        borderRadius: '14px',
+                        fontWeight: 700,
+                        fontSize: '0.95rem',
+                        textTransform: 'none',
+                        borderColor: 'rgba(255, 255, 255, 0.15)',
+                        color: '#E2E8F0',
+                        '&:hover': {
+                          borderColor: '#34D399',
+                          bgcolor: 'rgba(52, 211, 153, 0.08)'
+                        }
+                      }}
+                    >
+                      Cách Cài Đặt APK
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      component={Link}
+                      to="/auth/register"
+                      variant="contained"
+                      startIcon={<ExternalLink size={20} />}
+                      sx={{
+                        flex: 1.3,
+                        py: 1.8,
+                        px: 3,
+                        borderRadius: '14px',
+                        fontWeight: 800,
+                        fontSize: '1rem',
+                        textTransform: 'none',
+                        background: 'linear-gradient(135deg, #334155 0%, #0F172A 100%)',
+                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.4)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: '#FFFFFF',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #475569 0%, #1E293B 100%)',
+                          transform: 'translateY(-2px)'
+                        },
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      MỞ APP TRÊN SAFARI (iOS)
+                    </Button>
+
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        setGuideModalPlatform('ios');
+                        setInstallGuideOpen(true);
+                      }}
+                      startIcon={<HelpCircle size={18} />}
+                      sx={{
+                        flex: 1,
+                        py: 1.8,
+                        px: 2.5,
+                        borderRadius: '14px',
+                        fontWeight: 700,
+                        fontSize: '0.95rem',
+                        textTransform: 'none',
+                        borderColor: 'rgba(255, 255, 255, 0.15)',
+                        color: '#E2E8F0',
+                        '&:hover': {
+                          borderColor: '#38BDF8',
+                          bgcolor: 'rgba(56, 189, 248, 0.08)'
+                        }
+                      }}
+                    >
+                      4 Bước Ghim Màn Hình iOS
+                    </Button>
+                  </>
+                )}
               </Box>
             </Paper>
 
@@ -2044,104 +2162,227 @@ export default function LandingPage() {
           }
         }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '10px',
+                  bgcolor: guideModalPlatform === 'android' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: guideModalPlatform === 'android' ? '#34D399' : '#FFFFFF'
+                }}
+              >
+                {guideModalPlatform === 'android' ? <AndroidSvgIcon size={22} color="#34D399" /> : <AppleSvgIcon size={22} color="#FFFFFF" />}
+              </Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: { xs: '1.05rem', sm: '1.2rem' } }}>
+                {guideModalPlatform === 'android' ? 'Hướng Dẫn Cài Đặt Finora APK' : 'Hướng Dẫn Ghim Finora Trên iPhone (iOS)'}
+              </Typography>
+            </Box>
+            <IconButton onClick={() => setInstallGuideOpen(false)} sx={{ color: '#94A3B8' }}>
+              <X size={20} />
+            </IconButton>
+          </Box>
+
+          {/* Platform Switcher Inside Dialog */}
+          <Box sx={{ display: 'flex', gap: 1, bgcolor: 'rgba(255,255,255,0.05)', p: 0.5, borderRadius: '12px' }}>
+            <Button
+              fullWidth
+              size="small"
+              onClick={() => setGuideModalPlatform('android')}
+              startIcon={<AndroidSvgIcon size={16} color={guideModalPlatform === 'android' ? '#FFFFFF' : '#34D399'} />}
               sx={{
-                width: 38,
-                height: 38,
-                borderRadius: '10px',
-                bgcolor: 'rgba(16, 185, 129, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#34D399'
+                borderRadius: '8px',
+                py: 0.7,
+                fontWeight: 750,
+                fontSize: '0.8rem',
+                textTransform: 'none',
+                bgcolor: guideModalPlatform === 'android' ? '#059669' : 'transparent',
+                color: guideModalPlatform === 'android' ? '#FFFFFF' : '#94A3B8'
               }}
             >
-              <Smartphone size={22} />
-            </Box>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
-              Hướng Dẫn Cài Đặt Finora APK
-            </Typography>
+              Android (APK)
+            </Button>
+            <Button
+              fullWidth
+              size="small"
+              onClick={() => setGuideModalPlatform('ios')}
+              startIcon={<AppleSvgIcon size={16} color={guideModalPlatform === 'ios' ? '#FFFFFF' : '#CBD5E1'} />}
+              sx={{
+                borderRadius: '8px',
+                py: 0.7,
+                fontWeight: 750,
+                fontSize: '0.8rem',
+                textTransform: 'none',
+                bgcolor: guideModalPlatform === 'ios' ? '#334155' : 'transparent',
+                color: guideModalPlatform === 'ios' ? '#FFFFFF' : '#94A3B8'
+              }}
+            >
+              Apple iOS (Safari)
+            </Button>
           </Box>
-          <IconButton onClick={() => setInstallGuideOpen(false)} sx={{ color: '#94A3B8' }}>
-            <X size={20} />
-          </IconButton>
         </DialogTitle>
 
         <DialogContent sx={{ pt: 2 }}>
-          {/* Note Box */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              mb: 3,
-              borderRadius: '14px',
-              bgcolor: 'rgba(245, 158, 11, 0.1)',
-              border: '1px solid rgba(245, 158, 11, 0.25)',
-              display: 'flex',
-              gap: 1.5
-            }}
-          >
-            <ShieldCheck size={20} color="#F59E0B" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <Typography variant="body2" sx={{ color: '#FCD34D', fontSize: '0.85rem', lineHeight: 1.5 }}>
-              <strong>Lưu ý bảo mật:</strong> Do Finora được phân phối trực tiếp dưới dạng file APK nội bộ sạch, Android sẽ hiển thị cảnh báo tiêu chuẩn đối với nguồn ngoài Google Play. Ứng dụng an toàn 100% và không chứa mã độc.
-            </Typography>
-          </Paper>
+          {guideModalPlatform === 'android' ? (
+            <>
+              {/* Android Note Box */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mb: 3,
+                  borderRadius: '14px',
+                  bgcolor: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                  display: 'flex',
+                  gap: 1.5
+                }}
+              >
+                <ShieldCheck size={20} color="#F59E0B" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <Typography variant="body2" sx={{ color: '#FCD34D', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                  <strong>Lưu ý bảo mật:</strong> Do Finora được phân phối trực tiếp dưới dạng file APK nội bộ sạch, Android sẽ hiển thị cảnh báo tiêu chuẩn đối với nguồn ngoài Google Play. Ứng dụng an toàn 100% và không chứa mã độc.
+                </Typography>
+              </Paper>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            {[
-              {
-                num: '1',
-                title: 'Tải file Finora-TichSan.apk',
-                desc: 'Nhấn nút "Tải APK" trên trang web hoặc quét mã QR bằng camera. Trình duyệt sẽ lưu file vào thư mục Tải về (Downloads).'
-              },
-              {
-                num: '2',
-                title: 'Xác nhận tải file ("Vẫn tải xuống")',
-                desc: 'Nếu trình duyệt Chrome hiển thị thông báo "Tệp có thể gây hại", hãy chọn "Vẫn tải xuống" (Download anyway) để tiếp tục.'
-              },
-              {
-                num: '3',
-                title: 'Cho phép cài đặt từ nguồn này',
-                desc: 'Khi mở file, nếu điện thoại yêu cầu quyền cài đặt ứng dụng không rõ nguồn gốc, hãy nhấn "Cài đặt" (Settings) và gạt bật "Cho phép từ nguồn này".'
-              },
-              {
-                num: '4',
-                title: 'Nhấn Cài Đặt & Trải nghiệm',
-                desc: 'Hệ điều hành sẽ tiến hành cài đặt trong vài giây. Biểu tượng Finora sẽ xuất hiện ngay trên màn hình chính!'
-              }
-            ].map((step, idx) => (
-              <Box key={idx} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                <Box
-                  sx={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    bgcolor: 'rgba(16, 185, 129, 0.25)',
-                    color: '#34D399',
-                    border: '1px solid rgba(16, 185, 129, 0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 800,
-                    fontSize: '0.85rem',
-                    flexShrink: 0
-                  }}
-                >
-                  {step.num}
-                </Box>
-                <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: '0.95rem', mb: 0.3 }}>
-                    {step.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#94A3B8', fontSize: '0.85rem', lineHeight: 1.5 }}>
-                    {step.desc}
-                  </Typography>
-                </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {[
+                  {
+                    num: '1',
+                    title: 'Tải file Finora-TichSan.apk',
+                    desc: 'Nhấn nút "Tải APK" trên trang web hoặc quét mã QR bằng camera. Trình duyệt sẽ lưu file vào thư mục Tải về (Downloads).'
+                  },
+                  {
+                    num: '2',
+                    title: 'Xác nhận tải file ("Vẫn tải xuống")',
+                    desc: 'Nếu trình duyệt Chrome hiển thị thông báo "Tệp có thể gây hại", hãy chọn "Vẫn tải xuống" (Download anyway) để tiếp tục.'
+                  },
+                  {
+                    num: '3',
+                    title: 'Cho phép cài đặt từ nguồn này',
+                    desc: 'Khi mở file, nếu điện thoại yêu cầu quyền cài đặt ứng dụng không rõ nguồn gốc, hãy nhấn "Cài đặt" (Settings) và gạt bật "Cho phép từ nguồn này".'
+                  },
+                  {
+                    num: '4',
+                    title: 'Nhấn Cài Đặt & Trải nghiệm',
+                    desc: 'Hệ điều hành sẽ tiến hành cài đặt trong vài giây. Biểu tượng Finora sẽ xuất hiện ngay trên màn hình chính!'
+                  }
+                ].map((step, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(16, 185, 129, 0.25)',
+                        color: '#34D399',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        flexShrink: 0
+                      }}
+                    >
+                      {step.num}
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: '0.95rem', mb: 0.3 }}>
+                        {step.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#94A3B8', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                        {step.desc}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
               </Box>
-            ))}
-          </Box>
+            </>
+          ) : (
+            <>
+              {/* iOS PWA Note Box */}
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mb: 3,
+                  borderRadius: '14px',
+                  bgcolor: 'rgba(56, 189, 248, 0.1)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  display: 'flex',
+                  gap: 1.5
+                }}
+              >
+                <AppleSvgIcon size={20} color="#38BDF8" className="flex-shrink-0 mt-0.5" />
+                <Typography variant="body2" sx={{ color: '#BAE6FD', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                  <strong>Chuẩn Apple PWA:</strong> Trên iOS (iPhone/iPad), Apple hỗ trợ cài đặt trực tiếp từ trình duyệt Safari vào Màn hình chính mà không cần qua App Store, chạy mượt toàn màn hình và tự động đồng bộ.
+                </Typography>
+              </Paper>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {[
+                  {
+                    num: '1',
+                    title: 'Mở bằng trình duyệt Safari',
+                    desc: 'Hãy chắc chắn rằng bạn đang mở Finora bằng trình duyệt Safari mặc định trên iPhone/iPad.'
+                  },
+                  {
+                    num: '2',
+                    title: 'Nhấn nút Chia sẻ (Share)',
+                    desc: (
+                      <span>
+                        Nhấn vào biểu tượng Chia sẻ <Share size={14} style={{ display: 'inline', verticalAlign: 'middle', color: '#38BDF8' }} /> (hình vuông có mũi tên chỉ lên) ở thanh công cụ dưới cùng Safari.
+                      </span>
+                    )
+                  },
+                  {
+                    num: '3',
+                    title: 'Chọn "Thêm vào MH chính" (Add to Home Screen)',
+                    desc: 'Cuộn xuống menu các tùy chọn và bấm vào "Thêm vào MH chính" (biểu tượng hình vuông có dấu cộng).'
+                  },
+                  {
+                    num: '4',
+                    title: 'Nhấn "Thêm" (Add) ở góc phải trên',
+                    desc: 'Biểu tượng Finora sẽ xuất hiện ngay trên Màn hình chính. Nhấn vào để mở ứng dụng toàn màn hình không có thanh địa chỉ Safari!'
+                  }
+                ].map((step, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(56, 189, 248, 0.2)',
+                        color: '#38BDF8',
+                        border: '1px solid rgba(56, 189, 248, 0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 800,
+                        fontSize: '0.85rem',
+                        flexShrink: 0
+                      }}
+                    >
+                      {step.num}
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: '0.95rem', mb: 0.3 }}>
+                        {step.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#94A3B8', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                        {step.desc}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </>
+          )}
         </DialogContent>
 
         <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(255, 255, 255, 0.08)', gap: 1 }}>
@@ -2152,25 +2393,46 @@ export default function LandingPage() {
           >
             Đóng
           </Button>
-          <Button
-            component="a"
-            href="/downloads/finora-latest.apk"
-            download="Finora-TichSan.apk"
-            variant="contained"
-            startIcon={<DownloadCloud size={18} />}
-            onClick={() => setInstallGuideOpen(false)}
-            sx={{
-              bgcolor: '#10B981',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              textTransform: 'none',
-              px: 3,
-              borderRadius: '12px',
-              '&:hover': { bgcolor: '#059669' }
-            }}
-          >
-            Tải Ngay APK (13.2 MB)
-          </Button>
+          {guideModalPlatform === 'android' ? (
+            <Button
+              component="a"
+              href="/downloads/finora-latest.apk"
+              download="Finora-TichSan.apk"
+              variant="contained"
+              startIcon={<DownloadCloud size={18} />}
+              onClick={() => setInstallGuideOpen(false)}
+              sx={{
+                bgcolor: '#10B981',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                textTransform: 'none',
+                px: 3,
+                borderRadius: '12px',
+                '&:hover': { bgcolor: '#059669' }
+              }}
+            >
+              Tải Ngay APK (24 MB)
+            </Button>
+          ) : (
+            <Button
+              component={Link}
+              to="/auth/register"
+              variant="contained"
+              startIcon={<ExternalLink size={18} />}
+              onClick={() => setInstallGuideOpen(false)}
+              sx={{
+                bgcolor: '#0284C7',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                textTransform: 'none',
+                px: 3,
+                borderRadius: '12px',
+                '&:hover': { bgcolor: '#0369A1' }
+              }}
+            >
+              Mở Ứng Dụng Ngay
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Box>

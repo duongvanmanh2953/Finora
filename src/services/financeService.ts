@@ -43,6 +43,39 @@ export function getActiveStorageKey(): string {
   return DEMO_KEY;
 }
 
+export function getCleanEmptyFinanceData(user: User): FinanceData {
+  return {
+    user,
+    accounts: [
+      {
+        id: 'wallet',
+        name: 'Ví tiền mặt',
+        type: 'cash',
+        openingBalance: 0,
+        color: '#10B981',
+        createdAt: todayKey(),
+        active: true
+      }
+    ],
+    transactions: [],
+    categories: structuredClone(seed.categories),
+    budgets: [],
+    goals: [],
+    debts: [],
+    investments: [],
+    recurring: [],
+    notifications: [
+      {
+        id: 'noti-welcome',
+        title: 'Chào mừng bạn đến với Finora - Tích Sản! Sổ tài chính của bạn đã sẵn sàng.',
+        date: todayKey(),
+        read: false
+      }
+    ],
+    quickTemplates: structuredClone(seed.quickTemplates)
+  };
+}
+
 export interface FinanceService {
   load(): Promise<FinanceData>;
   save(data: FinanceData): Promise<void>;
@@ -333,9 +366,10 @@ export const mockFinanceService: FinanceService = {
 
     if (!existingUser || existingUser.email !== trimmedEmail) {
       const now = new Date();
+      const isDemoAccount = trimmedEmail === 'demo@finora.app' || trimmedEmail === 'demo@tichsan.vn';
       existingUser = {
-        id: `usr_${uid()}`,
-        name: trimmedEmail.split('@')[0] || 'Khách hàng Finora',
+        id: isDemoAccount ? 'usr_demo_empty' : `usr_${uid()}`,
+        name: isDemoAccount ? 'Tài Khoản Demo (Trống)' : (trimmedEmail.split('@')[0] || 'Khách hàng Finora'),
         email: trimmedEmail,
         currency: 'VND',
         financialMonthStart: 1,
@@ -344,7 +378,7 @@ export const mockFinanceService: FinanceService = {
         trial_started_at: now.toISOString(),
         trial_ends_at: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         current_plan_id: 'plan-gold',
-        streakCount: 1,
+        streakCount: 0,
         lastCheckInDate: todayKey(),
         defaultAccountId: 'wallet',
         nlpUsageToday: { date: todayKey(), count: 0 }
@@ -353,6 +387,15 @@ export const mockFinanceService: FinanceService = {
       const lease = createSignedLease(existingUser.id, 'plan-gold', 'gold', 30);
       await offlineStorage.setLease(lease);
       localStorage.setItem(AUTH_USER_KEY, JSON.stringify(existingUser));
+
+      // If it's a demo clean account, initialize empty data
+      if (isDemoAccount) {
+        const cleanData = getCleanEmptyFinanceData(existingUser);
+        const storageKey = `finora:user:${existingUser.id}:v1`;
+        localStorage.setItem(storageKey, JSON.stringify(cleanData));
+        await offlineStorage.setUserData(existingUser.id, cleanData);
+        return cleanData;
+      }
     }
 
     return this.load();

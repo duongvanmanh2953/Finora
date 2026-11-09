@@ -23,11 +23,11 @@ import {
   CheckCircle,
   TrendingUp,
   Bot,
-  HardDrive,
   Cloud,
   Banknote,
   Server,
-  Star
+  Star,
+  LogOut
 } from 'lucide-react';
 import {
   Button,
@@ -38,7 +38,11 @@ import {
   Box,
   IconButton,
   InputBase,
-  Typography
+  Typography,
+  Menu as MuiMenu,
+  MenuItem,
+  Avatar,
+  Divider
 } from '@mui/material';
 import { useFinance } from '../store';
 import {
@@ -115,10 +119,18 @@ export function Layout() {
     pricingOpen,
     pricingFeature,
     openPricing,
-    closePricing
+    closePricing,
+    logout
   } = useFinance();
   const loc = useLocation();
   const navigate = useNavigate();
+  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
+
+  const handleLogout = async () => {
+    setUserMenuAnchor(null);
+    await logout();
+    navigate('/auth/login');
+  };
 
   const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Tích Sản';
   const isPro = data ? isProUser(data) : false;
@@ -681,6 +693,28 @@ export function Layout() {
                     : 'Cơ Bản (Free)'}
                 </Box>
               </Box>
+
+              <Tooltip title="Đăng xuất tài khoản">
+                <IconButton
+                  size="small"
+                  onClick={e => {
+                    e.stopPropagation();
+                    void handleLogout();
+                  }}
+                  sx={{
+                    color: 'text.secondary',
+                    p: 0.7,
+                    borderRadius: '8px',
+                    '&:hover': {
+                      color: '#EF4444',
+                      bgcolor: 'rgba(239, 68, 68, 0.1)'
+                    }
+                  }}
+                  aria-label="Đăng xuất"
+                >
+                  <LogOut size={16} />
+                </IconButton>
+              </Tooltip>
             </Box>
           </div>
         </aside>
@@ -740,44 +774,28 @@ export function Layout() {
               </Box>
             </div>
 
-            <div className="topactions">
+            <div className="topactions" style={{ display: 'flex', alignItems: 'center' }}>
               {/* Offline-First Sync Status Indicator */}
-              <SyncStatusBadge />
+              <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
+                <SyncStatusBadge />
+              </Box>
 
-              {/* Daily Streak Badge - Thu gọn trên mobile */}
+              {/* Daily Streak Badge */}
               <Tooltip title={isCheckedInToday ? `Chuỗi ghi chép: ${streak} ngày liên tiếp!` : 'Chưa ghi chép hôm nay'}>
                 <Chip
-                  icon={<Flame size={13} style={{ color: '#D65B58' }} />}
-                  label={`${streak}`}
-                  size="small"
-                  sx={{
-                    display: { xs: 'inline-flex', sm: 'none' },
-                    fontWeight: 750,
-                    fontSize: 11,
-                    bgcolor: 'rgba(214, 91, 88, 0.08)',
-                    color: '#D65B58',
-                    border: '1px solid rgba(214, 91, 88, 0.25)',
-                    height: 28,
-                    cursor: 'default',
-                    px: 0.25
-                  }}
-                />
-              </Tooltip>
-
-              <Tooltip title={isCheckedInToday ? 'Hôm nay bạn đã ghi chép!' : 'Chưa ghi chép hôm nay'}>
-                <Chip
                   icon={<Flame size={14} style={{ color: '#D65B58' }} />}
-                  label={`${streak} ngày`}
+                  label={`${streak}${streak > 1 ? ' ngày' : ''}`}
                   size="small"
                   sx={{
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    fontWeight: 650,
+                    fontWeight: 700,
                     fontSize: 11.5,
                     bgcolor: 'rgba(214, 91, 88, 0.08)',
                     color: '#D65B58',
                     border: '1px solid rgba(214, 91, 88, 0.25)',
-                    height: 28,
-                    cursor: 'default'
+                    height: 36,
+                    borderRadius: '10px',
+                    cursor: 'default',
+                    px: { xs: 0.5, sm: 1 }
                   }}
                 />
               </Tooltip>
@@ -787,14 +805,16 @@ export function Layout() {
                 variant="outlined"
                 size="small"
                 onClick={handleZeroSpendCheckIn}
-                startIcon={<CheckCircle size={13} />}
+                startIcon={<CheckCircle size={14} />}
                 sx={{
-                  display: { xs: 'none', sm: 'inline-flex' },
-                  fontSize: 11.5,
+                  display: { xs: 'none', md: 'inline-flex' },
+                  fontSize: 12,
                   fontWeight: 650,
-                  height: 28,
+                  height: 36,
+                  borderRadius: '10px',
                   borderColor: 'var(--border-subtle)',
                   color: 'text.secondary',
+                  px: 1.5,
                   '&:hover': {
                     borderColor: 'primary.main',
                     color: 'primary.main'
@@ -804,58 +824,63 @@ export function Layout() {
                 Hôm nay 0đ
               </Button>
 
-              {/* VIP Gold / Trial Badge */}
+              {/* VIP Gold / Trial Badge (Desktop/Tablet) */}
               {trialActive ? (
                 <Tooltip title={`Đang trải nghiệm VIP Gold 30 ngày (Còn ${daysRemaining} ngày). Bấm để xem bảng giá & quyền lợi.`}>
                   <Chip
-                    icon={<Crown size={13} color={GOLD_COLOR_TOKENS.goldMetallic} />}
-                    label={`VIP Gold Trial: ${daysRemaining} ngày`}
+                    icon={<Crown size={14} color={GOLD_COLOR_TOKENS.goldMetallic} />}
+                    label={`VIP Gold: ${daysRemaining}d`}
                     size="small"
                     onClick={() => navigate('/pricing')}
                     clickable
                     sx={{
+                      display: { xs: 'none', sm: 'inline-flex' },
                       bgcolor: 'rgba(197, 160, 89, 0.15)',
                       color: GOLD_COLOR_TOKENS.goldMetallic,
                       border: `1px solid ${GOLD_COLOR_TOKENS.goldBorder}`,
                       fontWeight: 800,
                       fontSize: 11.5,
-                      height: 28,
-                      cursor: 'pointer'
+                      height: 36,
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      px: 0.8
                     }}
                   />
                 </Tooltip>
               ) : isGold ? (
                 <Tooltip title="Thành viên VIP Gold cao cấp. Bấm để xem gói cước.">
                   <Chip
-                    icon={<Crown size={13} color={GOLD_COLOR_TOKENS.goldMetallic} />}
+                    icon={<Crown size={14} color={GOLD_COLOR_TOKENS.goldMetallic} />}
                     label="VIP GOLD"
                     size="small"
                     onClick={() => navigate('/pricing')}
                     clickable
                     sx={{
+                      display: { xs: 'none', sm: 'inline-flex' },
                       bgcolor: 'rgba(197, 160, 89, 0.15)',
                       color: GOLD_COLOR_TOKENS.goldMetallic,
                       border: `1px solid ${GOLD_COLOR_TOKENS.goldBorder}`,
                       fontWeight: 800,
                       fontSize: 11.5,
-                      height: 28,
+                      height: 36,
+                      borderRadius: '10px',
                       cursor: 'pointer'
                     }}
                   />
                 </Tooltip>
               ) : null}
 
-              {/* Quick Pro Mode Switch - Compact Crown Only Icon */}
+              {/* Quick Pro Mode Switch */}
               <Tooltip title={isPro ? 'Finora PRO: Đang BẬT (Bấm để chuyển về Free)' : 'Bản Free (Bấm để bật thử Finora Pro)'}>
                 <IconButton
                   size="small"
                   onClick={handleTogglePro}
                   sx={{
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    borderRadius: '8px',
+                    width: 36,
+                    height: 36,
+                    minWidth: 36,
+                    minHeight: 36,
+                    borderRadius: '10px',
                     position: 'relative',
                     bgcolor: isPro ? 'rgba(223, 186, 115, 0.15)' : 'var(--bg-subtle)',
                     border: '1px solid',
@@ -879,10 +904,10 @@ export function Layout() {
                     <Box
                       sx={{
                         position: 'absolute',
-                        top: 4,
-                        right: 4,
-                        width: 5,
-                        height: 5,
+                        top: 5,
+                        right: 5,
+                        width: 6,
+                        height: 6,
                         borderRadius: '50%',
                         bgcolor: '#DFBA73'
                       }}
@@ -901,68 +926,39 @@ export function Layout() {
                     color: 'primary.main',
                     bgcolor: 'var(--brand-primary-tint)',
                     border: '1px solid var(--border-subtle)',
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    p: 0.75
+                    width: 36,
+                    height: 36,
+                    minWidth: 36,
+                    minHeight: 36,
+                    borderRadius: '10px'
                   }}
                   aria-label="Trợ lý AI"
                 >
-                  <Bot size={17} />
+                  <Bot size={18} />
                 </IconButton>
               </Tooltip>
 
-              {/* Admin SaaS Console (Only visible to verified Administrators) */}
+              {/* Admin Console (For Admins) */}
               {data?.user?.role === 'admin' && (
-                <>
-                  <Tooltip title="Mở Bảng điều khiển Quản trị Hệ thống (Tích Sản Admin)">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => navigate('/admin')}
-                      startIcon={<Server size={14} color="#10B981" />}
-                      sx={{
-                        display: { xs: 'none', sm: 'inline-flex' },
-                        fontSize: 12,
-                        fontWeight: 700,
-                        height: 28,
-                        borderRadius: '4px',
-                        borderColor: 'rgba(16, 185, 129, 0.4)',
-                        color: '#10B981',
-                        bgcolor: 'rgba(16, 185, 129, 0.08)',
-                        '&:hover': {
-                          bgcolor: 'rgba(16, 185, 129, 0.16)',
-                          borderColor: '#10B981'
-                        }
-                      }}
-                    >
-                      Trang Admin
-                    </Button>
-                  </Tooltip>
-
-                  <Tooltip title="Mở Trang Quản trị">
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate('/admin')}
-                      sx={{
-                        display: { xs: 'inline-flex', sm: 'none' },
-                        color: '#10B981',
-                        bgcolor: 'rgba(16, 185, 129, 0.1)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        borderRadius: '4px',
-                        width: 34,
-                        height: 34,
-                        minWidth: 34,
-                        minHeight: 34,
-                        p: 0.75
-                      }}
-                      aria-label="Quản trị"
-                    >
-                      <Server size={16} />
-                    </IconButton>
-                  </Tooltip>
-                </>
+                <Tooltip title="Mở Bảng điều khiển Quản trị">
+                  <IconButton
+                    size="small"
+                    onClick={() => navigate('/admin')}
+                    sx={{
+                      color: '#10B981',
+                      bgcolor: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      borderRadius: '10px',
+                      width: 36,
+                      height: 36,
+                      minWidth: 36,
+                      minHeight: 36
+                    }}
+                    aria-label="Quản trị"
+                  >
+                    <Server size={17} />
+                  </IconButton>
+                </Tooltip>
               )}
 
               {/* Fast search pill */}
@@ -973,70 +969,49 @@ export function Layout() {
                   navigate('/transactions?search=' + encodeURIComponent(query));
                 }}
                 sx={{
-                  display: { xs: 'none', md: 'flex' },
+                  display: { xs: 'none', lg: 'flex' },
                   alignItems: 'center',
                   gap: 1,
                   px: 1.5,
-                  py: 0.4,
-                  borderRadius: 1.5,
+                  height: 36,
+                  borderRadius: '10px',
                   bgcolor: 'action.hover',
                   border: '1px solid',
                   borderColor: 'divider'
                 }}
               >
-                <Search size={13} style={{ color: 'var(--text-muted)' }} />
+                <Search size={14} style={{ color: 'var(--text-muted)' }} />
                 <InputBase
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Tìm giao dịch..."
                   sx={{
                     fontSize: 12,
-                    width: 130,
+                    width: 120,
                     color: 'inherit',
                     fontFamily: 'inherit'
                   }}
                 />
               </Box>
 
-              {/* Offline-First & Cloud Sync Indicator */}
-              <Tooltip title="Lưu trữ an toàn trên thiết bị (Offline). Nhấn để đồng bộ Cloud.">
-                <Chip
-                  icon={<HardDrive size={13} style={{ color: 'var(--text-secondary)' }} />}
-                  label="Offline Ready"
-                  size="small"
-                  onClick={() => setCloudSyncOpen(true)}
-                  sx={{
-                    display: { xs: 'none', md: 'inline-flex' },
-                    height: 28,
-                    fontSize: 11,
-                    fontWeight: 750,
-                    bgcolor: 'var(--bg-subtle)',
-                    border: '1px solid var(--border-subtle)',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      bgcolor: 'action.hover'
-                    }
-                  }}
-                />
-              </Tooltip>
-
+              {/* Cloud Sync Icon */}
               <Tooltip title="Đồng bộ Cloud theo yêu cầu">
                 <IconButton
                   size="small"
                   onClick={() => setCloudSyncOpen(true)}
                   sx={{
-                    display: { xs: 'none', sm: 'inline-flex' },
+                    display: { xs: 'none', md: 'inline-flex' },
                     color: 'text.primary',
                     border: '1px solid var(--border-subtle)',
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    p: 0.75
+                    width: 36,
+                    height: 36,
+                    minWidth: 36,
+                    minHeight: 36,
+                    borderRadius: '10px'
                   }}
                   aria-label="Đồng bộ Cloud"
                 >
-                  <Cloud size={16} />
+                  <Cloud size={17} />
                 </IconButton>
               </Tooltip>
 
@@ -1047,11 +1022,11 @@ export function Layout() {
                 sx={{
                   color: 'text.primary',
                   border: '1px solid var(--border-subtle)',
-                  width: { xs: 40, sm: 34 },
-                  height: { xs: 40, sm: 34 },
-                  minWidth: { xs: 40, sm: 34 },
-                  minHeight: { xs: 40, sm: 34 },
-                  p: 0.75
+                  width: 36,
+                  height: 36,
+                  minWidth: 36,
+                  minHeight: 36,
+                  borderRadius: '10px'
                 }}
                 aria-label="Đổi giao diện"
               >
@@ -1066,18 +1041,18 @@ export function Layout() {
                   sx={{
                     color: 'text.primary',
                     border: '1px solid var(--border-subtle)',
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    p: 0.75
+                    width: 36,
+                    height: 36,
+                    minWidth: 36,
+                    minHeight: 36,
+                    borderRadius: '10px'
                   }}
                   aria-label="Thông báo"
                 >
-                  <Bell size={16} />
+                  <Bell size={17} />
                 </IconButton>
                 {notis && (
-                  <div className="card pad" style={{ position: 'absolute', right: 0, top: 43, width: 280, zIndex: 40, boxShadow: '0 12px 36px rgba(0,0,0,0.15)' }}>
+                  <div className="card pad" style={{ position: 'absolute', right: 0, top: 44, width: 280, zIndex: 40, boxShadow: '0 12px 36px rgba(0,0,0,0.15)' }}>
                     <div className="section-head">
                       <h3>Thông báo</h3>
                     </div>
@@ -1091,7 +1066,7 @@ export function Layout() {
                       fullWidth
                       size="small"
                       variant="outlined"
-                      sx={{ mt: 1 }}
+                      sx={{ mt: 1, borderRadius: '8px' }}
                       onClick={() => {
                         update(d => ({
                           ...d,
@@ -1106,18 +1081,18 @@ export function Layout() {
                 )}
               </Box>
 
-              {/* Add transaction quick button (Desktop: Full Pill, Mobile: Vivid Green Circle/Square with White Plus) */}
+              {/* Add transaction quick button */}
               <Tooltip title="Thêm giao dịch mới">
                 <IconButton
                   size="small"
                   onClick={() => navigate('/transactions?add=1')}
                   sx={{
                     display: { xs: 'inline-flex', sm: 'none' },
-                    width: 34,
-                    height: 34,
-                    minWidth: 34,
-                    minHeight: 34,
-                    borderRadius: '8px',
+                    width: 36,
+                    height: 36,
+                    minWidth: 36,
+                    minHeight: 36,
+                    borderRadius: '10px',
                     bgcolor: '#10B981',
                     color: '#FFFFFF',
                     boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)',
@@ -1137,17 +1112,154 @@ export function Layout() {
                 variant="contained"
                 size="small"
                 color="primary"
-                startIcon={<Plus size={14} />}
+                startIcon={<Plus size={15} />}
                 onClick={() => navigate('/transactions?add=1')}
                 sx={{
                   display: { xs: 'none', sm: 'inline-flex' },
-                  height: 32,
-                  px: 1.5,
-                  fontWeight: 700
+                  height: 36,
+                  px: 1.8,
+                  borderRadius: '10px',
+                  fontWeight: 750,
+                  fontSize: '0.82rem',
+                  textTransform: 'none'
                 }}
               >
                 Giao dịch
               </Button>
+
+              {/* User Profile & Logout Menu */}
+              <Box sx={{ position: 'relative' }}>
+                <Tooltip title={`Tài khoản: ${data?.user.name || 'Người dùng'} (Menu & Đăng xuất)`}>
+                  <IconButton
+                    size="small"
+                    onClick={e => setUserMenuAnchor(e.currentTarget)}
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      minWidth: 36,
+                      minHeight: 36,
+                      borderRadius: '10px',
+                      p: 0,
+                      border: '1.5px solid',
+                      borderColor: trialActive || isGold ? GOLD_COLOR_TOKENS.goldBorder : 'var(--border-subtle)',
+                      bgcolor: trialActive || isGold ? 'rgba(197, 160, 89, 0.15)' : 'var(--bg-subtle)',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        borderColor: trialActive || isGold ? GOLD_COLOR_TOKENS.goldLight : 'primary.main'
+                      }
+                    }}
+                    aria-label="Menu tài khoản cá nhân"
+                  >
+                    <Avatar
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        bgcolor: trialActive || isGold ? GOLD_COLOR_TOKENS.goldMetallic : '#10B981',
+                        color: trialActive || isGold ? '#09261E' : '#FFFFFF'
+                      }}
+                    >
+                      {data?.user.name ? data.user.name.charAt(0).toUpperCase() : 'U'}
+                    </Avatar>
+                  </IconButton>
+                </Tooltip>
+
+                <MuiMenu
+                  anchorEl={userMenuAnchor}
+                  open={Boolean(userMenuAnchor)}
+                  onClose={() => setUserMenuAnchor(null)}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        mt: 1.2,
+                        minWidth: 240,
+                        borderRadius: '14px',
+                        boxShadow: '0 12px 36px rgba(0,0,0,0.25)',
+                        p: 1,
+                        border: '1px solid var(--border-subtle)',
+                        bgcolor: 'background.paper'
+                      }
+                    }
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <Box sx={{ px: 1.5, py: 1.2 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
+                      {data?.user.name}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.8, fontSize: '0.75rem' }}>
+                      {data?.user.email}
+                    </Typography>
+                    <Chip
+                      size="small"
+                      icon={<Crown size={12} color={trialActive || isGold ? '#B45309' : '#059669'} />}
+                      label={
+                        trialActive
+                          ? `VIP Gold Trial (${daysRemaining} ngày)`
+                          : isGold
+                          ? 'VIP Gold Hoàng Gia'
+                          : isPro
+                          ? 'Wealth Pro'
+                          : 'Gói Free Cơ Bản'
+                      }
+                      sx={{
+                        fontWeight: 750,
+                        fontSize: '0.72rem',
+                        height: 22,
+                        bgcolor: trialActive || isGold ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.1)',
+                        color: trialActive || isGold ? '#D97706' : '#059669',
+                        border: '1px solid',
+                        borderColor: trialActive || isGold ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)'
+                      }}
+                    />
+                  </Box>
+
+                  <Divider sx={{ my: 0.8 }} />
+
+                  <MenuItem
+                    onClick={() => {
+                      setUserMenuAnchor(null);
+                      navigate('/pricing');
+                    }}
+                    sx={{ borderRadius: '8px', fontSize: 13, py: 1, gap: 1.2, fontWeight: 650 }}
+                  >
+                    <Crown size={16} color={GOLD_COLOR_TOKENS.goldMetallic} />
+                    Bảng giá & Gói cước
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      setUserMenuAnchor(null);
+                      navigate('/settings');
+                    }}
+                    sx={{ borderRadius: '8px', fontSize: 13, py: 1, gap: 1.2, fontWeight: 650 }}
+                  >
+                    <Settings size={16} />
+                    Cài đặt hệ thống
+                  </MenuItem>
+
+                  <Divider sx={{ my: 0.8 }} />
+
+                  <MenuItem
+                    onClick={() => void handleLogout()}
+                    sx={{
+                      borderRadius: '8px',
+                      fontSize: 13,
+                      py: 1,
+                      gap: 1.2,
+                      fontWeight: 750,
+                      color: '#EF4444',
+                      '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.08)' }
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Đăng xuất tài khoản
+                  </MenuItem>
+                </MuiMenu>
+              </Box>
             </div>
           </header>
 

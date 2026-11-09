@@ -37,10 +37,19 @@ import {
 } from './features/admin/Admin';
 import Auth from './features/auth/Auth';
 import { useFinance } from './store';
+import { mockFinanceService } from './services/financeService';
 import { registerFinanceTools } from './lib/webmcp';
 import { getFinoraTheme } from './theme/muiTheme';
 import { fetchVietQRBanks } from './lib/bankService';
 import './styles.css';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const currentUser = mockFinanceService.getCurrentUser();
+  if (!currentUser) {
+    return <Navigate to="/auth/login" replace />;
+  }
+  return <>{children}</>;
+}
 
 export function Loading() {
   return (
@@ -223,8 +232,8 @@ function App() {
               <Route path="settings" element={<AdminSettingsView />} />
             </Route>
 
-            {/* CONSUMER PERSONAL FINANCE APPLICATION SHELL */}
-            <Route element={<Layout />}>
+            {/* CONSUMER PERSONAL FINANCE APPLICATION SHELL (PROTECTED) */}
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
               <Route index element={<Dashboard />} />
               <Route path="transactions" element={<Transactions />} />
               <Route path="accounts" element={<Accounts />} />

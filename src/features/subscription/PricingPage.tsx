@@ -206,12 +206,17 @@ export default function PricingPage() {
             startIcon={<Sparkles size={16} />}
             onClick={() => handleSelectPlan('plan-trial', 'Dùng thử VIP Gold (30 Ngày)')}
             sx={{
-              borderRadius: '6px',
+              width: { xs: '100%', sm: 'auto' },
+              borderRadius: '8px',
+              py: 1,
+              px: 2.2,
               textTransform: 'none',
-              fontWeight: 750,
+              fontWeight: 800,
+              fontSize: '0.85rem',
               bgcolor: GOLD_COLOR_TOKENS.main,
               color: '#FFFFFF',
               whiteSpace: 'nowrap',
+              boxShadow: '0 4px 14px rgba(197, 160, 89, 0.35)',
               '&:hover': { bgcolor: GOLD_COLOR_TOKENS.dark }
             }}
           >
@@ -221,30 +226,37 @@ export default function PricingPage() {
       </Paper>
 
       {/* 2. Billing Cycle Switcher */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
         <Box
           sx={{
-            display: 'inline-flex',
-            p: '3px',
-            borderRadius: '8px',
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            width: { xs: '100%', sm: 'auto' },
+            maxWidth: { xs: '100%', sm: 480 },
+            p: 0.5,
+            borderRadius: '12px',
             bgcolor: isDark ? '#161B22' : '#F1F5F9',
             border: '1px solid',
-            borderColor: 'divider'
+            borderColor: 'divider',
+            gap: 0.5
           }}
         >
           <Button
             size="small"
+            fullWidth
             onClick={() => setBillingCycle('annual')}
             sx={{
-              py: 0.5,
-              px: 2,
-              fontSize: '0.80rem',
-              fontWeight: billingCycle === 'annual' ? 750 : 500,
+              py: 0.8,
+              px: { xs: 2, sm: 2.5 },
+              fontSize: '0.82rem',
+              fontWeight: billingCycle === 'annual' ? 800 : 500,
               color: billingCycle === 'annual' ? (isDark ? '#F8FAFC' : '#0F172A') : 'text.secondary',
               bgcolor: billingCycle === 'annual' ? (isDark ? '#2D3748' : '#FFFFFF') : 'transparent',
-              borderRadius: '6px',
+              borderRadius: '8px',
               boxShadow: billingCycle === 'annual' ? 1 : 0,
               textTransform: 'none',
+              whiteSpace: 'nowrap',
+              justifyContent: 'center',
               '&:hover': { bgcolor: billingCycle === 'annual' ? (isDark ? '#374151' : '#FFFFFF') : 'action.hover' }
             }}
           >
@@ -252,17 +264,20 @@ export default function PricingPage() {
           </Button>
           <Button
             size="small"
+            fullWidth
             onClick={() => setBillingCycle('monthly')}
             sx={{
-              py: 0.5,
-              px: 2,
-              fontSize: '0.80rem',
-              fontWeight: billingCycle === 'monthly' ? 750 : 500,
+              py: 0.8,
+              px: { xs: 2, sm: 2.5 },
+              fontSize: '0.82rem',
+              fontWeight: billingCycle === 'monthly' ? 800 : 500,
               color: billingCycle === 'monthly' ? (isDark ? '#F8FAFC' : '#0F172A') : 'text.secondary',
               bgcolor: billingCycle === 'monthly' ? (isDark ? '#2D3748' : '#FFFFFF') : 'transparent',
-              borderRadius: '6px',
+              borderRadius: '8px',
               boxShadow: billingCycle === 'monthly' ? 1 : 0,
               textTransform: 'none',
+              whiteSpace: 'nowrap',
+              justifyContent: 'center',
               '&:hover': { bgcolor: billingCycle === 'monthly' ? (isDark ? '#374151' : '#FFFFFF') : 'action.hover' }
             }}
           >
@@ -445,18 +460,20 @@ export default function PricingPage() {
 
               {/* Action Button */}
               <Button
-                variant={isCurrent ? 'outlined' : isGoldCard ? 'contained' : 'contained'}
+                variant={isCurrent ? 'outlined' : 'contained'}
                 fullWidth
-                size="small"
+                size="medium"
                 disabled={isCurrent}
                 onClick={() => handleSelectPlan(plan.id, plan.name)}
                 sx={{
-                  py: 1,
-                  borderRadius: '13px',
-                  fontWeight: 750,
-                  fontSize: '0.82rem',
+                  py: 1.3,
+                  px: 2,
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.86rem',
+                  letterSpacing: 0.2,
                   textTransform: 'none',
-                  minHeight: 42,
+                  minHeight: 46,
                   bgcolor: isCurrent
                     ? 'transparent'
                     : isGoldCard
@@ -466,8 +483,10 @@ export default function PricingPage() {
                     ? 'text.secondary'
                     : '#FFFFFF',
                   borderColor: isCurrent ? 'divider' : 'transparent',
+                  boxShadow: isCurrent ? 'none' : isGoldCard ? '0 4px 16px rgba(197, 160, 89, 0.4)' : '0 4px 14px rgba(53, 94, 82, 0.3)',
                   '&:hover': {
-                    bgcolor: isCurrent ? 'transparent' : isGoldCard ? GOLD_COLOR_TOKENS.dark : 'var(--brand-primary-hover, #2A4E44)'
+                    bgcolor: isCurrent ? 'transparent' : isGoldCard ? GOLD_COLOR_TOKENS.dark : 'var(--brand-primary-hover, #2A4E44)',
+                    boxShadow: isCurrent ? 'none' : isGoldCard ? '0 6px 20px rgba(197, 160, 89, 0.5)' : '0 6px 18px rgba(53, 94, 82, 0.4)'
                   }
                 }}
               >

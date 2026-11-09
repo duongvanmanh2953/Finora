@@ -290,21 +290,22 @@ export default function LandingPage() {
           top: 0,
           zIndex: 100,
           backdropFilter: 'blur(20px)',
-          bgcolor: 'rgba(3, 7, 6, 0.9)',
+          bgcolor: 'rgba(3, 7, 6, 0.92)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-          px: { xs: 2, sm: 3, md: 6 },
-          py: 1.5
+          px: { xs: 1.5, sm: 3, md: 5 },
+          py: { xs: 1, sm: 1.5 }
         }}
       >
-        <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+        <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+          {/* Logo & Brand Name */}
+          <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
             <Box
               component="img"
               src="/logo.png?v=20261105"
               alt="Finora"
               sx={{
-                width: { xs: 32, sm: 36 },
-                height: { xs: 32, sm: 36 },
+                width: { xs: 30, sm: 36 },
+                height: { xs: 30, sm: 36 },
                 borderRadius: '8px',
                 boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
                 border: '1px solid rgba(52, 211, 153, 0.4)',
@@ -312,7 +313,7 @@ export default function LandingPage() {
               }}
             />
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 900, letterSpacing: -0.5, color: '#FFFFFF', lineHeight: 1.1, fontSize: { xs: 16, sm: 18 } }}>
+              <Typography variant="h6" sx={{ fontWeight: 900, letterSpacing: -0.4, color: '#FFFFFF', lineHeight: 1.1, fontSize: { xs: 15, sm: 18 } }}>
                 Finora <span style={{ color: '#34D399', fontWeight: 700, fontSize: '0.85em' }}>· Tích Sản</span>
               </Typography>
               <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '10px', fontWeight: 600, display: { xs: 'none', sm: 'block' }, letterSpacing: '0.02em' }}>
@@ -322,7 +323,7 @@ export default function LandingPage() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3, fontSize: 13.5, fontWeight: 650 }}>
+          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 2.5, fontSize: 13, fontWeight: 650 }}>
             <a href="#quick-solutions" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
               Giải pháp nhanh
             </a>
@@ -332,10 +333,10 @@ export default function LandingPage() {
             <a href="#gauges" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
               Đồng hồ Bán nguyệt
             </a>
-            <a href="#app-download" style={{ color: '#34D399', textDecoration: 'none', fontWeight: 750, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <AndroidSvgIcon size={16} color="#34D399" />
-              <AppleSvgIcon size={16} color="#E2E8F0" />
-              <span>Tải App Android & iOS</span>
+            <a href="#app-download" style={{ color: '#34D399', textDecoration: 'none', fontWeight: 750, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <AndroidSvgIcon size={15} color="#34D399" />
+              <AppleSvgIcon size={15} color="#E2E8F0" />
+              <span>Tải App</span>
             </a>
             <a href="#pricing" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
               Bảng giá & Trial
@@ -343,24 +344,24 @@ export default function LandingPage() {
           </Box>
 
           {/* Actions: Desktop & Mobile */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
-            {/* Download App Pill for Desktop & Tablet */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.8, sm: 1.2 }, flexShrink: 0 }}>
+            {/* Download App Pill (Only on Desktop/Large Tablet) */}
             <Button
               component="a"
               href="#app-download"
               variant="outlined"
               size="small"
-              startIcon={<AndroidSvgIcon size={15} color="#34D399" />}
-              endIcon={<AppleSvgIcon size={14} color="#E2E8F0" />}
+              startIcon={<AndroidSvgIcon size={14} color="#34D399" />}
               sx={{
                 borderColor: 'rgba(52, 211, 153, 0.45)',
                 color: '#34D399',
-                fontSize: 12,
+                fontSize: 11.5,
                 fontWeight: 750,
                 borderRadius: '8px',
-                px: 1.5,
+                px: 1.2,
+                height: 34,
                 bgcolor: 'rgba(16, 185, 129, 0.08)',
-                display: { xs: 'none', sm: 'inline-flex' },
+                display: { xs: 'none', md: 'inline-flex' },
                 '&:hover': { borderColor: '#34D399', bgcolor: 'rgba(52, 211, 153, 0.16)' }
               }}
             >
@@ -371,41 +372,51 @@ export default function LandingPage() {
             <Button
               variant="text"
               onClick={() => navigate('/auth/login')}
-              sx={{ color: '#FFFFFF', fontSize: { xs: 12.5, sm: 13 }, fontWeight: 700, px: { xs: 1, sm: 1.5 } }}
+              sx={{
+                color: '#FFFFFF',
+                fontSize: { xs: 12, sm: 13 },
+                fontWeight: 700,
+                px: { xs: 1, sm: 1.5 },
+                height: 34,
+                borderRadius: '8px',
+                whiteSpace: 'nowrap',
+                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' }
+              }}
             >
               Đăng nhập
             </Button>
 
-            {/* Trial Gold Button */}
+            {/* Trial Gold Button (Desktop/Tablet only, hidden on small mobile to avoid crowding) */}
             <Button
               variant="contained"
               onClick={() => navigate('/auth/register')}
               startIcon={<Crown size={14} color="#09261E" />}
               sx={{
+                display: { xs: 'none', sm: 'inline-flex' },
                 bgcolor: GOLD_COLOR_TOKENS.goldMetallic,
                 color: '#09261E',
-                fontSize: { xs: 12, sm: 13 },
+                fontSize: { xs: 12, sm: 12.5 },
                 fontWeight: 850,
-                px: { xs: 1.5, sm: 2 },
-                py: { xs: 0.75, sm: 0.9 },
+                px: { xs: 1.5, sm: 1.8 },
+                height: 34,
                 borderRadius: '8px',
-                boxShadow: '0 4px 16px rgba(197, 160, 89, 0.35)',
+                boxShadow: '0 4px 14px rgba(197, 160, 89, 0.35)',
                 whiteSpace: 'nowrap',
                 '&:hover': { bgcolor: GOLD_COLOR_TOKENS.goldLight }
               }}
             >
-              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Thử VIP Gold 30 Ngày</Box>
-              <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Thử Gold</Box>
+              Thử VIP Gold 30 Ngày
             </Button>
 
-            {/* Hamburger Button for Mobile */}
+            {/* Hamburger Button for Mobile & Tablet */}
             <IconButton
               onClick={() => setMobileDrawerOpen(true)}
               sx={{
-                display: { xs: 'inline-flex', md: 'none' },
+                display: { xs: 'inline-flex', lg: 'none' },
                 color: '#FFFFFF',
                 bgcolor: 'rgba(255, 255, 255, 0.06)',
-                p: 0.8,
+                width: 36,
+                height: 36,
                 borderRadius: '8px',
                 '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.12)' }
               }}
@@ -425,11 +436,11 @@ export default function LandingPage() {
         slotProps={{
           paper: {
             sx: {
-              width: '82%',
+              width: '85%',
               maxWidth: 320,
               bgcolor: '#091310',
               borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
-              p: 3,
+              p: 2.5,
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between'
@@ -439,16 +450,60 @@ export default function LandingPage() {
       >
         <Box>
           {/* Drawer Header */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 2.5, mb: 2, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 2, mb: 2, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
               <img src="/logo.png?v=20261105" alt="Finora" style={{ width: 30, height: 30, borderRadius: 6 }} />
-              <Typography variant="subtitle1" sx={{ fontWeight: 850, color: '#FFFFFF' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 850, color: '#FFFFFF', fontSize: 16 }}>
                 Finora · Tích Sản
               </Typography>
             </Box>
             <IconButton onClick={() => setMobileDrawerOpen(false)} sx={{ color: '#94A3B8', p: 0.5 }}>
               <X size={20} />
             </IconButton>
+          </Box>
+
+          {/* Quick Action Buttons in Drawer */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2, mb: 2.5 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={() => {
+                setMobileDrawerOpen(false);
+                navigate('/auth/register');
+              }}
+              startIcon={<Crown size={15} color="#09261E" />}
+              sx={{
+                bgcolor: GOLD_COLOR_TOKENS.goldMetallic,
+                color: '#09261E',
+                fontWeight: 850,
+                py: 1,
+                fontSize: 13,
+                borderRadius: '10px',
+                '&:hover': { bgcolor: GOLD_COLOR_TOKENS.goldLight }
+              }}
+            >
+              Đăng ký VIP Gold 30 Ngày (0đ)
+            </Button>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => {
+                setMobileDrawerOpen(false);
+                navigate('/auth/login');
+              }}
+              sx={{
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                fontWeight: 700,
+                py: 0.9,
+                fontSize: 13,
+                borderRadius: '10px',
+                '&:hover': { borderColor: '#10B981', bgcolor: 'rgba(16, 185, 129, 0.08)' }
+              }}
+            >
+              Đăng nhập tài khoản
+            </Button>
           </Box>
 
           {/* Drawer Links */}

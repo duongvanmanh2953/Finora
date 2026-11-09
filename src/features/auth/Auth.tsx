@@ -7,7 +7,8 @@ import {
   Sparkles,
   Lock,
   Database,
-  CheckCircle2
+  CheckCircle2,
+  Zap
 } from 'lucide-react';
 import {
   Box,
@@ -95,6 +96,25 @@ export default function Auth() {
       navigate('/');
     } catch {
       setError('Đã xảy ra lỗi trong quá trình xác thực. Vui lòng thử lại.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleQuickDemoLogin = async () => {
+    setEmail('demo@finora.app');
+    setPassword('123456');
+    setSubmitting(true);
+    setError('');
+    try {
+      await login('demo@finora.app');
+      notify({
+        message: 'Đăng nhập vào tài khoản Demo trống thành công! Bạn có thể bắt đầu tạo tài khoản và ghi chép.',
+        severity: 'success'
+      });
+      navigate('/');
+    } catch {
+      setError('Đã xảy ra lỗi khi đăng nhập tài khoản Demo. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
@@ -308,7 +328,7 @@ export default function Auth() {
       >
         <Box sx={{ width: '100%', maxWidth: 420 }}>
           {/* Header Title */}
-          <Box sx={{ mb: 3.5 }}>
+          <Box sx={{ mb: 3 }}>
             <Typography
               variant="caption"
               sx={{
@@ -335,6 +355,62 @@ export default function Auth() {
                     : 'Đăng nhập để đồng bộ dòng tiền và quản lý tài sản thông minh.'}
             </Typography>
           </Box>
+
+          {/* Quick Demo Clean Account 1-Click Login */}
+          {mode === 'login' && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2,
+                mb: 3,
+                borderRadius: '14px',
+                bgcolor: 'rgba(16, 185, 129, 0.08)',
+                border: '1px solid rgba(16, 185, 129, 0.28)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Sparkles size={16} color="#10B981" />
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#10B981', fontSize: '0.85rem' }}>
+                    Tài khoản Mẫu Trống (Demo)
+                  </Typography>
+                </Box>
+                <Chip size="small" label="0đ Số dư · Tự do nhập" sx={{ bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#10B981', fontWeight: 750, fontSize: '0.72rem' }} />
+              </Box>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.78rem', lineHeight: 1.4 }}>
+                Tài khoản sẵn sàng để bắt đầu nhập liệu, không chứa dữ liệu ảo:
+                <strong style={{ display: 'block', marginTop: 2, color: 'text.primary' }}>
+                  Email: <code>demo@finora.app</code> | Mật khẩu: <code>123456</code>
+                </strong>
+              </Typography>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleQuickDemoLogin}
+                disabled={submitting}
+                startIcon={<Zap size={15} />}
+                sx={{
+                  mt: 0.5,
+                  py: 0.9,
+                  borderRadius: '10px',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  textTransform: 'none',
+                  bgcolor: '#10B981',
+                  color: '#FFFFFF',
+                  boxShadow: '0 2px 10px rgba(16, 185, 129, 0.3)',
+                  '&:hover': {
+                    bgcolor: '#059669'
+                  }
+                }}
+              >
+                1-Click: Đăng Nhập Tài Khoản Demo Trống
+              </Button>
+            </Paper>
+          )}
 
           {/* Form */}
           <Box component="form" onSubmit={submit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.2 }}>

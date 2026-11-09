@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import crypto from 'crypto';
 import { db } from './db/database';
 import { handleMarketApiRequest } from './marketApiHandler';
+import { createSignedLease } from '../lib/offline/signedLease';
 
 function sendJson(res: ServerResponse, statusCode: number, data: any) {
   res.statusCode = statusCode;
@@ -393,7 +394,63 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     }
 
     // =========================================================================
-    // 5. ADMIN OPERATIONS & SYSTEM HEALTH (Requires Admin Role)
+    // 5. OFFLINE-FIRST SYNCHRONIZATION & HEALTH CHECK
+    // =========================================================================
+
+    // GET /api/health - Lightweight health ping for network status check and server time sync
+    if (pathname === '/api/health' && req.method === 'GET') {
+      sendJson(res, 200, {
+        status: 'ok',
+        serverTime: new Date().toISOString(),
+        uptime: process.uptime?.() || 0
+      });
+      return true;
+    }
+
+    // GET /api/sync/lease - Fetch signed offline entitlement lease
+    if (pathname === '/api/sync/lease' && req.method === 'GET') {
+      const token = extractToken(req);
+      const user = token ? db.getUserByToken(token) : null;
+      if (!user) {
+        sendJson(res, 401, { success: false, error: 'Unauthorized' });
+        return true;
+      }
+      const lease = createSignedLease(user.id, user.current_plan_id || 'plan-gold', user.plan || 'gold', 30);
+      sendJson(res, 200, { success: true, lease });
+      return true;
+    }
+
+    // POST /api/sync/batch - Batch synchronize offline operations with idempotency and conflict check
+    if (pathname === '/api/sync/batch' && req.method === 'POST') {
+      const token = extractToken(req);
+      const user = token ? db.getUserByToken(token) : null;
+      const targetUserId = user ? user.id : 'usr_demo_vip';
+
+      const body = await parseBody(req);
+      const operations = Array.isArray(body.operations) ? body.operations : [];
+      const results = db.processSyncBatch(targetUserId, operations, user);
+
+      sendJson(res, 200, {
+        success: true,
+        results,
+        server_timestamp: new Date().toISOString()
+      });
+      return true;
+    }
+
+    // POST /api/auth/consent - Record user terms and offline sync consent evidence
+    if (pathname === '/api/auth/consent' && req.method === 'POST') {
+      const token = extractToken(req);
+      const user = token ? db.getUserByToken(token) : null;
+      const body = await parseBody(req);
+      const targetUserId = user ? user.id : (body.user_id || 'demo');
+      db.recordConsent(targetUserId, body);
+      sendJson(res, 200, { success: true, message: 'Đã ghi nhận sự đồng thuận điều khoản của người dùng' });
+      return true;
+    }
+
+    // =========================================================================
+    // 6. ADMIN OPERATIONS & SYSTEM HEALTH (Requires Admin Role)
     // =========================================================================
 
     // Admin authorization guard

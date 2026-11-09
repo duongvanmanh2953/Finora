@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -6,6 +6,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
+import { SplashScreen } from './components/ui/SplashScreen';
 import { Layout } from './components/Layout';
 import Dashboard from './features/dashboard/Dashboard';
 import Transactions from './features/transactions/Transactions';
@@ -41,7 +42,7 @@ import { getFinoraTheme } from './theme/muiTheme';
 import { fetchVietQRBanks } from './lib/bankService';
 import './styles.css';
 
-function Loading() {
+export function Loading() {
   return (
     <div className="app" style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-app)' }}>
       <div
@@ -147,6 +148,16 @@ function Loading() {
 
 function App() {
   const { load, loading, error, theme } = useFinance();
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const alreadyShown = sessionStorage.getItem('finora:splash_shown');
+      if (!alreadyShown) {
+        sessionStorage.setItem('finora:splash_shown', 'true');
+        return true;
+      }
+    }
+    return false;
+  });
 
   useEffect(() => {
     load();
@@ -167,7 +178,15 @@ function App() {
 
   const muiTheme = useMemo(() => getFinoraTheme(theme), [theme]);
 
-  if (loading) return <Loading />;
+  if (loading || showSplash) {
+    return (
+      <ThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      </ThemeProvider>
+    );
+  }
+
   if (error) {
     return (
       <div className="app" style={{ padding: 40 }}>

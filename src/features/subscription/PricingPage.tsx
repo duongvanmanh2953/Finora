@@ -45,6 +45,7 @@ export default function PricingPage() {
   const user = data?.user;
   const trialActive = isTrialActive(user);
   const trialDaysRemaining = getTrialDaysRemaining(user);
+  const daysRemaining = trialDaysRemaining;
   const isGold = data ? isGoldUser(data) : false;
   const isPro = user?.plan === 'pro';
 
@@ -64,7 +65,7 @@ export default function PricingPage() {
   const handleSelectPlan = async (planId: string, planName: string) => {
     if (!data) return;
 
-    if (planId === 'plan-trial') {
+    if (planId === 'plan-gold' && !isGold && !trialActive) {
       const now = new Date();
       const endsAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
       await update(d => ({
@@ -74,9 +75,10 @@ export default function PricingPage() {
           plan: 'gold',
           subscription_status: 'trialing',
           trial_started_at: now.toISOString(),
-          trial_ends_at: endsAt
+          trial_ends_at: endsAt,
+          current_plan_id: 'plan-gold'
         }
-      }), 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí. Khám phá toàn bộ tính năng cao cấp!');
+      }), 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí (0đ). Khám phá toàn bộ tính năng cao cấp!');
       return;
     }
 
@@ -86,15 +88,16 @@ export default function PricingPage() {
         user: {
           ...d.user,
           plan: 'free',
-          subscription_status: 'free'
+          subscription_status: 'free',
+          current_plan_id: 'plan-free'
         }
       }), 'Đã chuyển sang gói Miễn Phí (Free).');
       return;
     }
 
-    // For paid plans, trigger the PayOS & Legal compliance gate checkout
+    // For paid plans, trigger checkout
     const targetPlan = SYSTEM_PLANS.find(p => p.id === planId);
-    const price = targetPlan ? (billingCycle === 'annual' ? targetPlan.price : Math.round(targetPlan.price * 1.5 / 12)) : 499000;
+    const price = targetPlan ? (billingCycle === 'annual' ? targetPlan.price : Math.round(targetPlan.price * 1.5 / 12)) : 999000;
     setCheckoutModal({
       open: true,
       planId,
@@ -268,21 +271,21 @@ export default function PricingPage() {
         </Box>
       </Box>
 
-      {/* 3. Pricing Cards Grid */}
+      {/* 3. Pricing Cards Grid - 3 Distinct Tiers with Single VIP Gold Card */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
           gap: 2.5
         }}
       >
         {SYSTEM_PLANS.map(plan => {
           const isCurrent = (plan.id === 'plan-free' && !isPro && !isGold && !trialActive) ||
-            (plan.id === 'plan-trial' && trialActive) ||
             (plan.tier === 'pro' && isPro && !trialActive) ||
             (plan.tier === 'gold' && isGold && !trialActive);
 
           const isGoldCard = plan.isGold;
+          const isGoldTrialing = isGoldCard && trialActive;
 
           return (
             <Paper
@@ -290,7 +293,7 @@ export default function PricingPage() {
               elevation={0}
               sx={{
                 p: { xs: 2.25, sm: 2.5 },
-                borderRadius: '10px',
+                borderRadius: '18px',
                 border: '1px solid',
                 borderColor: isGoldCard
                   ? (isDark ? GOLD_COLOR_TOKENS.borderDark : GOLD_COLOR_TOKENS.borderLight)
@@ -310,12 +313,12 @@ export default function PricingPage() {
               }}
             >
               <Box>
-                {/* Header Row: Title & Clean Badge (No overlapping / sticking) */}
+                {/* Header Row: Title & Badge */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1, mb: 1, minHeight: 28 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
                     <TierBadgeIcon
                       tier={plan.isGold ? 'gold' : plan.tier}
-                      isTrial={plan.id === 'plan-trial'}
+                      isTrial={isGoldTrialing}
                       size={36}
                       iconSize={19}
                       showTooltip={false}
@@ -325,13 +328,27 @@ export default function PricingPage() {
                     </Typography>
                   </Box>
 
-                  {plan.badge && (
+                  {isGoldTrialing ? (
+                    <Chip
+                      size="small"
+                      label={`Đang dùng thử (Còn ${daysRemaining} ngày)`}
+                      sx={{
+                        flexShrink: 0,
+                        height: 22,
+                        fontSize: '0.68rem',
+                        fontWeight: 800,
+                        bgcolor: 'rgba(197, 160, 89, 0.25)',
+                        color: GOLD_COLOR_TOKENS.main,
+                        border: `1px solid ${GOLD_COLOR_TOKENS.borderLight}`
+                      }}
+                    />
+                  ) : plan.badge ? (
                     <Chip
                       size="small"
                       label={plan.badge}
                       sx={{
                         flexShrink: 0,
-                        height: 20,
+                        height: 22,
                         fontSize: '0.68rem',
                         fontWeight: 750,
                         bgcolor: isGoldCard
@@ -342,32 +359,75 @@ export default function PricingPage() {
                         borderColor: isGoldCard ? GOLD_COLOR_TOKENS.borderLight : 'divider'
                       }}
                     />
-                  )}
+                  ) : null}
                 </Box>
 
                 {/* Price Display */}
                 <Box sx={{ my: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 900,
-                        color: isGoldCard ? (isDark ? GOLD_COLOR_TOKENS.light : GOLD_COLOR_TOKENS.dark) : 'text.primary',
-                        letterSpacing: '-0.02em',
-                        fontFeatureSettings: '"tnum"'
-                      }}
-                    >
-                      {plan.price === 0 ? '0 ₫' : money(billingCycle === 'annual' ? plan.price : Math.round(plan.price * 1.5 / 12))}
-                    </Typography>
-                    {plan.originalPrice && (
-                      <Typography variant="caption" sx={{ textDecoration: 'line-through', color: 'text.secondary', fontSize: '0.75rem' }}>
-                        {money(plan.originalPrice)}
+                  {isGoldCard ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: 900,
+                            color: isDark ? GOLD_COLOR_TOKENS.light : GOLD_COLOR_TOKENS.dark,
+                            letterSpacing: '-0.02em',
+                            fontFeatureSettings: '"tnum"'
+                          }}
+                        >
+                          30 ngày đầu: 0đ
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem', lineHeight: 1.35 }}>
+                        Sau thời gian dùng thử: Giá gốc 99.000 ₫/tháng hoặc 999.000 ₫/năm (Không tự động trừ thẻ)
                       </Typography>
-                    )}
-                  </Box>
-                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
-                    {plan.billingPeriod}
-                  </Typography>
+
+                      {/* Active Trial Progress Bar */}
+                      {isGoldTrialing && (
+                        <Box sx={{ mt: 1.25, p: 1.25, borderRadius: '12px', bgcolor: isDark ? 'rgba(197, 160, 89, 0.12)' : '#FEF9EE', border: '1px solid', borderColor: GOLD_COLOR_TOKENS.borderLight }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                            <Typography variant="caption" sx={{ fontSize: '0.72rem', fontWeight: 700, color: GOLD_COLOR_TOKENS.main }}>
+                              Tiến độ dùng thử VIP Gold
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontSize: '0.72rem', fontWeight: 800, color: GOLD_COLOR_TOKENS.main }}>
+                              Còn {daysRemaining} / 30 ngày
+                            </Typography>
+                          </Box>
+                          <Box sx={{ width: '100%', height: 6, borderRadius: 3, bgcolor: 'rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+                            <Box sx={{ width: `${Math.max(5, Math.min(100, ((30 - daysRemaining) / 30) * 100))}%`, height: '100%', bgcolor: GOLD_COLOR_TOKENS.main, borderRadius: 3 }} />
+                          </Box>
+                          <Typography variant="caption" sx={{ display: 'block', mt: 0.5, fontSize: '0.68rem', color: 'text.secondary' }}>
+                            Hết hạn bạn sẽ về gói Free và không bao giờ bị mất dữ liệu.
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  ) : (
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: 900,
+                            color: 'text.primary',
+                            letterSpacing: '-0.02em',
+                            fontFeatureSettings: '"tnum"'
+                          }}
+                        >
+                          {plan.price === 0 ? '0 ₫' : money(billingCycle === 'annual' ? plan.price : Math.round(plan.price * 1.5 / 12))}
+                        </Typography>
+                        {plan.originalPrice && (
+                          <Typography variant="caption" sx={{ textDecoration: 'line-through', color: 'text.secondary', fontSize: '0.75rem' }}>
+                            {money(plan.originalPrice)}
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                        {plan.billingPeriod}
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
 
                 {/* Features list */}
@@ -391,11 +451,12 @@ export default function PricingPage() {
                 disabled={isCurrent}
                 onClick={() => handleSelectPlan(plan.id, plan.name)}
                 sx={{
-                  py: 0.85,
-                  borderRadius: '6px',
+                  py: 1,
+                  borderRadius: '13px',
                   fontWeight: 750,
-                  fontSize: '0.80rem',
+                  fontSize: '0.82rem',
                   textTransform: 'none',
+                  minHeight: 42,
                   bgcolor: isCurrent
                     ? 'transparent'
                     : isGoldCard
@@ -410,7 +471,13 @@ export default function PricingPage() {
                   }
                 }}
               >
-                {isCurrent ? 'Gói hiện tại' : plan.id === 'plan-trial' ? 'Kích hoạt 30 ngày' : 'Chọn gói này'}
+                {isCurrent
+                  ? 'Gói hiện tại'
+                  : isGoldTrialing
+                  ? 'Nâng cấp VIP Gold ngay'
+                  : isGoldCard
+                  ? (isGold ? 'Gia hạn gói VIP Gold' : 'Dùng thử 30 ngày (0đ)')
+                  : 'Chọn gói này'}
               </Button>
             </Paper>
           );

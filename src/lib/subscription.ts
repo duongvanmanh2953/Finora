@@ -71,6 +71,9 @@ export interface PlanDefinition {
   isGold?: boolean;
   features: string[];
   limitations?: string[];
+  trialDays?: number;
+  trialPriceText?: string;
+  postTrialPriceText?: string;
 }
 
 export const SYSTEM_PLANS: PlanDefinition[] = [
@@ -85,31 +88,13 @@ export const SYSTEM_PLANS: PlanDefinition[] = [
       'Quản lý tối đa 2 tài khoản/ví',
       'Thiết lập tối đa 3 ngân sách chi tiêu',
       '1 mục tiêu tài chính',
-      'Ghi chép giao dịch thủ công',
+      'Ghi chép giao dịch thủ công & Offline-first',
       'Báo cáo dòng tiền tháng hiện tại'
     ],
     limitations: [
       'Không hỗ trợ định giá chứng khoán/vàng tự động',
       'Không hỗ trợ xuất file Excel/CSV',
       'Không hỗ trợ tự động chạy định kỳ'
-    ]
-  },
-  {
-    id: 'plan-trial',
-    tier: 'gold',
-    name: 'Dùng Thử VIP Gold (30 Ngày)',
-    price: 0,
-    originalPrice: 149000,
-    billingPeriod: '30 ngày trải nghiệm',
-    badge: 'Khuyến nghị cho bạn mới',
-    isGold: true,
-    popular: true,
-    features: [
-      'Tự động cấp ngay khi đăng ký thành công',
-      'Mở khóa toàn bộ đặc quyền Gói Gold',
-      'Định giá danh mục đầu tư VN (HOSE, Vàng, Tiết kiệm)',
-      'WebMCP AI Assistant tương tác 2 chiều',
-      'Không yêu cầu thẻ thanh toán, không tự động gia hạn trừ tiền'
     ]
   },
   {
@@ -130,21 +115,26 @@ export const SYSTEM_PLANS: PlanDefinition[] = [
     ]
   },
   {
-    id: 'plan-gold-annual',
+    id: 'plan-gold',
     tier: 'gold',
-    name: 'Tích Sản VIP Gold (Năm)',
+    name: 'Tích Sản VIP Gold',
     price: 999000,
     originalPrice: 1788000,
     billingPeriod: '83.250 ₫/tháng (999.000 ₫/năm)',
     badge: 'Đặc quyền Tinh hoa',
     isGold: true,
+    popular: true,
+    trialDays: 30,
+    trialPriceText: '30 ngày đầu: 0đ',
+    postTrialPriceText: 'Sau dùng thử: Giá gốc 99.000 ₫/tháng hoặc 999.000 ₫/năm',
     features: [
-      'Toàn bộ đặc quyền Tích Sản Pro',
+      '30 ngày đầu trải nghiệm toàn diện không thu phí (0đ)',
       'Hệ thống AI Context WebMCP độc quyền phân tích dòng tiền',
       'Smart Ledger theo dõi vốn đầu tư chưa thu hồi',
       'Speedometer Gauges đo lường sức khỏe tài chính nâng cao',
+      'Tự động hóa giao dịch định kỳ & Xuất báo cáo Excel/CSV',
       'Huy hiệu thành viên Champagne Gold độc quyền',
-      'Ưu tiên kết nối trực tiếp với chuyên gia tài chính Tích Sản'
+      'Không yêu cầu thẻ thanh toán, không tự động gia hạn trừ tiền'
     ]
   }
 ];

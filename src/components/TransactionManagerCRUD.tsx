@@ -4,10 +4,6 @@ import {
   Button,
   Card,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   IconButton,
   InputAdornment,
   Paper,
@@ -36,6 +32,8 @@ import { MuiCurrencyInput, MuiSelect, MuiTextField } from './mui/MuiInputs';
 import { Confirm } from './ui';
 import { StatusBadge } from './ui/StatusBadge';
 import { FullscreenModal, FullscreenButton, FullscreenChartContent } from './ui/FullscreenModal';
+import { MobileBottomSheet } from './ui/MobileBottomSheet';
+import { networkManager } from '../lib/offline/networkStatus';
 import type { Transaction, TxType } from '../types';
 
 export function TransactionManagerCRUD() {
@@ -132,6 +130,7 @@ export function TransactionManagerCRUD() {
       return;
     }
 
+    const isOffline = networkManager.getState() === 'OFFLINE';
     const newTx: Transaction = {
       id: uid(),
       name: form.name.trim(),
@@ -142,13 +141,15 @@ export function TransactionManagerCRUD() {
       date: form.date,
       method: form.type === 'income' ? 'Chuyển khoản' : 'Tiền mặt',
       note: form.note.trim(),
-      status: 'completed'
+      status: 'completed',
+      is_synced: !isOffline,
+      sync_status: isOffline ? 'PENDING' : 'SYNCED'
     };
 
     await update(d => ({
       ...d,
       transactions: [newTx, ...d.transactions]
-    }), `Đã thêm giao dịch "${newTx.name}" (${money(newTx.amount)})`);
+    }), `Đã thêm giao dịch "${newTx.name}" (${money(newTx.amount)})${isOffline ? ' (Lưu Offline)' : ''}`);
 
     setAddModalOpen(false);
   };
@@ -605,16 +606,25 @@ export function TransactionManagerCRUD() {
         )}
       </Box>
 
-      {/* 3. Dialog Thêm Mới (Manual Add) */}
-      <Dialog
+      {/* 3. Bottom Sheet / Modal Thêm Mới */}
+      <MobileBottomSheet
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
+        title="Thêm Giao Dịch Mới"
+        subtitle="Ghi chép tức thì, lưu an toàn Offline ngay cả khi mất mạng"
         maxWidth="xs"
-        fullWidth
-        slotProps={{ paper: { sx: { borderRadius: '6px' } } }} // Strictly 6px outer
+        actions={
+          <>
+            <Button onClick={() => setAddModalOpen(false)} sx={{ borderRadius: '12px' }}>
+              Hủy
+            </Button>
+            <Button variant="contained" onClick={handleSaveAdd} sx={{ borderRadius: '12px', minHeight: 40 }}>
+              Lưu Giao Dịch
+            </Button>
+          </>
+        }
       >
-        <DialogTitle sx={{ fontWeight: 800 }}>Thêm Giao Dịch Mới</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
           <MuiTextField
             label="Tên giao dịch / Chi tiết"
             value={form.name}
@@ -626,7 +636,7 @@ export function TransactionManagerCRUD() {
             value={form.amount}
             onChange={val => setForm({ ...form, amount: Number(val) || 0 })}
           />
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
             <MuiSelect
               label="Loại giao dịch"
               value={form.type}
@@ -644,7 +654,7 @@ export function TransactionManagerCRUD() {
               options={categories.map(c => ({ value: c.id, label: c.name }))}
             />
           </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
             <MuiSelect
               label="Tài khoản thanh toán"
               value={form.accountId}
@@ -665,25 +675,28 @@ export function TransactionManagerCRUD() {
             onChange={e => setForm({ ...form, note: e.target.value })}
             fullWidth
           />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setAddModalOpen(false)} sx={{ borderRadius: '4px' }}>Hủy</Button>
-          <Button variant="contained" onClick={handleSaveAdd} sx={{ borderRadius: '4px' }}>
-            Lưu Giao Dịch
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </MobileBottomSheet>
 
-      {/* 4. Dialog Sửa Giao Dịch (Edit Modal) */}
-      <Dialog
+      {/* 4. Bottom Sheet / Modal Sửa Giao Dịch */}
+      <MobileBottomSheet
         open={Boolean(editingTx)}
         onClose={() => setEditingTx(null)}
+        title="Chỉnh Sửa Giao Dịch"
+        subtitle="Cập nhật thông tin giao dịch"
         maxWidth="xs"
-        fullWidth
-        slotProps={{ paper: { sx: { borderRadius: '6px' } } }} // Strictly 6px outer
+        actions={
+          <>
+            <Button onClick={() => setEditingTx(null)} sx={{ borderRadius: '12px' }}>
+              Hủy
+            </Button>
+            <Button variant="contained" onClick={handleSaveEdit} sx={{ borderRadius: '12px', minHeight: 40 }}>
+              Cập Nhật
+            </Button>
+          </>
+        }
       >
-        <DialogTitle sx={{ fontWeight: 800 }}>Chỉnh Sửa Giao Dịch</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
           <MuiTextField
             label="Tên giao dịch"
             value={form.name}
@@ -695,7 +708,7 @@ export function TransactionManagerCRUD() {
             value={form.amount}
             onChange={val => setForm({ ...form, amount: Number(val) || 0 })}
           />
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
             <MuiSelect
               label="Loại"
               value={form.type}
@@ -726,14 +739,8 @@ export function TransactionManagerCRUD() {
             onChange={e => setForm({ ...form, note: e.target.value })}
             fullWidth
           />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setEditingTx(null)} sx={{ borderRadius: '4px' }}>Hủy</Button>
-          <Button variant="contained" onClick={handleSaveEdit} sx={{ borderRadius: '4px' }}>
-            Cập Nhật
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </MobileBottomSheet>
 
       {/* 5. Delete Confirmation Modal */}
       <Confirm

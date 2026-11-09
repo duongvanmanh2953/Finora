@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { FinanceData } from './types';
-import { mockFinanceService } from './services/financeService';
+import { mockFinanceService, getAuthToken } from './services/financeService';
+import { networkManager, type NetworkState } from './lib/offline/networkStatus';
+import { outboxManager } from './lib/offline/outboxManager';
 
 export interface ToastInfo {
   message: string;
@@ -18,6 +20,9 @@ interface State {
   lastSnapshot: FinanceData | null;
   pricingOpen: boolean;
   pricingFeature: string | undefined;
+  networkState: NetworkState;
+  pendingCount: number;
+  syncNow: () => Promise<void>;
   load: () => Promise<void>;
   update: (fn: (data: FinanceData) => FinanceData, toastMessage?: string) => Promise<void>;
   undo: () => Promise<void>;
@@ -31,25 +36,75 @@ interface State {
   logout: () => Promise<void>;
 }
 
-export const useFinance = create<State>((set, get) => ({
-  data: null,
-  loading: true,
-  error: null,
-  theme: (localStorage.getItem('finora:theme') as 'light' | 'dark') || 'light',
-  toast: null,
-  lastSnapshot: null,
-  pricingOpen: false,
-  pricingFeature: undefined,
+export const useFinance = create<State>((set, get) => {
+  // Subscribe to real-time network and outbox events
+  networkManager.subscribe((state, count) => {
+    set({ networkState: state, pendingCount: count });
+  });
 
-  load: async () => {
-    try {
-      set({ loading: true, error: null });
-      const loaded = await mockFinanceService.load();
-      set({ data: loaded, loading: false });
-    } catch {
-      set({ error: 'Không thể tải dữ liệu. Vui lòng thử lại.', loading: false });
-    }
-  },
+  if (typeof window !== 'undefined') {
+    window.addEventListener('finora:reconnected', async () => {
+      const current = get().data;
+      if (!current) return;
+      const userId = current.user.id || 'demo';
+      get().notify({
+        message: 'Kết nối đã được khôi phục. Đang đồng bộ...',
+        severity: 'info'
+      });
+      const result = await outboxManager.syncOutbox(userId, getAuthToken());
+      if (result.synced > 0) {
+        get().notify({
+          message: `Đồng bộ thành công ${result.synced} thay đổi.`,
+          severity: 'success'
+        });
+      }
+      if (result.requiresPlan > 0) {
+        get().notify({
+          message: 'Dùng thử VIP Gold đã kết thúc. Một số tính năng VIP tạm dừng.',
+          severity: 'warning'
+        });
+      }
+      await get().load();
+    });
+  }
+
+  return {
+    data: null,
+    loading: true,
+    error: null,
+    theme: (typeof localStorage !== 'undefined' && localStorage.getItem('finora:theme') as 'light' | 'dark') || 'light',
+    toast: null,
+    lastSnapshot: null,
+    pricingOpen: false,
+    pricingFeature: undefined,
+    networkState: networkManager.getState(),
+    pendingCount: 0,
+
+    syncNow: async () => {
+      const current = get().data;
+      if (!current) return;
+      const userId = current.user.id || 'demo';
+      get().notify({ message: 'Đang đồng bộ dữ liệu...', severity: 'info' });
+      const result = await outboxManager.syncOutbox(userId, getAuthToken());
+      if (result.synced > 0) {
+        get().notify({ message: `Đã đồng bộ ${result.synced} thao tác`, severity: 'success' });
+      } else if (result.failed > 0) {
+        get().notify({ message: 'Không thể đồng bộ toàn bộ hàng đợi. Sẽ thử lại sau.', severity: 'warning' });
+      } else {
+        get().notify({ message: 'Dữ liệu đã được đồng bộ mới nhất', severity: 'info' });
+      }
+      await get().load();
+    },
+
+    load: async () => {
+      try {
+        set({ loading: true, error: null });
+        const loaded = await mockFinanceService.load();
+        set({ data: loaded, loading: false });
+      } catch {
+        set({ error: 'Không thể tải dữ liệu. Vui lòng thử lại.', loading: false });
+      }
+    },
 
   update: async (fn, toastMessage) => {
     const previous = get().data;
@@ -147,4 +202,5 @@ export const useFinance = create<State>((set, get) => ({
     mockFinanceService.logoutUser();
     await get().load();
   }
-}));
+};
+});

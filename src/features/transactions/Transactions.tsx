@@ -1298,6 +1298,20 @@ export default function Transactions() {
                             <Typography variant="body2" sx={{ fontWeight: 700 }}>
                               {t.name}
                             </Typography>
+                            {t.is_synced === false && (
+                              <Chip
+                                label="Chưa đồng bộ"
+                                size="small"
+                                sx={{
+                                  height: 18,
+                                  fontSize: 9.5,
+                                  fontWeight: 800,
+                                  bgcolor: 'rgba(234, 179, 8, 0.12)',
+                                  color: '#B45309',
+                                  border: '1px solid rgba(234, 179, 8, 0.3)'
+                                }}
+                              />
+                            )}
                             {isInstallment && (
                               <Chip
                                 label="Trả góp"
@@ -1448,9 +1462,25 @@ export default function Transactions() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
                       <CategoryAvatarBadge categoryId={t.categoryId} categoryName={cat?.name} txType={t.type} />
                       <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 750 }}>
-                          {t.name}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                            {t.name}
+                          </Typography>
+                          {t.is_synced === false && (
+                            <Chip
+                              label="Chưa đồng bộ"
+                              size="small"
+                              sx={{
+                                height: 17,
+                                fontSize: 9,
+                                fontWeight: 800,
+                                bgcolor: 'rgba(234, 179, 8, 0.12)',
+                                color: '#B45309',
+                                border: '1px solid rgba(234, 179, 8, 0.3)'
+                              }}
+                            />
+                          )}
+                        </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
                           <BankLogoBadge accountName={acc?.name} accountType={acc?.type} size="small" />
                           <Typography variant="caption" sx={{ color: 'var(--text-muted)', fontSize: 11 }}>

@@ -692,9 +692,30 @@ class TichSanDatabase {
   }
 
   public saveFinanceData(userId: string, data: FinanceData): void {
-    const user = this.schema.users[userId];
+    let user = this.schema.users[userId];
     if (!user) {
-      throw new Error('Unauthorized: User không tồn tại');
+      if (userId === 'usr_demo_vip' || userId.startsWith('usr_')) {
+        user = {
+          id: userId,
+          name: data.user?.name || 'Khách hàng Tích Sản',
+          email: data.user?.email || `${userId}@finora.vn`,
+          role: 'user',
+          currency: 'VND',
+          financialMonthStart: 1,
+          plan: data.user?.plan || 'free',
+          subscription_status: data.user?.subscription_status || 'free',
+          streakCount: 1,
+          lastCheckInDate: todayKey(),
+          defaultAccountId: 'wallet',
+          isSuspended: false,
+          createdAt: todayKey(),
+          lastActive: todayKey(),
+          emailVerified: false
+        };
+        this.schema.users[userId] = user;
+      } else {
+        throw new Error('Unauthorized: User không tồn tại');
+      }
     }
 
     data.user = {
@@ -708,6 +729,121 @@ class TichSanDatabase {
     };
 
     this.schema.financeData[userId] = data;
+    this.persist();
+  }
+
+  public processSyncBatch(
+    userId: string,
+    operations: any[],
+    user?: DbUser | null
+  ): Array<{ operation_id: string; status: string; error?: string; server_version?: number }> {
+    const results: Array<{ operation_id: string; status: string; error?: string; server_version?: number }> = [];
+    const currentData = this.getFinanceData(userId);
+    let currentVersion = currentData.server_version || 1;
+
+    // Check if user's trial is expired
+    const isExpired = user && (
+      user.subscription_status === 'expired' ||
+      (user.subscription_status === 'trialing' && user.trial_ends_at && new Date(user.trial_ends_at).getTime() < Date.now())
+    );
+
+    for (const op of operations) {
+      // 1. Idempotency Check
+      const idempotencyKey = op.idempotency_key || `op_${op.operation_id}`;
+      if (this.schema.idempotency[idempotencyKey]) {
+        results.push({
+          operation_id: op.operation_id,
+          status: 'SYNCED',
+          server_version: currentVersion
+        });
+        continue;
+      }
+
+      // 2. VIP Entitlement Protection: If user is expired and op requires VIP entitlement
+      if (isExpired && op.payload && op.payload.requires_vip) {
+        results.push({
+          operation_id: op.operation_id,
+          status: 'REQUIRES_PLAN',
+          error: 'Thời gian dùng thử VIP Gold đã kết thúc. Tính năng này yêu cầu gia hạn gói VIP.',
+          server_version: currentVersion
+        });
+        continue;
+      }
+
+      // 3. Concurrency check
+      if (op.local_version && op.local_version < currentVersion - 5) {
+        results.push({
+          operation_id: op.operation_id,
+          status: 'CONFLICT',
+          error: 'Phiên bản dữ liệu cũ hơn so với máy chủ',
+          server_version: currentVersion
+        });
+        continue;
+      }
+
+      // 4. Apply mutation
+      try {
+        if (op.entity_type === 'bulk_sync' && op.payload) {
+          this.saveFinanceData(userId, op.payload);
+        } else if (op.entity_type === 'transaction' && op.payload) {
+          if (op.operation_type === 'CREATE') {
+            currentData.transactions = currentData.transactions || [];
+            currentData.transactions.unshift({ ...op.payload, is_synced: true, sync_status: 'SYNCED' });
+          } else if (op.operation_type === 'UPDATE') {
+            currentData.transactions = (currentData.transactions || []).map(t =>
+              t.id === op.entity_id ? { ...t, ...op.payload, is_synced: true, sync_status: 'SYNCED' } : t
+            );
+          } else if (op.operation_type === 'DELETE') {
+            currentData.transactions = (currentData.transactions || []).filter(t => t.id !== op.entity_id);
+          }
+          this.saveFinanceData(userId, currentData);
+        }
+
+        currentVersion++;
+        currentData.server_version = currentVersion;
+
+        // Record idempotency
+        this.schema.idempotency[idempotencyKey] = {
+          key: idempotencyKey,
+          scope: 'sync_batch',
+          endpoint: '/api/sync/batch',
+          requestHash: idempotencyKey,
+          status: 'COMPLETED',
+          response: { status: 'SYNCED', operation_id: op.operation_id },
+          createdAt: Date.now(),
+          expiresAt: Date.now() + 86400000
+        };
+
+        results.push({
+          operation_id: op.operation_id,
+          status: 'SYNCED',
+          server_version: currentVersion
+        });
+      } catch (err: any) {
+        results.push({
+          operation_id: op.operation_id,
+          status: 'FAILED',
+          error: err.message || 'Lỗi áp dụng thay đổi trên máy chủ'
+        });
+      }
+    }
+
+    this.persist();
+    return results;
+  }
+
+  public recordConsent(userId: string, consent: any): void {
+    const key = `consent_${userId}_${consent?.terms_version || 'default'}`;
+    this.schema.idempotency[key] = {
+      key,
+      scope: 'consent',
+      endpoint: '/api/auth/consent',
+      requestHash: key,
+      status: 'COMPLETED',
+      response: consent,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 365 * 86400000
+    };
     this.persist();
   }
 

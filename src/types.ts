@@ -70,6 +70,9 @@ export interface Transaction {
   receiptUrl?: string; // Base64 data URL or image preview
   paidByMember?: string; // for shared wallet expenses
   isSharedExpense?: boolean;
+  is_synced?: boolean;
+  sync_status?: 'PENDING' | 'SYNCED' | 'FAILED' | 'REQUIRES_PLAN';
+  version?: number;
 }
 
 export interface Budget {
@@ -307,4 +310,5 @@ export interface FinanceData {
   userMcpConfig?: import('./types/unifiedInvestment').UserMcpConfig;
   smartInvestmentNotes?: import('./types/smartLedger').InvestmentNote[];
   hideRiskyAssetsGlobal?: boolean;
+  server_version?: number;
 }

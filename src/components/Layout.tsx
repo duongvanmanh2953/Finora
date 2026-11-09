@@ -54,6 +54,7 @@ import { PricingDialog } from './PricingDialog';
 import { TierBadgeIcon } from './subscription/TierBadgeIcon';
 import { AiAssistantDrawer } from './AiAssistantDrawer';
 import { CloudSyncModal } from './CloudSyncModal';
+import { SyncStatusBadge } from './offline/SyncStatusBadge';
 
 export interface NavItemConfig {
   url: string;
@@ -740,6 +741,9 @@ export function Layout() {
             </div>
 
             <div className="topactions">
+              {/* Offline-First Sync Status Indicator */}
+              <SyncStatusBadge />
+
               {/* Daily Streak Badge - Thu gọn trên mobile */}
               <Tooltip title={isCheckedInToday ? `Chuỗi ghi chép: ${streak} ngày liên tiếp!` : 'Chưa ghi chép hôm nay'}>
                 <Chip

@@ -28,6 +28,29 @@
   background: rgba(148, 163, 184, 0.45);
 }
 
+/* Subtle animations for SplashScreen & Sync Status */
+@keyframes splashPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+.spin-animate {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .dark * {
   scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
@@ -97,14 +120,27 @@ body {
   --accent-info: #1D4ED8;
   --accent-neutral: #475569;
 
-  /* Radius Tokens */
-  --radius-badge: 6px;
-  --radius-input: 8px;
-  --radius-btn: 8px;
-  --radius-card-sm: 10px;
-  --radius-card: 12px;
-  --radius-card-lg: 16px;
-  --radius-modal: 16px;
+  /* Radius Tokens - Mobile-First Compact Premium Fintech UI */
+  --radius-badge: 9999px;
+  --radius-pill: 9999px;
+  --radius-input: 13px;
+  --radius-btn: 13px;
+  --radius-card-sm: 15px;
+  --radius-card: 19px;
+  --radius-card-lg: 20px;
+  --radius-modal: 22px;
+  --radius-sheet: 24px;
+  --radius-dropdown: 13px;
+
+  /* Mobile Design Tokens */
+  --mobile-card-padding: 13px;
+  --mobile-card-gap: 11px;
+  --mobile-container-px: 15px;
+  --mobile-input-height: 44px;
+  --mobile-btn-height: 42px;
+  --mobile-modal-padding: 16px;
+  --mobile-form-gap: 11px;
+  --mobile-touch-target: 44px;
 
   /* Spacing Tokens (4px System) */
   --space-1: 4px;
@@ -281,6 +317,29 @@ td,
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.45);
+}
+
+/* Subtle animations for SplashScreen & Sync Status */
+@keyframes splashPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+.spin-animate {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sidebar-footer {
@@ -1020,16 +1079,33 @@ td,
   }
 
   .content {
-    padding: 10px 8px calc(80px + env(safe-area-inset-bottom, 0px));
+    padding: 12px var(--mobile-container-px) calc(84px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Prevent overflow on tables, grids, and metric pills */
+  /* Compact Premium Fintech UI for Mobile */
   .card {
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-card);
   }
 
   .pad {
-    padding: 14px;
+    padding: var(--mobile-card-padding);
+  }
+
+  /* Mobile-first compact controls */
+  .MuiInputBase-root {
+    border-radius: var(--radius-input) !important;
+    min-height: var(--mobile-input-height) !important;
+    font-size: 13.5px !important;
+  }
+
+  .MuiButton-root {
+    border-radius: var(--radius-btn) !important;
+    min-height: var(--mobile-btn-height) !important;
+    font-size: 13px !important;
+  }
+
+  .MuiDialog-paper {
+    border-radius: var(--radius-modal) !important;
   }
 }
 
@@ -1220,4 +1296,27 @@ table th {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.45);
+}
+
+/* Subtle animations for SplashScreen & Sync Status */
+@keyframes splashPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+.spin-animate {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

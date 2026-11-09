@@ -95,7 +95,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       divider: isDark ? 'rgba(255, 255, 255, 0.16)' : '#E2E8F0'
     },
     shape: {
-      borderRadius: 8
+      borderRadius: 13
     },
     spacing: 8,
     typography: {
@@ -144,14 +144,14 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
-            borderRadius: 12
+            borderRadius: 18
           },
           rounded: {
-            borderRadius: 12
+            borderRadius: 18
           },
           outlined: {
             backgroundColor: isDark ? '#161B22' : '#FFFFFF',
-            borderRadius: 12,
+            borderRadius: 18,
             borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : '#E4E9E5',
             boxShadow: isDark
               ? '0 2px 8px 0 rgba(0, 0, 0, 0.45)'
@@ -165,7 +165,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
         },
         styleOverrides: {
           paper: {
-            borderRadius: 16,
+            borderRadius: 22,
             backgroundImage: 'none',
             backgroundColor: isDark ? '#161B22' : '#FFFFFF',
             border: isDark ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #E4E9E5',
@@ -181,7 +181,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
           paper: {
             backgroundColor: isDark ? '#161B22' : '#FFFFFF',
             color: isDark ? '#F0F6FC' : '#17211E',
-            borderRadius: 10,
+            borderRadius: 13,
             border: isDark ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #E4E9E5',
             boxShadow: isDark ? '0 12px 32px rgba(0,0,0,0.55)' : '0 12px 32px rgba(23,33,30,0.08)'
           }
@@ -195,7 +195,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
           paper: {
             backgroundColor: isDark ? '#161B22' : '#FFFFFF',
             color: isDark ? '#F0F6FC' : '#17211E',
-            borderRadius: 10,
+            borderRadius: 13,
             border: isDark ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #E4E9E5',
             boxShadow: isDark ? '0 12px 32px rgba(0,0,0,0.55)' : '0 12px 32px rgba(23,33,30,0.08)'
           }
@@ -204,27 +204,29 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 13,
             textTransform: 'none',
             fontWeight: 650,
             fontSize: 13.5,
             boxShadow: 'none',
             padding: '8px 16px',
-            minHeight: 40,
+            minHeight: 42,
             transition: 'all 0.15s ease',
             '&:hover': {
               boxShadow: 'none'
             }
           },
           sizeSmall: {
-            minHeight: 32,
+            minHeight: 34,
             padding: '4px 12px',
-            fontSize: 12.5
+            fontSize: 12.5,
+            borderRadius: 11
           },
           sizeLarge: {
-            minHeight: 44,
+            minHeight: 46,
             padding: '10px 20px',
-            fontSize: 14.5
+            fontSize: 14.5,
+            borderRadius: 14
           },
           contained: {
             backgroundColor: isDark ? '#4E9B7C' : '#355E52',
@@ -236,7 +238,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
           outlined: {
             borderColor: isDark ? 'rgba(255, 255, 255, 0.22)' : '#D4DDD7',
             color: isDark ? '#F0F6FC' : '#17211E',
-            borderRadius: 8,
+            borderRadius: 13,
             '&:hover': {
               borderColor: isDark ? 'rgba(255, 255, 255, 0.35)' : '#B5BDB8',
               backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.02)'
@@ -247,10 +249,10 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 13,
             backgroundColor: isDark ? '#1C2128' : '#FFFFFF',
             fontSize: 13.5,
-            minHeight: 42,
+            minHeight: 44,
             color: isDark ? '#F0F6FC' : '#17211E',
             '& fieldset': {
               borderColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#E4E9E5'
@@ -268,7 +270,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiChip: {
         styleOverrides: {
           root: {
-            borderRadius: 6,
+            borderRadius: 9999,
             fontWeight: 650,
             fontSize: 12
           }
@@ -277,7 +279,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiMenuItem: {
         styleOverrides: {
           root: {
-            borderRadius: 4,
+            borderRadius: 10,
             color: isDark ? '#F8FAFC' : '#17211F',
             fontSize: 13,
             margin: '2px 4px',
@@ -296,7 +298,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiAlert: {
         styleOverrides: {
           root: {
-            borderRadius: 4,
+            borderRadius: 14,
             border: isDark ? '1px solid rgba(255, 255, 255, 0.16)' : undefined
           }
         }
@@ -304,7 +306,7 @@ export function getFinoraTheme(mode: 'light' | 'dark') {
       MuiSelect: {
         styleOverrides: {
           root: {
-            borderRadius: 4
+            borderRadius: 13
           },
           icon: {
             color: isDark ? '#CBD5E1' : '#68756F'

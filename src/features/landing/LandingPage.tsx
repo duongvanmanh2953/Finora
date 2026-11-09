@@ -26,7 +26,9 @@ import {
   X,
   DownloadCloud,
   QrCode,
-  HelpCircle
+  HelpCircle,
+  Share,
+  ExternalLink
 } from 'lucide-react';
 import {
   Box,
@@ -51,6 +53,23 @@ import { TierBadgeIcon } from '../../components/subscription/TierBadgeIcon';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
+}
+
+// Crisp Vector SVG Components for Android and Apple iOS
+export function AndroidSvgIcon({ size = 20, color = 'currentColor', className }: { size?: number; color?: string; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} className={className} style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
+      <path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-2.86-1.21-6.08-1.21-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/>
+    </svg>
+  );
+}
+
+export function AppleSvgIcon({ size = 20, color = 'currentColor', className }: { size?: number; color?: string; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} className={className} style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+    </svg>
+  );
 }
 
 // 7 Financial Overview Cards showcase with "Tím Trần" for Assets
@@ -173,6 +192,8 @@ export default function LandingPage() {
   const [activeFilterTab, setActiveFilterTab] = useState<string>('all');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState<boolean>(false);
   const [installGuideOpen, setInstallGuideOpen] = useState<boolean>(false);
+  const [downloadPlatform, setDownloadPlatform] = useState<'android' | 'ios'>('android');
+  const [guideModalPlatform, setGuideModalPlatform] = useState<'android' | 'ios'>('android');
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -311,8 +332,10 @@ export default function LandingPage() {
             <a href="#gauges" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
               Đồng hồ Bán nguyệt
             </a>
-            <a href="#app-download" style={{ color: '#34D399', textDecoration: 'none', fontWeight: 750, transition: 'color 0.2s' }}>
-              Tải App Android
+            <a href="#app-download" style={{ color: '#34D399', textDecoration: 'none', fontWeight: 750, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <AndroidSvgIcon size={16} color="#34D399" />
+              <AppleSvgIcon size={16} color="#E2E8F0" />
+              <span>Tải App Android & iOS</span>
             </a>
             <a href="#pricing" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
               Bảng giá & Trial
@@ -321,14 +344,14 @@ export default function LandingPage() {
 
           {/* Actions: Desktop & Mobile */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
-            {/* Download APK Pill for Desktop & Tablet */}
+            {/* Download App Pill for Desktop & Tablet */}
             <Button
               component="a"
-              href="/downloads/finora-latest.apk"
-              download="Finora-TichSan.apk"
+              href="#app-download"
               variant="outlined"
               size="small"
-              startIcon={<Smartphone size={14} />}
+              startIcon={<AndroidSvgIcon size={15} color="#34D399" />}
+              endIcon={<AppleSvgIcon size={14} color="#E2E8F0" />}
               sx={{
                 borderColor: 'rgba(52, 211, 153, 0.45)',
                 color: '#34D399',
@@ -341,7 +364,7 @@ export default function LandingPage() {
                 '&:hover': { borderColor: '#34D399', bgcolor: 'rgba(52, 211, 153, 0.16)' }
               }}
             >
-              Tải APK
+              Tải App
             </Button>
 
             {/* Login button */}
@@ -434,7 +457,7 @@ export default function LandingPage() {
               { href: '#quick-solutions', label: 'Giải pháp nhanh', icon: Zap },
               { href: '#overview', label: '7 Thẻ Dòng tiền', icon: PieChart },
               { href: '#gauges', label: 'Đồng hồ Bán nguyệt', icon: Activity },
-              { href: '#app-download', label: 'Tải App Android (.APK)', icon: Smartphone, highlight: true },
+              { href: '#app-download', label: 'Tải App Android & iOS', icon: Smartphone, highlight: true },
               { href: '#pricing', label: 'Bảng giá & Trial 30 Ngày', icon: Crown }
             ].map((item, idx) => {
               const IconCmp = item.icon;
@@ -472,7 +495,7 @@ export default function LandingPage() {
             download="Finora-TichSan.apk"
             fullWidth
             variant="contained"
-            startIcon={<DownloadCloud size={18} />}
+            startIcon={<AndroidSvgIcon size={18} color="#FFFFFF" />}
             sx={{
               background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
               color: '#FFFFFF',
@@ -481,7 +504,30 @@ export default function LandingPage() {
               borderRadius: 2
             }}
           >
-            Tải File APK (13 MB)
+            Tải APK Android (13 MB)
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => {
+              setMobileDrawerOpen(false);
+              setGuideModalPlatform('ios');
+              setInstallGuideOpen(true);
+            }}
+            startIcon={<AppleSvgIcon size={18} color="#FFFFFF" />}
+            sx={{
+              borderColor: 'rgba(255, 255, 255, 0.25)',
+              color: '#FFFFFF',
+              fontWeight: 750,
+              py: 1.1,
+              borderRadius: 2,
+              '&:hover': {
+                borderColor: '#FFFFFF',
+                bgcolor: 'rgba(255, 255, 255, 0.08)'
+              }
+            }}
+          >
+            Cài đặt cho iOS (iPhone)
           </Button>
           <Button
             fullWidth
@@ -622,19 +668,20 @@ export default function LandingPage() {
             Nhận 30 Ngày VIP Gold Miễn Phí
           </Button>
 
+          {/* Android APK Download Button */}
           <Button
             component="a"
             href="/downloads/finora-latest.apk"
             download="Finora-TichSan.apk"
             variant="contained"
             size="large"
-            startIcon={<Smartphone size={20} color="#34D399" />}
+            startIcon={<AndroidSvgIcon size={22} color="#34D399" />}
             sx={{
               background: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #047857 100%)',
               color: '#FFFFFF',
               fontWeight: 800,
               fontSize: { xs: 14, sm: 15 },
-              px: { xs: 2.5, sm: 3.2 },
+              px: { xs: 2.2, sm: 2.8 },
               py: { xs: 1.25, sm: 1.25 },
               width: { xs: '100%', sm: 'auto' },
               borderRadius: 2.5,
@@ -651,11 +698,52 @@ export default function LandingPage() {
             }}
           >
             <Box sx={{ ml: 0.5 }}>
-              <Typography sx={{ fontSize: 10.5, fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Bản Android Chính Thức
+              <Typography sx={{ fontSize: 10, fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Bản Android (.APK)
               </Typography>
-              <Typography sx={{ fontSize: { xs: 14, sm: 15 }, fontWeight: 850, lineHeight: 1.2 }}>
-                Tải App APK (13 MB)
+              <Typography sx={{ fontSize: { xs: 13.5, sm: 14.5 }, fontWeight: 850, lineHeight: 1.2 }}>
+                Tải File APK (13 MB)
+              </Typography>
+            </Box>
+          </Button>
+
+          {/* iOS Web App / PWA Button */}
+          <Button
+            component="a"
+            href="#app-download"
+            onClick={() => {
+              setDownloadPlatform('ios');
+            }}
+            variant="contained"
+            size="large"
+            startIcon={<AppleSvgIcon size={22} color="#FFFFFF" />}
+            sx={{
+              background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: { xs: 14, sm: 15 },
+              px: { xs: 2.2, sm: 2.8 },
+              py: { xs: 1.25, sm: 1.25 },
+              width: { xs: '100%', sm: 'auto' },
+              borderRadius: 2.5,
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'left',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #334155 0%, #1E293B 100%)',
+                borderColor: 'rgba(255, 255, 255, 0.35)'
+              }
+            }}
+          >
+            <Box sx={{ ml: 0.5 }}>
+              <Typography sx={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Dành Cho iPhone / iPad
+              </Typography>
+              <Typography sx={{ fontSize: { xs: 13.5, sm: 14.5 }, fontWeight: 850, lineHeight: 1.2 }}>
+                Cài Đặt Trên iOS
               </Typography>
             </Box>
           </Button>
@@ -677,7 +765,7 @@ export default function LandingPage() {
               '&:hover': { borderColor: '#FFFFFF', bgcolor: 'rgba(255,255,255,0.08)' }
             }}
           >
-            Khám phá Demo Trực tiếp
+            Khám phá Demo
           </Button>
         </Box>
 
@@ -699,7 +787,7 @@ export default function LandingPage() {
               border: '1px solid rgba(52, 211, 153, 0.25)'
             }}
           >
-            <QrCode size={14} /> Quét mã QR & Hướng dẫn cài đặt Android 30s →
+            <QrCode size={14} /> Quét mã QR & Hướng dẫn cài đặt Android & iOS 30s →
           </a>
         </Box>
 

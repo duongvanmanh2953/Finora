@@ -2141,7 +2141,7 @@ export function SmartQuickEntryModal({
         <DialogTitle
           sx={{
             py: { xs: 1.5, sm: 1.75 },
-            px: { xs: 2, sm: 2.75 },
+            px: { xs: 2, sm: 2.5 },
             borderBottom: '1px solid var(--border-subtle)',
             bgcolor: 'background.paper',
             display: 'flex',
@@ -2154,135 +2154,124 @@ export function SmartQuickEntryModal({
           <Box
             sx={{
               display: 'inline-flex',
-              p: 0.4,
+              alignItems: 'center',
+              p: 0.5,
               borderRadius: '10px',
               bgcolor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
               border: '1px solid var(--border-subtle)',
-              gap: 0.5,
-              flexWrap: 'wrap'
+              gap: 0.5
             }}
           >
-            <Button
-              size="small"
-              onClick={() => setMainMode('daily')}
-              startIcon={<Zap size={14} />}
-              sx={{
-                borderRadius: '7px',
-                px: { xs: 1.25, sm: 1.75 },
-                py: 0.5,
-                fontSize: { xs: '0.78rem', sm: '0.82rem' },
-                fontWeight: mainMode === 'daily' ? 800 : 600,
-                textTransform: 'none',
-                color: mainMode === 'daily' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
-                bgcolor: mainMode === 'daily' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
-                boxShadow: mainMode === 'daily' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
-                border: mainMode === 'daily' ? '1px solid var(--border-subtle)' : '1px solid transparent',
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  bgcolor: mainMode === 'daily' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
-                }
-              }}
-            >
-              Ghi nhanh
-            </Button>
-
-            <Button
-              size="small"
-              onClick={() => setMainMode('camera')}
-              startIcon={<Camera size={14} />}
-              sx={{
-                borderRadius: '7px',
-                px: { xs: 1.25, sm: 1.75 },
-                py: 0.5,
-                fontSize: { xs: '0.78rem', sm: '0.82rem' },
-                fontWeight: mainMode === 'camera' ? 800 : 600,
-                textTransform: 'none',
-                color: mainMode === 'camera' ? '#3B82F6' : 'text.secondary',
-                bgcolor: mainMode === 'camera' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
-                boxShadow: mainMode === 'camera' ? '0 2px 6px rgba(59, 130, 246, 0.15)' : 'none',
-                border: mainMode === 'camera' ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent',
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  bgcolor: mainMode === 'camera' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
-                }
-              }}
-            >
-              Camera VietQR
-              <Box
-                component="span"
+            <Tooltip title="Ghi nhanh 1-chạm" arrow>
+              <IconButton
+                size="small"
+                onClick={() => setMainMode('daily')}
                 sx={{
-                  ml: 0.5,
-                  px: 0.6,
-                  py: 0.1,
-                  borderRadius: '4px',
-                  fontSize: '0.62rem',
-                  fontWeight: 800,
-                  bgcolor: '#3B82F6',
-                  color: '#FFFFFF'
+                  width: 32,
+                  height: 32,
+                  borderRadius: '7px',
+                  color: mainMode === 'daily' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
+                  bgcolor: mainMode === 'daily' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
+                  boxShadow: mainMode === 'daily' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                  border: mainMode === 'daily' ? '1px solid var(--border-subtle)' : '1px solid transparent',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: mainMode === 'daily' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
+                  }
                 }}
               >
-                MỚI
-              </Box>
-            </Button>
+                <Zap size={16} />
+              </IconButton>
+            </Tooltip>
 
-            <Button
-              size="small"
-              onClick={() => setMainMode('ai')}
-              startIcon={<Sparkles size={14} />}
-              sx={{
-                borderRadius: '7px',
-                px: { xs: 1.25, sm: 1.75 },
-                py: 0.5,
-                fontSize: { xs: '0.78rem', sm: '0.82rem' },
-                fontWeight: mainMode === 'ai' ? 800 : 600,
-                textTransform: 'none',
-                color: mainMode === 'ai' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
-                bgcolor: mainMode === 'ai' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
-                boxShadow: mainMode === 'ai' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
-                border: mainMode === 'ai' ? '1px solid var(--border-subtle)' : '1px solid transparent',
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  bgcolor: mainMode === 'ai' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
-                }
-              }}
-            >
-              Trợ lý AI
-            </Button>
+            <Tooltip title="Quét Camera VietQR & Hóa đơn (MỚI)" arrow>
+              <IconButton
+                size="small"
+                onClick={() => setMainMode('camera')}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '7px',
+                  color: mainMode === 'camera' ? '#3B82F6' : 'text.secondary',
+                  bgcolor: mainMode === 'camera' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
+                  boxShadow: mainMode === 'camera' ? '0 1px 4px rgba(59, 130, 246, 0.2)' : 'none',
+                  border: mainMode === 'camera' ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid transparent',
+                  position: 'relative',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: mainMode === 'camera' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
+                  }
+                }}
+              >
+                <Camera size={16} />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 5,
+                    right: 5,
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: '#3B82F6'
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
 
-            <Button
-              size="small"
-              onClick={() => {
-                setManualForm({
-                  name: parsed.note || (parsed.categoryName ? `${parsed.categoryName}` : 'Chi tiêu'),
-                  amount: parsed.amount > 0 ? parsed.amount : 50000,
-                  type: (entryType === 'invest' ? 'expense' : entryType) as TxType,
-                  categoryId: customCategory?.key || categories[0]?.id || 'food',
-                  accountId: customAccountId || accounts[0]?.id || 'bank',
-                  date: customDate || todayKey(),
-                  note: ''
-                });
-                setMainMode('manual');
-              }}
-              startIcon={<Plus size={14} />}
-              sx={{
-                borderRadius: '7px',
-                px: { xs: 1.25, sm: 1.75 },
-                py: 0.5,
-                fontSize: { xs: '0.78rem', sm: '0.82rem' },
-                fontWeight: mainMode === 'manual' ? 800 : 600,
-                textTransform: 'none',
-                color: mainMode === 'manual' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
-                bgcolor: mainMode === 'manual' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
-                boxShadow: mainMode === 'manual' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
-                border: mainMode === 'manual' ? '1px solid var(--border-subtle)' : '1px solid transparent',
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  bgcolor: mainMode === 'manual' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
-                }
-              }}
-            >
-              Nhập chi tiết
-            </Button>
+            <Tooltip title="Trợ lý tài chính AI" arrow>
+              <IconButton
+                size="small"
+                onClick={() => setMainMode('ai')}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '7px',
+                  color: mainMode === 'ai' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
+                  bgcolor: mainMode === 'ai' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
+                  boxShadow: mainMode === 'ai' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                  border: mainMode === 'ai' ? '1px solid var(--border-subtle)' : '1px solid transparent',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: mainMode === 'ai' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
+                  }
+                }}
+              >
+                <Sparkles size={16} />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Nhập chi tiết đầy đủ" arrow>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setManualForm({
+                    name: parsed.note || (parsed.categoryName ? `${parsed.categoryName}` : 'Chi tiêu'),
+                    amount: parsed.amount > 0 ? parsed.amount : 50000,
+                    type: (entryType === 'invest' ? 'expense' : entryType) as TxType,
+                    categoryId: customCategory?.key || categories[0]?.id || 'food',
+                    accountId: customAccountId || accounts[0]?.id || 'bank',
+                    date: customDate || todayKey(),
+                    note: ''
+                  });
+                  setMainMode('manual');
+                }}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '7px',
+                  color: mainMode === 'manual' ? (isDark ? '#FFFFFF' : '#0F172A') : 'text.secondary',
+                  bgcolor: mainMode === 'manual' ? (isDark ? '#1E293B' : '#FFFFFF') : 'transparent',
+                  boxShadow: mainMode === 'manual' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                  border: mainMode === 'manual' ? '1px solid var(--border-subtle)' : '1px solid transparent',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: mainMode === 'manual' ? (isDark ? '#1E293B' : '#FFFFFF') : 'action.hover'
+                  }
+                }}
+              >
+                <Plus size={16} />
+              </IconButton>
+            </Tooltip>
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -2360,10 +2349,10 @@ export function SmartQuickEntryModal({
                 }}
               >
                 {[
-                  { type: 'expense' as const, label: 'Chi', color: '#DC2626', bg: isDark ? 'rgba(220, 38, 38, 0.2)' : '#FFFFFF', icon: <TrendingDownRounded sx={{ fontSize: 16 }} /> },
-                  { type: 'income' as const, label: 'Thu', color: '#16A34A', bg: isDark ? 'rgba(22, 163, 74, 0.2)' : '#FFFFFF', icon: <TrendingUpRounded sx={{ fontSize: 16 }} /> },
-                  { type: 'saving' as const, label: 'T.Kiệm', color: '#7C3AED', bg: isDark ? 'rgba(124, 58, 237, 0.2)' : '#FFFFFF', icon: <SavingsRounded sx={{ fontSize: 16 }} /> },
-                  { type: 'invest' as const, label: 'Đầu tư', color: '#2563EB', bg: isDark ? 'rgba(37, 99, 235, 0.2)' : '#FFFFFF', icon: <ShowChartRounded sx={{ fontSize: 16 }} /> }
+                  { type: 'expense' as const, label: 'Chi tiêu', color: '#DC2626', bg: isDark ? 'rgba(220, 38, 38, 0.18)' : '#FFFFFF', icon: <TrendingDownRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'income' as const, label: 'Thu nhập', color: '#16A34A', bg: isDark ? 'rgba(22, 163, 74, 0.18)' : '#FFFFFF', icon: <TrendingUpRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'saving' as const, label: 'Tiết kiệm', color: '#7C3AED', bg: isDark ? 'rgba(124, 58, 237, 0.18)' : '#FFFFFF', icon: <SavingsRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'invest' as const, label: 'Đầu tư', color: '#2563EB', bg: isDark ? 'rgba(37, 99, 235, 0.18)' : '#FFFFFF', icon: <ShowChartRounded sx={{ fontSize: 16 }} /> }
                 ].map(tab => {
                   const isSelected = entryType === tab.type;
                   return (
@@ -2383,24 +2372,36 @@ export function SmartQuickEntryModal({
                           setCustomCategory(null);
                         }
                       }}
+                      startIcon={tab.icon}
                       sx={{
                         flex: 1,
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        py: 0.5,
-                        px: 0.5,
-                        minWidth: 'auto',
+                        fontSize: { xs: '0.74rem', sm: '0.8rem' },
+                        fontWeight: isSelected ? 800 : 600,
+                        py: { xs: 0.65, sm: 0.75 },
+                        px: { xs: 0.5, sm: 1 },
+                        minWidth: 0,
+                        whiteSpace: 'nowrap',
                         textTransform: 'none',
                         color: isSelected ? tab.color : 'text.secondary',
                         bgcolor: isSelected ? tab.bg : 'transparent',
-                        borderRadius: '6px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 0.25,
-                        '&:hover': { bgcolor: isSelected ? tab.bg : 'action.hover' }
+                        borderRadius: '7px',
+                        border: isSelected ? `1px solid ${tab.color}40` : '1px solid transparent',
+                        boxShadow: isSelected
+                          ? isDark
+                            ? '0 2px 6px rgba(0, 0, 0, 0.3)'
+                            : '0 2px 6px rgba(0, 0, 0, 0.06)'
+                          : 'none',
+                        transition: 'all 0.15s ease',
+                        '& .MuiButton-startIcon': {
+                          mr: { xs: 0.35, sm: 0.6 },
+                          ml: 0
+                        },
+                        '&:hover': {
+                          bgcolor: isSelected ? tab.bg : 'action.hover',
+                          color: isSelected ? tab.color : 'text.primary'
+                        }
                       }}
                     >
-                      {tab.icon}
                       {tab.label}
                     </Button>
                   );
@@ -2494,11 +2495,9 @@ export function SmartQuickEntryModal({
                     fullWidth
                     autoFocus
                     value={inputText}
-                    onFocus={() => setShowSuggestions(true)}
                     onChange={e => {
                       setInputText(e.target.value);
                       setOverrideAmount(null);
-                      setShowSuggestions(true);
                     }}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {

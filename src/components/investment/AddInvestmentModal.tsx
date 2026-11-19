@@ -461,10 +461,30 @@ export function AddInvestmentModal({ open, onClose, onSuccess }: AddInvestmentMo
                   label="Mức độ rủi ro"
                   onChange={e => setRiskLevel(e.target.value as RiskLevel)}
                 >
-                  <MenuItem value="SAFE">🟢 An toàn (Tiết kiệm Bank, Trái phiếu CP)</MenuItem>
-                  <MenuItem value="LOW">🟢 Thấp (Vàng vật chất, Quỹ mở an toàn)</MenuItem>
-                  <MenuItem value="MEDIUM">🟡 Trung bình (Cổ phiếu, Quỹ ETF, BĐS)</MenuItem>
-                  <MenuItem value="HIGH">🔴 Cao (Mạo hiểm, Tiền số, P2P)</MenuItem>
+                  <MenuItem value="SAFE">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                      <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10B981', flexShrink: 0 }} />
+                      <span>An toàn (Tiết kiệm Bank, Trái phiếu CP)</span>
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="LOW">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                      <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#34D399', flexShrink: 0 }} />
+                      <span>Thấp (Vàng vật chất, Quỹ mở an toàn)</span>
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="MEDIUM">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                      <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#F59E0B', flexShrink: 0 }} />
+                      <span>Trung bình (Cổ phiếu, Quỹ ETF, BĐS)</span>
+                    </Box>
+                  </MenuItem>
+                  <MenuItem value="HIGH">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                      <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#EF4444', flexShrink: 0 }} />
+                      <span>Cao (Mạo hiểm, Tiền số, P2P)</span>
+                    </Box>
+                  </MenuItem>
                 </Select>
               </FormControl>
 

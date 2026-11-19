@@ -97,6 +97,12 @@ class MemoryStorageAdapter {
       if (op.user_id === userId) this.outbox.delete(id);
     }
   }
+  async clearAllStores(): Promise<void> {
+    this.userData.clear();
+    this.outbox.clear();
+    this.leases.clear();
+    this.consents.clear();
+  }
 }
 
 /**
@@ -114,6 +120,7 @@ export interface StorageAdapter {
   saveConsent(consent: ConsentRecord): Promise<void>;
   getConsent(userId: string, termsVersion: string): Promise<ConsentRecord | null>;
   clearUserStore(userId: string): Promise<void>;
+  clearAllStores(): Promise<void>;
 }
 
 class IndexedDbAdapter implements StorageAdapter {
@@ -360,6 +367,19 @@ class IndexedDbAdapter implements StorageAdapter {
       const tx = db.transaction([STORE_USER_DATA, STORE_LEASES], 'readwrite');
       tx.objectStore(STORE_USER_DATA).delete(userId);
       tx.objectStore(STORE_LEASES).delete(userId);
+    } catch {}
+  }
+
+  async clearAllStores(): Promise<void> {
+    await this.memoryFallback.clearAllStores();
+    if (!this.isIndexedDbAvailable) return;
+    try {
+      const db = await this.getDB();
+      const tx = db.transaction([STORE_USER_DATA, STORE_OUTBOX, STORE_LEASES, STORE_CONSENTS], 'readwrite');
+      tx.objectStore(STORE_USER_DATA).clear();
+      tx.objectStore(STORE_OUTBOX).clear();
+      tx.objectStore(STORE_LEASES).clear();
+      tx.objectStore(STORE_CONSENTS).clear();
     } catch {}
   }
 }

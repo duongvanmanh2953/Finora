@@ -8,9 +8,9 @@ export const BRAND = {
   appName: 'Tích Sản',
   tagline: 'Quản lý tài chính & Tích lũy tài sản cá nhân thông minh',
   description: 'Tích Sản – Nền tảng quản lý tài chính, phân bổ dòng tiền và tích lũy tài sản cá nhân bảo mật, minh bạch và bền vững.',
-  domain: 'tichsan.vn',
-  supportEmail: 'hotro@tichsan.vn',
-  complianceEmail: 'phaply@tichsan.vn',
+  domain: 'tichsan.site',
+  supportEmail: 'hotro@tichsan.site',
+  complianceEmail: 'phaply@tichsan.site',
   copyright: `© ${new Date().getFullYear()} Tích Sản Platform. Bản quyền được bảo hộ.`,
   version: '2.0.0',
 

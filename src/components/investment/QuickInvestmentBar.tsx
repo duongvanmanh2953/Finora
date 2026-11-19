@@ -20,6 +20,7 @@ import TollRounded from '@mui/icons-material/TollRounded';
 import ReceiptLongRounded from '@mui/icons-material/ReceiptLongRounded';
 import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded';
 import LightbulbRounded from '@mui/icons-material/LightbulbRounded';
+import { Sprout, Zap } from 'lucide-react';
 
 import { useFinance } from '../../store';
 import { money, todayKey, uid } from '../../lib/finance';
@@ -357,14 +358,16 @@ export function QuickInvestmentBar({ onSuccess }: QuickInvestmentBarProps) {
 
             <Chip
               size="small"
-              label={parsed.strategy_type === 'DCA' ? '🌱 Tích sản DCA' : '⚡ Lướt sóng Trade'}
+              icon={parsed.strategy_type === 'DCA' ? <Sprout size={13} color="#059669" /> : <Zap size={13} color="#DC2626" />}
+              label={parsed.strategy_type === 'DCA' ? 'Tích sản DCA' : 'Lướt sóng Trade'}
               sx={{
                 borderRadius: '4px',
                 fontWeight: 750,
-                bgcolor: parsed.strategy_type === 'DCA' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                bgcolor: parsed.strategy_type === 'DCA' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
                 color: parsed.strategy_type === 'DCA' ? '#059669' : '#DC2626',
                 height: 24,
-                fontSize: '0.75rem'
+                fontSize: '0.75rem',
+                '& .MuiChip-icon': { ml: '6px', mr: '-2px' }
               }}
             />
 

@@ -2,8 +2,11 @@ import { describe, it, expect } from 'vitest';
 import {
   calculatePayroll,
   calculateProgressivePit,
+  syncSalaryToPayroll,
   STATUTORY_LIMITS
 } from './payrollEngine';
+import { formatVnMonth } from './dateUtils';
+import { parseVietnameseCommand } from './nlpParser';
 import {
   calculateWeightedAverageBuy,
   calculateSellOrder,
@@ -102,6 +105,81 @@ describe('Finora Payroll & Vietnamese Tax Engine (FINORA_INCOME_AND_PAYROLL_SPEC
     expect(record.overtimeTaxExemptPay).toBe(625000);
     // Taxable income = Gross - exempt OT = 23,875,000 - 625,000 = 23,250,000 VND
     expect(record.taxableIncome).toBe(23250000);
+  });
+
+  it('honors manual Net salary override when isCustomNet is true', () => {
+    const record = calculatePayroll({
+      month: '2026-11',
+      contractSalary: 35000000,
+      isCustomNet: true,
+      customNetSalary: 28500000
+    });
+
+    expect(record.isCustomNet).toBe(true);
+    expect(record.netSalary).toBe(28500000);
+    expect(record.contractSalary).toBe(35000000);
+  });
+
+  it('syncSalaryToPayroll extracts month and updates or creates paid payroll records', () => {
+    const existingPayrolls = [
+      calculatePayroll({ month: '2026-10', contractSalary: 25000000 })
+    ];
+
+    // Case 1: Detects month from text "Lương tháng 11"
+    const sync1 = syncSalaryToPayroll(existingPayrolls, {
+      name: 'Lương tháng 11',
+      amount: 27000000,
+      date: '2026-11-15',
+      accountId: 'acc-vcb'
+    });
+
+    expect(sync1.month).toBe('2026-11');
+    expect(sync1.updatedPayrolls.length).toBe(2);
+    const p11 = sync1.updatedPayrolls.find(p => p.month === '2026-11')!;
+    expect(p11.status).toBe('paid');
+    expect(p11.netSalary).toBe(27000000);
+    expect(p11.actualPaidDate).toBe('2026-11-15');
+    expect(p11.targetAccountId).toBe('acc-vcb');
+
+    // Case 2: Updates existing month
+    const sync2 = syncSalaryToPayroll(sync1.updatedPayrolls, {
+      name: 'Nhận lương T11 bổ sung',
+      amount: 30000000,
+      date: '2026-11-20',
+      accountId: 'acc-tcb'
+    });
+    expect(sync2.updatedPayrolls.length).toBe(2);
+    const p11Updated = sync2.updatedPayrolls.find(p => p.month === '2026-11')!;
+    expect(p11Updated.netSalary).toBe(30000000);
+    expect(p11Updated.targetAccountId).toBe('acc-tcb');
+  });
+
+  it('formatVnMonth correctly converts YYYY-MM to MM/YYYY', () => {
+    expect(formatVnMonth('2026-11')).toBe('11/2026');
+    expect(formatVnMonth('2026-05')).toBe('05/2026');
+  });
+
+  it('correctly parses compound salary and savings commands', () => {
+    // Case 1: "tôi nhận lương 5 gửi tiết kiệm 2m" -> 5M salary, 2M savings
+    const cmd1 = parseVietnameseCommand('tôi nhận lương 5 gửi tiết kiệm 2m', [], []);
+    expect(cmd1).not.toBeNull();
+    expect(cmd1?.intent).toBe('salary_and_saving');
+    expect(cmd1?.salaryAndSaving?.salaryAmount).toBe(5000000);
+    expect(cmd1?.salaryAndSaving?.savingAmount).toBe(2000000);
+
+    // Case 2: "nhận lương 20tr gửi tiết kiệm 5tr vào mua xe"
+    const cmd2 = parseVietnameseCommand('nhận lương 20tr gửi tiết kiệm 5tr vào mua xe', [], []);
+    expect(cmd2).not.toBeNull();
+    expect(cmd2?.intent).toBe('salary_and_saving');
+    expect(cmd2?.salaryAndSaving?.salaryAmount).toBe(20000000);
+    expect(cmd2?.salaryAndSaving?.savingAmount).toBe(5000000);
+    expect(cmd2?.salaryAndSaving?.savingGoalName).toBe('mua xe');
+
+    // Case 3: Simple transaction -> instant transaction
+    const cmd3 = parseVietnameseCommand('ăn trưa 45k', [], []);
+    expect(cmd3).not.toBeNull();
+    expect(cmd3?.intent).toBe('transaction');
+    expect(cmd3?.transaction?.amount).toBe(45000);
   });
 });
 

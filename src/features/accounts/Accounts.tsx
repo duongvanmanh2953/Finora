@@ -7,7 +7,8 @@ import {
   Trash2,
   History,
   Scale,
-  Users
+  Users,
+  Coins
 } from 'lucide-react';
 import {
   Box,
@@ -33,6 +34,9 @@ import { canAddAccount } from '../../lib/subscription';
 import { MuiTextField, MuiSelect, MuiCurrencyInput } from '../../components/mui/MuiInputs';
 import { BankLogoBadge } from '../../lib/brandBadges';
 import { ItemActionMenu } from '../../components/ItemActionMenu';
+import { MonthlyBalanceRolloverSection } from './MonthlyBalanceRolloverSection';
+import { FamilySettlementModal } from '../../components/family/FamilySettlementModal';
+import { TaxAndCurrencyModal } from '../../components/tax/TaxAndCurrencyModal';
 import type { Account, Transaction } from '../../types';
 
 const kinds: Record<Account['type'], string> = {
@@ -75,6 +79,9 @@ export default function Accounts() {
   const [target, setTarget] = useState(data.accounts[1]?.id || '');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+  const [viewTab, setViewTab] = useState<'cards' | 'rollover'>('cards');
+  const [familyModalOpen, setFamilyModalOpen] = useState(false);
+  const [taxCurrencyModalOpen, setTaxCurrencyModalOpen] = useState(false);
 
   const start = (a?: Account) => {
     if (!a && !canAddAccount(data)) {
@@ -209,7 +216,23 @@ export default function Accounts() {
         title="Tài khoản"
         subtitle="Theo dõi số dư từ số dư đầu kỳ và lịch sử giao dịch."
         actions={
-          <>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              startIcon={<Coins size={14} />}
+              onClick={() => setTaxCurrencyModalOpen(true)}
+            >
+              Đa tiền tệ & Thuế
+            </Button>
+            <Button
+              variant="outlined"
+              color="inherit"
+              startIcon={<Users size={14} />}
+              onClick={() => setFamilyModalOpen(true)}
+            >
+              Ví chung & Quyết toán
+            </Button>
             <Button
               variant="outlined"
               color="inherit"
@@ -229,7 +252,7 @@ export default function Accounts() {
             >
               Thêm tài khoản
             </Button>
-          </>
+          </Box>
         }
       />
 
@@ -254,8 +277,33 @@ export default function Accounts() {
         ))}
       </div>
 
-      {/* Account Cards */}
-      <div className="tiles">
+      {/* VIEW SWITCHER */}
+      <Box sx={{ display: 'flex', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
+        <Button
+          variant={viewTab === 'cards' ? 'contained' : 'outlined'}
+          size="small"
+          onClick={() => setViewTab('cards')}
+          startIcon={<Wallet size={16} />}
+          sx={{ fontWeight: 700, borderRadius: 2, textTransform: 'none' }}
+        >
+          Danh sách Tài khoản ({data.accounts.length})
+        </Button>
+        <Button
+          variant={viewTab === 'rollover' ? 'contained' : 'outlined'}
+          size="small"
+          onClick={() => setViewTab('rollover')}
+          startIcon={<History size={16} />}
+          sx={{ fontWeight: 700, borderRadius: 2, textTransform: 'none' }}
+        >
+          Đối soát Chuyển tiếp Số dư (Monthly Rollover)
+        </Button>
+      </Box>
+
+      {viewTab === 'rollover' ? (
+        <MonthlyBalanceRolloverSection />
+      ) : (
+        /* Account Cards */
+        <div className="tiles">
         {data.accounts.map(a => {
           const currentBal = balance(a, data.transactions);
           return (
@@ -388,6 +436,7 @@ export default function Accounts() {
           );
         })}
       </div>
+      )}
 
       {/*  Balance Reconciliation Modal */}
       <ReconcileDialog
@@ -680,6 +729,18 @@ export default function Accounts() {
           }));
         }}
         message={`Xóa tài khoản “${deleting?.name || ''}”? Tài khoản đã có giao dịch sẽ được giữ lại để bảo toàn lịch sử.`}
+      />
+
+      {/* Family / Duo Finance Settlement Modal */}
+      <FamilySettlementModal
+        open={familyModalOpen}
+        onClose={() => setFamilyModalOpen(false)}
+      />
+
+      {/* Tax & Multi-Currency Modal */}
+      <TaxAndCurrencyModal
+        open={taxCurrencyModalOpen}
+        onClose={() => setTaxCurrencyModalOpen(false)}
       />
     </>
   );

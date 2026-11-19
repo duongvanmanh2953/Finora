@@ -1,9 +1,67 @@
 services:
-  finora:
+  finora-app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: app
     container_name: finora-app
     ports:
-      - "8080:80"
+      - "7000:80"
     restart: unless-stopped
+    depends_on:
+      - finora-api
+    networks:
+      - default
+
+  finora-landing:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: landing
+    container_name: finora-landing
+    ports:
+      - "7001:80"
+    restart: unless-stopped
+    depends_on:
+      - finora-api
+    networks:
+      - default
+
+  finora-auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: auth
+    container_name: finora-auth
+    ports:
+      - "7002:80"
+    restart: unless-stopped
+    depends_on:
+      - finora-api
+    networks:
+      - default
+
+  finora-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    container_name: finora-api
+    ports:
+      - "7003:7003"
+    environment:
+      - PORT=7003
+      - HOST=0.0.0.0
+      - NODE_ENV=production
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./.data:/app/.data
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    name: finora_default

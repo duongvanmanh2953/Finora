@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Typography, Switch, Divider } from '@mui/material';
-import { Save } from 'lucide-react';
+import { Save, Check } from 'lucide-react';
 import { BaseCard } from '../../components/ui/CardVariants';
 import { FinoraButton } from '../../components/ui/FinoraButton';
 
@@ -102,8 +102,12 @@ export function AdminSettingsView() {
           </Box>
 
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
-            <FinoraButton variant="primary" startIcon={<Save size={15} />} onClick={handleSave}>
-              {saved ? 'Đã lưu cấu hình ✓' : 'Lưu thay đổi'}
+            <FinoraButton
+              variant={saved ? 'secondary' : 'primary'}
+              startIcon={saved ? <Check size={15} /> : <Save size={15} />}
+              onClick={handleSave}
+            >
+              {saved ? 'Đã lưu cấu hình' : 'Lưu thay đổi'}
             </FinoraButton>
           </Box>
         </Box>

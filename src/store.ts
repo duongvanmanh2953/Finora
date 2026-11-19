@@ -29,10 +29,13 @@ interface State {
   setTheme: (theme: 'light' | 'dark') => void;
   notify: (toast: string | ToastInfo) => void;
   clearToast: () => void;
+  clearError: () => void;
   openPricing: (feature?: string) => void;
   closePricing: () => void;
-  register: (name: string, email: string) => Promise<void>;
-  login: (email: string) => Promise<void>;
+  register: (name: string, email: string, password?: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<void>;
+  oauthLogin: (name: string, email: string, provider?: string) => Promise<void>;
+  startGuest: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -45,8 +48,8 @@ export const useFinance = create<State>((set, get) => {
   if (typeof window !== 'undefined') {
     window.addEventListener('finora:reconnected', async () => {
       const current = get().data;
-      if (!current) return;
-      const userId = current.user.id || 'demo';
+      if (!current?.user?.id) return;
+      const userId = current.user.id;
       get().notify({
         message: 'Kết nối đã được khôi phục. Đang đồng bộ...',
         severity: 'info'
@@ -72,7 +75,7 @@ export const useFinance = create<State>((set, get) => {
     data: null,
     loading: true,
     error: null,
-    theme: (typeof localStorage !== 'undefined' && localStorage.getItem('finora:theme') as 'light' | 'dark') || 'light',
+    theme: (typeof localStorage !== 'undefined' && localStorage.getItem('finora:theme') as 'light' | 'dark') || 'dark',
     toast: null,
     lastSnapshot: null,
     pricingOpen: false,
@@ -82,8 +85,8 @@ export const useFinance = create<State>((set, get) => {
 
     syncNow: async () => {
       const current = get().data;
-      if (!current) return;
-      const userId = current.user.id || 'demo';
+      if (!current?.user?.id) return;
+      const userId = current.user.id;
       get().notify({ message: 'Đang đồng bộ dữ liệu...', severity: 'info' });
       const result = await outboxManager.syncOutbox(userId, getAuthToken());
       if (result.synced > 0) {
@@ -113,23 +116,27 @@ export const useFinance = create<State>((set, get) => {
     const next = fn(structuredClone(previous));
     try {
       await mockFinanceService.save(next);
+      const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+      const displayMsg = toastMessage
+        ? isOffline
+          ? `${toastMessage} (Đã lưu offline • Tự đồng bộ khi có mạng)`
+          : toastMessage
+        : isOffline
+        ? 'Đã lưu offline trên máy'
+        : 'Đã lưu thay đổi';
+
       set({
         data: next,
         lastSnapshot: clonedPrev,
-        toast: toastMessage
-          ? {
-              message: toastMessage,
-              actionLabel: 'Hoàn tác',
-              onAction: () => get().undo(),
-              severity: 'success'
-            }
-          : {
-              message: 'Đã lưu thay đổi',
-              severity: 'success'
-            }
+        toast: {
+          message: displayMsg,
+          actionLabel: 'Hoàn tác',
+          onAction: () => get().undo(),
+          severity: isOffline ? 'info' : 'success'
+        }
       });
       setTimeout(() => {
-        if (get().toast?.message === (toastMessage || 'Đã lưu thay đổi')) {
+        if (get().toast?.message === displayMsg) {
           set({ toast: null });
         }
       }, 5000);
@@ -175,32 +182,49 @@ export const useFinance = create<State>((set, get) => {
   },
 
   clearToast: () => set({ toast: null }),
+  clearError: () => set({ error: null }),
   openPricing: feature => set({ pricingOpen: true, pricingFeature: feature }),
   closePricing: () => set({ pricingOpen: false, pricingFeature: undefined }),
 
-  register: async (name: string, email: string) => {
+  register: async (name: string, email: string, password?: string) => {
     try {
-      set({ loading: true, error: null });
-      const nextData = await mockFinanceService.registerUser(name, email);
-      set({ data: nextData, loading: false });
-    } catch {
-      set({ error: 'Không thể đăng ký tài khoản. Vui lòng thử lại.', loading: false });
+      const nextData = await mockFinanceService.registerUser(name, email, password);
+      set({ data: nextData, error: null });
+    } catch (err: any) {
+      throw err;
     }
   },
 
-  login: async (email: string) => {
+  login: async (email: string, password?: string) => {
     try {
-      set({ loading: true, error: null });
-      const nextData = await mockFinanceService.loginUser(email);
-      set({ data: nextData, loading: false });
-    } catch {
-      set({ error: 'Không thể đăng nhập. Vui lòng thử lại.', loading: false });
+      const nextData = await mockFinanceService.loginUser(email, password);
+      set({ data: nextData, error: null });
+    } catch (err: any) {
+      throw err;
+    }
+  },
+
+  oauthLogin: async (name: string, email: string, provider = 'google') => {
+    try {
+      const nextData = await mockFinanceService.oauthLoginUser(name, email, provider);
+      set({ data: nextData, error: null });
+    } catch (err: any) {
+      throw err;
+    }
+  },
+
+  startGuest: async () => {
+    try {
+      const nextData = await mockFinanceService.startGuestSession();
+      set({ data: nextData, error: null });
+    } catch (err: any) {
+      throw err;
     }
   },
 
   logout: async () => {
-    mockFinanceService.logoutUser();
-    await get().load();
+    await mockFinanceService.logoutUser();
+    set({ data: null, lastSnapshot: null });
   }
 };
 });

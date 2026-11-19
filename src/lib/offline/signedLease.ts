@@ -1,6 +1,11 @@
 import type { SignedLease } from './indexedDbAdapter';
 
-const LEASE_SECRET = 'finora_vip_lease_secret_2026';
+const metaEnv = typeof import.meta !== 'undefined' ? (import.meta as any).env : undefined;
+const LEASE_SECRET = metaEnv?.VITE_LEASE_SALT
+  ? String(metaEnv.VITE_LEASE_SALT)
+  : (typeof process !== 'undefined' && process.env?.VITE_LEASE_SALT)
+    ? String(process.env.VITE_LEASE_SALT)
+    : 'f0e5c9321d533cf3f850ccb6451cd88a48373ea9851dde76aabac3e257a4c7ae';
 const MAX_TIME_KEY = 'finora:max_observed_server_time';
 let inMemoryMaxObservedTime = 0;
 

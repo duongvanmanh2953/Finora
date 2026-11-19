@@ -8,7 +8,7 @@ function runBootstrap() {
   console.log('======================================================================');
 
   // Verify server-side execution environment
-  const adminEmail = process.env.ADMIN_BOOTSTRAP_EMAIL || 'admin@tichsan.vn';
+  const adminEmail = process.env.ADMIN_BOOTSTRAP_EMAIL || 'admin@tichsan.site';
 
   try {
     const newPassword = generateSecurePassword(16);

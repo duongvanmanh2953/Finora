@@ -6,13 +6,21 @@ export class AIIntentRouter {
 
     // 1. Action intents (Commands to create or modify data)
     if (
+      (text.includes('lương') || text.includes('thu nhập')) &&
+      (text.includes('tiết kiệm') || text.includes('gửi tk') || text.includes('sổ'))
+    ) {
+      return 'ACTION_SAVINGS_CREATE';
+    }
+
+    if (
       text.includes('thêm') ||
       text.includes('tạo') ||
       text.includes('sửa') ||
       text.includes('đổi thành') ||
       text.includes('thiết lập') ||
       text.startsWith('chi ') ||
-      text.startsWith('tiêu ')
+      text.startsWith('tiêu ') ||
+      text.startsWith('nhận ')
     ) {
       if (text.includes('ngân sách')) {
         return text.includes('sửa') || text.includes('đổi') ? 'ACTION_BUDGET_UPDATE' : 'ACTION_BUDGET_CREATE';

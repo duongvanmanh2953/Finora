@@ -3,6 +3,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Native Mobile Touch & Interaction Standards */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  max-width: 100vw;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
 /* Modern Ultra-Thin, Sleek Custom Scrollbar */
 * {
   scrollbar-width: thin;
@@ -70,6 +86,8 @@
 
 html {
   overflow-x: hidden;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
   max-width: 100vw;
   width: 100%;
   scrollbar-gutter: stable;
@@ -79,68 +97,86 @@ html {
 
 body {
   overflow-x: hidden;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
   max-width: 100vw;
   width: 100%;
+  min-height: 100vh;
   padding-right: 0 !important;
   background-color: var(--bg-app);
   color: var(--text-primary);
   font-family: inherit;
 }
 
-:root {
+:root, .light {
   --font-sans: 'Inter', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Brand Palette - Calm Soothing Sage & Editorial Accent */
-  --brand-primary: #355E52;
-  --brand-primary-hover: #2A4E44;
-  --brand-primary-active: #203D35;
-  --brand-primary-soft: #EDF4F1;
-  --brand-accent: #6C63B5;
-  --brand-accent-soft: #F0EFFA;
+  /* Brand Palette - High-Contrast Rich Emerald & Editorial Accent */
+  --brand-primary: #1E5A48;
+  --brand-primary-hover: #164638;
+  --brand-primary-active: #0F3328;
+  --brand-primary-light: #2D7D65;
+  --brand-primary-dark: #143D30;
+  --brand-primary-tint: rgba(30, 90, 72, 0.08);
+  --brand-primary-soft: #E6F4EF;
+  --brand-accent: #5548C8;
+  --brand-accent-soft: #EEEDFA;
+  --brand-accent-hover: #4639B0;
 
-  /* Neutral Palette - Light Clean Editorial */
-  --bg-app: #F7F8F7;
+  /* Neutral Palette - Slate Canvas with High Contrast Pure White Surfaces */
+  --bg-app: #F1F5F9;
   --bg-surface: #FFFFFF;
-  --bg-surface-secondary: #F1F4F2;
-  --bg-subtle: #F1F4F2;
-  --bg-hover: #EBF0ED;
+  --bg-surface-secondary: #F8FAFC;
+  --bg-subtle: #E2E8F0;
+  --bg-hover: #E2E8F0;
+  --bg-glass: rgba(255, 255, 255, 0.94);
 
-  --border-subtle: #E2E8F0;
-  --border-strong: #CBD5E1;
+  /* High Contrast Borders (WCAG 3:1 non-text compliant) */
+  --border-subtle: #CBD5E1;
+  --border-strong: #94A3B8;
+  --border-glass: rgba(203, 213, 225, 0.8);
+  --glass-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
 
+  /* High-Contrast Card Surface & Elevated Shadow */
+  --card-inset-bg: #FFFFFF;
+  --card-inset-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
+
+  /* Razor Sharp Typography (WCAG AAA compliant contrast) */
   --text-primary: #0F172A;
-  --text-secondary: #475569;
+  --text-secondary: #334155;
   --text-muted: #64748B;
   --text-disabled: #94A3B8;
 
-  /* Semantic Colors */
+  /* Semantic Colors - Rich, Accessible Tones on Light Backgrounds */
   --accent-income: #15803D;
   --accent-expense: #B91C1C;
   --accent-warning: #B45309;
   --accent-info: #1D4ED8;
-  --accent-neutral: #475569;
+  --accent-neutral: #334155;
+  --accent-transfer: #0284C7;
+  --accent-runway: #15803D;
 
-  /* Radius Tokens - Mobile-First Compact Premium Fintech UI */
-  --radius-badge: 9999px;
+  /* Radius Tokens - User-friendly 4-6px standard (not overly rounded, tactile and clean) */
+  --radius-badge: 4px;
   --radius-pill: 9999px;
-  --radius-input: 13px;
-  --radius-btn: 13px;
-  --radius-card-sm: 15px;
-  --radius-card: 19px;
-  --radius-card-lg: 20px;
-  --radius-modal: 22px;
-  --radius-sheet: 24px;
-  --radius-dropdown: 13px;
+  --radius-input: 6px;
+  --radius-btn: 6px;
+  --radius-card-sm: 6px;
+  --radius-card: 6px;
+  --radius-card-lg: 6px;
+  --radius-modal: 6px;
+  --radius-sheet: 8px;
+  --radius-dropdown: 6px;
 
-  /* Mobile Design Tokens */
-  --mobile-card-padding: 13px;
-  --mobile-card-gap: 11px;
-  --mobile-container-px: 15px;
-  --mobile-input-height: 44px;
-  --mobile-btn-height: 42px;
-  --mobile-modal-padding: 16px;
-  --mobile-form-gap: 11px;
-  --mobile-touch-target: 44px;
+  /* Mobile Design Tokens - Compact, balanced, preventing text crowding */
+  --mobile-card-padding: 10px 12px;
+  --mobile-card-gap: 8px;
+  --mobile-container-px: 12px;
+  --mobile-input-height: 40px;
+  --mobile-btn-height: 38px;
+  --mobile-modal-padding: 14px;
+  --mobile-form-gap: 9px;
+  --mobile-touch-target: 40px;
 
   /* Spacing Tokens (4px System) */
   --space-1: 4px;
@@ -239,7 +275,6 @@ body {
   background-color: var(--bg-app);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  overflow-x: hidden;
 }
 
 /* Tabular figures for financial numbers */
@@ -262,7 +297,7 @@ td,
   display: flex;
   background-color: var(--bg-app);
   transition: background-color 0.2s ease;
-  overflow-x: hidden;
+  position: relative;
 }
 
 /* Sidebar: Fixed Header, Scrollable Navigation, Fixed Footer */
@@ -480,7 +515,7 @@ td,
   flex-direction: column;
   background-color: var(--bg-app);
   padding-top: var(--topbar-h);
-  overflow-x: hidden;
+  position: relative;
 }
 
 /* Topbar (100% Fixed on Desktop) */
@@ -923,9 +958,10 @@ td,
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(6, 11, 20, 0.72);
     z-index: 28;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     touch-action: none !important;
     overscroll-behavior: contain !important;
   }
@@ -1009,26 +1045,30 @@ td,
     transform: translateY(-1px);
   }
 
-  /* Center Floating Add Button in Bottom Nav - Vivid Green with White Icon */
+  /* Center Floating Add Button in Bottom Nav - Refined Solid Brand with White Icon */
   .mobile-bottom-add-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+    background: var(--brand-primary, #1E5A48) !important;
     color: #ffffff !important;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.45);
-    transform: translateY(-8px);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+    transform: translateY(-6px);
     margin: 0 2px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
     flex-shrink: 0;
     text-decoration: none;
+  }
+
+  .mobile-bottom-add-btn:hover {
+    background: var(--brand-primary-hover, #164638) !important;
   }
 
   .mobile-bottom-add-btn svg {
@@ -1091,17 +1131,22 @@ td,
     padding: var(--mobile-card-padding);
   }
 
-  /* Mobile-first compact controls */
+  /* Mobile-first compact controls with friendly 4-6px radius */
   .MuiInputBase-root {
     border-radius: var(--radius-input) !important;
     min-height: var(--mobile-input-height) !important;
-    font-size: 13.5px !important;
+    font-size: 13px !important;
   }
 
   .MuiButton-root {
     border-radius: var(--radius-btn) !important;
     min-height: var(--mobile-btn-height) !important;
-    font-size: 13px !important;
+    font-size: 12.5px !important;
+    padding: 6px 12px !important;
+  }
+
+  .MuiChip-root {
+    border-radius: var(--radius-badge) !important;
   }
 
   .MuiDialog-paper {
@@ -1236,7 +1281,7 @@ table th {
   background-color: var(--brand-primary, #10B981) !important;
   color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
 }
 
 .driver-popover-prev-btn {
@@ -1258,15 +1303,70 @@ table th {
   overscroll-behavior: contain !important;
 }
 
+/* Strict Background Scroll Lock when Modal, Dialog, Drawer or Dropdown Menu is open */
+body.MuiModal-open,
+body[style*="overflow: hidden"] {
+  overflow: hidden !important;
+  touch-action: none !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+html:has(body.MuiModal-open),
+html:has(body[style*="overflow: hidden"]) {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
 .MuiDialog-paper,
 .MuiDrawer-paper {
   overscroll-behavior: contain !important;
   touch-action: pan-y;
 }
 
+/* Dialog content spacing after dialog title to prevent sticking to header */
+.MuiDialogTitle-root + .MuiDialogContent-root,
+.MuiDialogTitle-root + div[class*="MuiDialogContent-root"] {
+  padding-top: 32px !important;
+}
+
+/* Background scroll lock when Dialog or Modal is open */
+body:has(.MuiDialog-root:not([aria-hidden="true"])),
+body:has([role="dialog"]:not([aria-hidden="true"])) {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
 .MuiBackdrop-root {
   touch-action: none !important;
   overscroll-behavior: contain !important;
+}
+
+/* Modal, Dialog & Drawer Backdrop Overlay: Dimmed dark background with blur effect (strictly excluding Select / Menu / Popovers) */
+.MuiDialog-root > .MuiBackdrop-root:not(.MuiBackdrop-invisible):not(.MuiModal-backdropInvisible),
+.MuiDrawer-root > .MuiBackdrop-root:not(.MuiBackdrop-invisible):not(.MuiModal-backdropInvisible) {
+  background-color: rgba(6, 11, 20, 0.72) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Explicitly disable ANY overlay, dark color or blur for ALL Select dropdowns, Menus, DatePickers and Popovers */
+.MuiMenu-root .MuiBackdrop-root,
+.MuiMenu-root > .MuiBackdrop-root,
+.MuiPopover-root .MuiBackdrop-root,
+.MuiPopover-root > .MuiBackdrop-root,
+.MuiBackdrop-invisible,
+.MuiModal-backdropInvisible,
+.MuiModal-root:has(.MuiMenu-paper) .MuiBackdrop-root,
+.MuiModal-root:has(.MuiPopover-paper) .MuiBackdrop-root,
+[role="presentation"]:has(.MuiMenu-paper) .MuiBackdrop-root,
+[role="presentation"]:has(.MuiPopover-paper) .MuiBackdrop-root,
+div[class*="MuiMenu"] .MuiBackdrop-root,
+div[class*="MuiPopover"] .MuiBackdrop-root {
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* Recharts Mobile Responsiveness: ensure flex/grid items can shrink without overflowing */

@@ -14,7 +14,12 @@ import {
   Send,
   Crown,
   Sparkles,
-  Bot
+  Bot,
+  BarChart2,
+  Wallet,
+  Target,
+  Edit3,
+  TrendingUp
 } from 'lucide-react';
 import { useFinance } from '../store';
 import { isProUser } from '../lib/subscription';
@@ -22,6 +27,7 @@ import { aiApiClient } from '../services/aiApiClient';
 import type { AIChatMessage, ActionPlan } from '../server/ai/types';
 import { AIActionPlanCard } from './ai/AIActionPlanCard';
 import { FinoraButton } from './ui/FinoraButton';
+import { HorizontalScrollBox } from './common/HorizontalScrollBox';
 
 export function AiAssistantDrawer({
   open,
@@ -108,7 +114,7 @@ export function AiAssistantDrawer({
             id: `ai-exec-${Date.now()}`,
             sender: 'assistant',
             type: 'action_result',
-            text: `✅ **KẾT QUẢ THỰC THI THÀNH CÔNG**:\n\n${result.summaryText}\n\n` +
+            text: `**KẾT QUẢ THỰC THI THÀNH CÔNG**:\n\n${result.summaryText}\n\n` +
               result.results.map(r => `• [${r.status === 'success' ? 'THÀNH CÔNG' : 'THẤT BẠI'}]: ${r.message}`).join('\n'),
             timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
           }
@@ -323,16 +329,17 @@ export function AiAssistantDrawer({
         <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 11, display: 'block', mb: 0.75 }}>
           Gợi ý nhanh cho bạn:
         </Typography>
-        <Box sx={{ display: 'flex', gap: 0.75, overflowX: 'auto', pb: 0.5 }}>
+        <HorizontalScrollBox gap="6px" buttonSize={22} scrollStep={180}>
           {[
-            { label: '📊 Tổng quan tài chính', prompt: 'Tổng quan tình hình tài chính của tôi' },
-            { label: '💸 Chi tiêu tháng này', prompt: 'Tháng này tôi tiêu hết bao nhiêu và khoản nào ngốn tiền nhất?' },
-            { label: '🎯 Đặt 3 ngân sách', prompt: 'Tạo ngân sách tháng này: ăn uống 3 triệu, đi lại 1 triệu, mua sắm 1,5 triệu' },
-            { label: '📝 Ghi 3 khoản chi', prompt: 'Thêm 3 khoản chi: 50k ăn sáng, 30k gửi xe, 80k ăn trưa' },
-            { label: '📈 Rà soát đầu tư', prompt: 'Danh mục cổ phiếu và đầu tư của tôi đang ra sao?' }
+            { icon: <BarChart2 size={13} />, label: 'Tổng quan tài chính', prompt: 'Tổng quan tình hình tài chính của tôi' },
+            { icon: <Wallet size={13} />, label: 'Chi tiêu tháng này', prompt: 'Tháng này tôi tiêu hết bao nhiêu và khoản nào ngốn tiền nhất?' },
+            { icon: <Target size={13} />, label: 'Đặt 3 ngân sách', prompt: 'Tạo ngân sách tháng này: ăn uống 3 triệu, đi lại 1 triệu, mua sắm 1,5 triệu' },
+            { icon: <Edit3 size={13} />, label: 'Ghi 3 khoản chi', prompt: 'Thêm 3 khoản chi: 50k ăn sáng, 30k gửi xe, 80k ăn trưa' },
+            { icon: <TrendingUp size={13} />, label: 'Rà soát đầu tư', prompt: 'Danh mục cổ phiếu và đầu tư của tôi đang ra sao?' }
           ].map((chip, idx) => (
             <Chip
               key={idx}
+              icon={chip.icon}
               label={chip.label}
               size="small"
               onClick={() => handleSend(chip.prompt)}
@@ -343,11 +350,13 @@ export function AiAssistantDrawer({
                 cursor: 'pointer',
                 bgcolor: 'action.hover',
                 '&:hover': { bgcolor: 'action.selected' },
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                '& .MuiChip-icon': { ml: '6px', mr: '-2px' }
               }}
             />
           ))}
-        </Box>
+        </HorizontalScrollBox>
       </Box>
 
       {/* Input Composer */}

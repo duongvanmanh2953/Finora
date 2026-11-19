@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1012760872089",
+    "project_id": "tich-san-b797b",
+    "storage_bucket": "tich-san-b797b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012760872089:android:1bdf41132d820c5bed2408",
+        "android_client_info": {
+          "package_name": "Tich.San_2953"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012760872089-ed3a19tlm8k2dhd3jr40mi0vpcekvb6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYbRxv_AfPi8eUiSRecQA7gn2Y-CScW7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012760872089-ed3a19tlm8k2dhd3jr40mi0vpcekvb6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012760872089:android:1bdf41132d820c5bed2408",
+        "android_client_info": {
+          "package_name": "vn.finora.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012760872089-ed3a19tlm8k2dhd3jr40mi0vpcekvb6d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYbRxv_AfPi8eUiSRecQA7gn2Y-CScW7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012760872089-ed3a19tlm8k2dhd3jr40mi0vpcekvb6d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

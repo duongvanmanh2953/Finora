@@ -61,6 +61,7 @@ export function SemiCircleGauge({
 
   // Geometry
   const strokeWidth = 14;
+  const pad = 12;
   const radius = (size - strokeWidth * 2) / 2;
   const centerX = size / 2;
   const centerY = size / 2;
@@ -202,18 +203,21 @@ export function SemiCircleGauge({
       </Box>
 
       {/* Speedometer Gauge Visual with Locked Axis and Vivid Active Zone Illumination */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%', minWidth: 0 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 0.5, width: '100%', maxWidth: '100%', minWidth: 0 }}>
         <svg
           width="100%"
-          height={size / 2 + 18}
-          viewBox={`0 0 ${size} ${size / 2 + 18}`}
+          height={size / 2 + 18 + pad * 2}
+          viewBox={`-${pad} -${pad} ${size + pad * 2} ${size / 2 + 18 + pad * 2}`}
           style={{ width: '100%', maxWidth: size, height: 'auto', display: 'block', overflow: 'visible' }}
         >
-          {/* SVG Glow Filter for the Active Zone */}
+          {/* SVG Glow Filter for the Active Zone: userSpaceOnUse with generous bounds completely eliminates square clipping */}
           <defs>
-            <filter id={`glow-${filterId}`} x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            <filter id={`glow-${filterId}`} filterUnits="userSpaceOnUse" x={-pad * 2} y={-pad * 2} width={size + pad * 4} height={size + pad * 4}>
+              <feGaussianBlur stdDeviation="4.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="blur" />
+              </feMerge>
             </filter>
           </defs>
 
@@ -230,7 +234,7 @@ export function SemiCircleGauge({
                     stroke={arc.color}
                     strokeWidth={strokeWidth + 6}
                     strokeLinecap="round"
-                    opacity={0.5}
+                    opacity={isDark ? 0.75 : 0.6}
                     filter={`url(#glow-${filterId})`}
                   />
                 )}
@@ -239,8 +243,8 @@ export function SemiCircleGauge({
                   d={arc.d}
                   fill="none"
                   stroke={arc.color}
-                  strokeWidth={isActive ? strokeWidth + 3 : strokeWidth - 2}
-                  strokeLinecap={i === 0 || i === zoneArcs.length - 1 ? 'round' : 'butt'}
+                  strokeWidth={isActive ? strokeWidth + 2.5 : strokeWidth - 2}
+                  strokeLinecap={isActive ? 'round' : i === 0 || i === zoneArcs.length - 1 ? 'round' : 'butt'}
                   opacity={isActive ? 1.0 : isDark ? 0.22 : 0.28}
                   style={{
                     transition: 'stroke-width 0.2s ease, opacity 0.2s ease',

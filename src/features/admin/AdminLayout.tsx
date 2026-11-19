@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -75,6 +75,16 @@ export function AdminLayout() {
   const isDark = theme.palette.mode === 'dark';
 
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Ensure body and html overflow are unlocked when entering Admin console
+  useEffect(() => {
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
 
   // Dynamic Page Title
   const activeNavItem = ADMIN_NAVIGATION.flatMap(g => g.items).find(i => location.pathname.startsWith(i.path));
@@ -218,13 +228,23 @@ export function AdminLayout() {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
+        bgcolor: 'background.default',
+        position: 'relative'
+      }}
+    >
       {/* Desktop Sidebar */}
       <Box
         component="aside"
         sx={{
           display: { xs: 'none', md: 'block' },
           width: 260,
+          height: '100vh',
           flexShrink: 0,
           position: 'fixed',
           top: 0,
@@ -241,7 +261,6 @@ export function AdminLayout() {
         variant="temporary"
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { width: 260, boxSizing: 'border-box' }
@@ -250,8 +269,22 @@ export function AdminLayout() {
         {sidebarContent}
       </Drawer>
 
-      {/* Main Admin Workspace */}
-      <Box sx={{ flex: 1, ml: { xs: 0, md: '260px' }, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      {/* Main Admin Workspace with dedicated scroll container */}
+      <Box
+        id="admin-scroll-container"
+        sx={{
+          flex: 1,
+          ml: { xs: 0, md: '260px' },
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0,
+          height: '100vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth'
+        }}
+      >
         {/* Dedicated Admin Topbar */}
         <Box
           component="header"
@@ -266,7 +299,8 @@ export function AdminLayout() {
             justifyContent: 'space-between',
             position: 'sticky',
             top: 0,
-            zIndex: 1100
+            zIndex: 1100,
+            flexShrink: 0
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -305,7 +339,7 @@ export function AdminLayout() {
         </Box>
 
         {/* Content Area */}
-        <Box component="main" sx={{ p: { xs: 2, sm: 3 }, flex: 1 }}>
+        <Box component="main" sx={{ p: { xs: 2, sm: 3 }, flex: 1, pb: 8 }}>
           <Outlet />
         </Box>
       </Box>

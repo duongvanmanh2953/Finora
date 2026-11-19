@@ -6,10 +6,11 @@
 
 ## 1. Điểm Nhấn Kiến Trúc & Tính Năng Nổi Bật
 
-1. **Quản trị Máy chủ CLI (`Tichsan2953@`)**:
+1. **Quản trị Máy chủ CLI (`admin:reset`)**:
    - Khởi tạo và luân chuyển mật khẩu Admin trực tiếp qua SSH/Shell máy chủ.
    - Không lưu mật khẩu thô (plaintext), băm bằng thuật toán `scrypt` an toàn.
    - Khóa chu kỳ reset tối đa 1 lần mỗi 7 ngày (7-Day Cooldown).
+   - Xác thực qua Master Key cấu hình trong biến môi trường `ADMIN_SECURITY_KEY`.
    - Ẩn hoàn toàn nút Admin khỏi giao diện người dùng thông thường và Demo.
 2. **Phiên Đăng Nhập 120 Ngày (120-Day Long Session)**:
    - Access token ngắn hạn (15 phút) hạn chế rủi ro lộ token.
@@ -52,7 +53,7 @@ Mở trình duyệt tại: `http://localhost:5173`.
 ### 2.3. Lệnh Quản trị Máy chủ
 Để lấy thông tin đăng nhập hoặc luân chuyển mật khẩu Admin:
 ```bash
-./Tichsan2953@
+pnpm admin:reset
 # hoặc
 bash scripts/admin-bootstrap.sh
 ```

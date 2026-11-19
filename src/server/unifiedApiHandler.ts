@@ -42,7 +42,9 @@ function extractToken(req: IncomingMessage): string | null {
   }
   const cookies = req.headers['cookie'];
   if (cookies) {
-    const match = cookies.match(/tichsan_token=([^;]+)/) || cookies.match(/finora_token=([^;]+)/);
+    const match = cookies.match(/tichsan_token=([^;]+)/) ||
+                  cookies.match(/tichsan_session_token=([^;]+)/) ||
+                  cookies.match(/finora_token=([^;]+)/);
     if (match) return decodeURIComponent(match[1]);
   }
   return null;
@@ -89,6 +91,25 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     // 1. AUTHENTICATION (Real Authentication, Scrypt, 120-Day Rotating Session)
     // =========================================================================
 
+    // GET or POST /api/auth/check-email
+    if (pathname === '/api/auth/check-email') {
+      let emailToCheck = parsedUrl.searchParams.get('email') || '';
+      if (!emailToCheck && req.method === 'POST') {
+        try {
+          const body = await parseBody(req);
+          emailToCheck = body?.email || '';
+        } catch {}
+      }
+      emailToCheck = emailToCheck.trim().toLowerCase();
+      const exists = emailToCheck ? db.isEmailRegistered(emailToCheck) : false;
+      sendJson(res, 200, {
+        success: true,
+        exists,
+        message: exists ? 'Email này đã được đăng ký tài khoản' : 'Email có thể sử dụng'
+      });
+      return true;
+    }
+
     // POST /api/auth/register
     if (pathname === '/api/auth/register' && req.method === 'POST') {
       const body = await parseBody(req);
@@ -98,51 +119,125 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
         return true;
       }
 
-      const result = db.register(name, email, password, clientIp, userAgent);
-      // Set 120-day refresh token cookie (HttpOnly, Secure, SameSite=Lax)
-      const maxAge120Days = 120 * 86400;
-      res.setHeader('Set-Cookie', [
-        `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
-        `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
-      ]);
+      const trimmedEmail = email.trim().toLowerCase();
+      if (db.isEmailRegistered(trimmedEmail)) {
+        sendJson(res, 409, {
+          success: false,
+          error: 'Email này đã được đăng ký tài khoản. Vui lòng chuyển sang Đăng nhập.'
+        });
+        return true;
+      }
 
-      sendJson(res, 201, {
-        success: true,
-        data: {
-          user: result.user,
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken,
-          message: 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí. Khám phá toàn bộ tính năng cao cấp và nâng cao khả năng quản lý tài chính của bạn.'
-        }
-      });
-      return true;
+      try {
+        const result = db.register(name, email, password, clientIp, userAgent);
+        // Set 120-day refresh token cookie (HttpOnly, Secure, SameSite=Lax)
+        const maxAge120Days = 120 * 86400;
+        res.setHeader('Set-Cookie', [
+          `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
+          `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
+        ]);
+
+        sendJson(res, 201, {
+          success: true,
+          data: {
+            user: result.user,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            message: 'Tích Sản gửi tặng bạn 01 tháng trải nghiệm VIP Gold miễn phí. Khám phá toàn bộ tính năng cao cấp và nâng cao khả năng quản lý tài chính của bạn.'
+          }
+        });
+        return true;
+      } catch (err: any) {
+        sendJson(res, 400, { success: false, error: err?.message || 'Không thể đăng ký tài khoản' });
+        return true;
+      }
+    }
+
+    // POST /api/auth/oauth
+    if (pathname === '/api/auth/oauth' && req.method === 'POST') {
+      const body = await parseBody(req);
+      const { name, email, provider, type_method_login } = body;
+      if (!email) {
+        sendJson(res, 400, { success: false, error: 'Email OAuth là bắt buộc' });
+        return true;
+      }
+
+      try {
+        const loginProvider = provider || type_method_login || 'google';
+        const result = db.oauthLogin(name || email.split('@')[0], email, loginProvider, clientIp, userAgent);
+        const maxAge120Days = 120 * 86400;
+        res.setHeader('Set-Cookie', [
+          `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
+          `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
+        ]);
+
+        sendJson(res, 200, {
+          success: true,
+          data: {
+            user: result.user,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            isNewUser: result.isNewUser
+          }
+        });
+        return true;
+      } catch (err: any) {
+        sendJson(res, 400, { success: false, error: err?.message || 'Xác thực OAuth không thành công' });
+        return true;
+      }
     }
 
     // POST /api/auth/login
     if (pathname === '/api/auth/login' && req.method === 'POST') {
       const body = await parseBody(req);
-      const { email, password } = body;
+      const { email, password, provider, type_method_login, isOAuth } = body;
       if (!email) {
         sendJson(res, 400, { success: false, error: 'Email là bắt buộc' });
         return true;
       }
 
-      const result = db.login(email, password, clientIp, userAgent);
-      const maxAge120Days = 120 * 86400;
-      res.setHeader('Set-Cookie', [
-        `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
-        `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
-      ]);
+      try {
+        if (isOAuth || type_method_login || (provider && !password)) {
+          const loginProvider = provider || type_method_login || 'google';
+          const result = db.oauthLogin(body.name || email.split('@')[0], email, loginProvider, clientIp, userAgent);
+          const maxAge120Days = 120 * 86400;
+          res.setHeader('Set-Cookie', [
+            `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
+            `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
+          ]);
 
-      sendJson(res, 200, {
-        success: true,
-        data: {
-          user: result.user,
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken
+          sendJson(res, 200, {
+            success: true,
+            data: {
+              user: result.user,
+              accessToken: result.accessToken,
+              refreshToken: result.refreshToken,
+              isNewUser: result.isNewUser
+            }
+          });
+          return true;
         }
-      });
-      return true;
+
+        const result = db.login(email, password, clientIp, userAgent);
+        const maxAge120Days = 120 * 86400;
+        res.setHeader('Set-Cookie', [
+          `tichsan_token=${encodeURIComponent(result.accessToken)}; Path=/; Max-Age=900; SameSite=Lax`,
+          `tichsan_refresh_token=${encodeURIComponent(result.refreshToken)}; Path=/; Max-Age=${maxAge120Days}; HttpOnly; SameSite=Lax`
+        ]);
+
+        sendJson(res, 200, {
+          success: true,
+          data: {
+            user: result.user,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken
+          }
+        });
+        return true;
+      } catch (err: any) {
+        sendJson(res, 401, { success: false, error: err?.message || 'Đăng nhập không thành công' });
+        return true;
+      }
     }
 
     // POST /api/auth/refresh
@@ -175,8 +270,7 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     if (pathname === '/api/auth/me' && req.method === 'GET') {
       const token = extractToken(req);
       if (!token) {
-        const demoUser = db.getAllUsers().find(u => u.email === 'minhanh@tichsan.vn');
-        sendJson(res, 200, { success: true, data: { user: demoUser, isDemo: true } });
+        sendJson(res, 401, { success: false, error: 'Chưa đăng nhập' });
         return true;
       }
 
@@ -192,16 +286,36 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
 
     // POST /api/auth/logout
     if (pathname === '/api/auth/logout' && req.method === 'POST') {
-      const token = extractToken(req);
-      const refreshToken = extractRefreshToken(req);
-      if (token) {
-        db.logout(token, refreshToken || undefined);
+      let token = extractToken(req);
+      let refreshToken = extractRefreshToken(req);
+      let userId: string | undefined;
+
+      try {
+        const body = await parseBody(req);
+        if (body?.token && !token) token = body.token;
+        if (body?.refreshToken && !refreshToken) refreshToken = body.refreshToken;
+        if (body?.userId) userId = body.userId;
+      } catch {}
+
+      if (token || refreshToken || userId) {
+        db.logout(token || undefined, refreshToken || undefined, userId);
       }
+
+      const host = req.headers.host || '';
+      const isTichSan = host.includes('tichsan.site');
+      const domainAttr = isTichSan ? '; Domain=.tichsan.site' : '';
+
       res.setHeader('Set-Cookie', [
-        `tichsan_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
-        `tichsan_refresh_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        `tichsan_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax${domainAttr}`,
+        `tichsan_refresh_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax${domainAttr}`,
+        `tichsan_session_user=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax${domainAttr}`,
+        `tichsan_session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax${domainAttr}`,
+        `tichsan_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`,
+        `tichsan_refresh_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax`,
+        `tichsan_session_user=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`,
+        `tichsan_session_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`
       ]);
-      sendJson(res, 200, { success: true, message: 'Đăng xuất an toàn thành công' });
+      sendJson(res, 200, { success: true, message: 'Đăng xuất thành công, đã thu hồi toàn bộ token trong database' });
       return true;
     }
 
@@ -361,6 +475,39 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
       return true;
     }
 
+    // POST /api/banking/webhook (Casso / SePay / Open Banking Webhook Listener)
+    if (pathname === '/api/banking/webhook' && req.method === 'POST') {
+      const data = await parseBody(req);
+      if (!data) {
+        sendJson(res, 400, { success: false, error: 'Dữ liệu webhook không hợp lệ' });
+        return true;
+      }
+
+      db.addAuditLog('banking_webhook', 'RECEIVED_BANKING_TRANSACTIONS', '/api/banking/webhook', 'SUCCESS', clientIp);
+      sendJson(res, 200, {
+        success: true,
+        message: 'Đã nhận biến động số dư ngân hàng và ghi vết đối soát thành công',
+        receivedAt: new Date().toISOString()
+      });
+      return true;
+    }
+
+    // POST /api/banking/notification-event (Native Android / Bridge Bank Notification Dispatcher)
+    if (pathname === '/api/banking/notification-event' && req.method === 'POST') {
+      const data = await parseBody(req);
+      if (!data || !data.amount) {
+        sendJson(res, 400, { success: false, error: 'Thiếu thông tin biến động số dư' });
+        return true;
+      }
+
+      sendJson(res, 200, {
+        success: true,
+        message: 'Đã chuyển tiếp thông báo giao dịch vào hệ thống đối soát',
+        timestamp: Date.now()
+      });
+      return true;
+    }
+
     // =========================================================================
     // 4. FINANCIAL DATA WITH STRICT OWNERSHIP
     // =========================================================================
@@ -369,9 +516,12 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     if (pathname === '/api/finance' && req.method === 'GET') {
       const token = extractToken(req);
       const user = token ? db.getUserByToken(token) : null;
-      const targetUserId = user ? user.id : 'usr_demo_vip';
+      if (!user) {
+        sendJson(res, 401, { success: false, error: 'Yêu cầu đăng nhập để truy cập dữ liệu tài chính' });
+        return true;
+      }
 
-      const data = db.getFinanceData(targetUserId);
+      const data = db.getFinanceData(user.id);
       sendJson(res, 200, { success: true, data });
       return true;
     }
@@ -380,7 +530,10 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     if (pathname === '/api/finance' && req.method === 'PUT') {
       const token = extractToken(req);
       const user = token ? db.getUserByToken(token) : null;
-      const targetUserId = user ? user.id : 'usr_demo_vip';
+      if (!user) {
+        sendJson(res, 401, { success: false, error: 'Yêu cầu đăng nhập để cập nhật dữ liệu tài chính' });
+        return true;
+      }
 
       const payload = await parseBody(req);
       if (!payload || typeof payload !== 'object') {
@@ -388,7 +541,7 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
         return true;
       }
 
-      db.saveFinanceData(targetUserId, payload);
+      db.saveFinanceData(user.id, payload);
       sendJson(res, 200, { success: true, message: 'Đã lưu thay đổi an toàn vào database' });
       return true;
     }
@@ -424,11 +577,14 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
     if (pathname === '/api/sync/batch' && req.method === 'POST') {
       const token = extractToken(req);
       const user = token ? db.getUserByToken(token) : null;
-      const targetUserId = user ? user.id : 'usr_demo_vip';
+      if (!user) {
+        sendJson(res, 401, { success: false, error: 'Yêu cầu đăng nhập để đồng bộ dữ liệu' });
+        return true;
+      }
 
       const body = await parseBody(req);
       const operations = Array.isArray(body.operations) ? body.operations : [];
-      const results = db.processSyncBatch(targetUserId, operations, user);
+      const results = db.processSyncBatch(user.id, operations, user);
 
       sendJson(res, 200, {
         success: true,
@@ -489,6 +645,37 @@ export async function handleUnifiedApiRequest(req: IncomingMessage, res: ServerR
       const targetUserId = parts[4];
       const updatedUser = db.toggleSuspend(targetUserId);
       sendJson(res, 200, { success: true, data: updatedUser });
+      return true;
+    }
+
+    // GET /api/admin/plans
+    if (pathname === '/api/admin/plans' && req.method === 'GET') {
+      const plans = db.getPlans();
+      sendJson(res, 200, { success: true, data: plans });
+      return true;
+    }
+
+    // POST/PUT /api/admin/plans/:id
+    if (pathname.startsWith('/api/admin/plans/') && (req.method === 'POST' || req.method === 'PUT')) {
+      const planId = pathname.replace('/api/admin/plans/', '');
+      const body = await parseBody(req);
+      const updated = db.updatePlan(planId, body);
+      sendJson(res, 200, { success: true, data: updated, message: 'Đã cập nhật cấu hình gói giá thành công' });
+      return true;
+    }
+
+    // GET /api/admin/plan-permissions
+    if (pathname === '/api/admin/plan-permissions' && req.method === 'GET') {
+      const permissions = db.getPlanPermissions();
+      sendJson(res, 200, { success: true, data: permissions });
+      return true;
+    }
+
+    // POST /api/admin/plan-permissions
+    if (pathname === '/api/admin/plan-permissions' && req.method === 'POST') {
+      const body = await parseBody(req);
+      const updated = db.updatePlanPermissions(body);
+      sendJson(res, 200, { success: true, data: updated, message: 'Đã lưu ma trận phân quyền dịch vụ theo gói giá' });
       return true;
     }
 

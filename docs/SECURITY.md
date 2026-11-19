@@ -33,13 +33,13 @@ Tài liệu này đặc tả toàn bộ các tiêu chuẩn, cơ chế bảo mậ
 
 ---
 
-## 3. Quản trị Server CLI & Khóa Chu kỳ 7 Ngày (`Tichsan2953@`)
+## 3. Quản trị Server CLI & Khóa Chu kỳ 7 Ngày (`pnpm admin:reset`)
 
 ### 3.1. Nguyên tắc Không Backdoor & Không Hardcode
 - Không tồn tại tài khoản Admin mặc định với mật khẩu cố định.
 - Không tồn tại API công khai hoặc bí mật trên web để lấy mật khẩu Admin.
 - Không hiển thị nút bấm Admin trên giao diện người dùng thông thường, Landing page hay Demo.
-- Chuỗi `Tichsan2953@` chỉ là định danh lệnh gọi script CLI chạy trên server vật lý/SSH, **tuyệt đối không** phải là mật khẩu hoặc chuỗi xác thực.
+- Xác thực quyền kích hoạt CLI thông qua Master Key độc lập cấu hình trong biến môi trường `ADMIN_SECURITY_KEY`, không lưu vết mã bí mật trong code hay repo.
 
 ### 3.2. Ràng buộc Chu kỳ 7 Ngày (7-Day Cooldown)
 - Khi gọi lệnh CLI:

@@ -40,7 +40,7 @@ Bảng kiểm tra bắt buộc trước khi đưa phiên bản mới của **Tí
 
 ## 3. Kiểm tra Quản trị Viên & Bảo mật Máy chủ (Admin & Security)
 - [x] Ẩn hoàn toàn nút Admin và menu Quản trị khỏi giao diện người dùng thông thường và Demo mode.
-- [x] Lệnh CLI `Tichsan2953@` (hoặc `scripts/admin-bootstrap.sh`) chạy thành công trên máy chủ.
+- [x] Lệnh CLI `pnpm admin:reset` (hoặc `scripts/admin-bootstrap.sh`) chạy thành công trên máy chủ.
 - [x] Mật khẩu Admin được sinh ngẫu nhiên mạnh và in ra terminal đúng một lần duy nhất.
 - [x] Không lưu mật khẩu Admin dạng văn bản thô (plaintext) trong bất kỳ file nào.
 - [x] Cơ chế khóa chu kỳ luân chuyển mật khẩu 7 ngày (7-Day Cooldown) hoạt động: Từ chối lệnh nếu chưa đủ 7 ngày kể từ lần reset trước.

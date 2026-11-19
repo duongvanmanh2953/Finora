@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogTitle,
@@ -16,9 +17,14 @@ import {
   HardDrive,
   ShieldCheck,
   FileDown,
-  FileUp
+  FileUp,
+  UserPlus,
+  LogIn,
+  Sparkles
 } from 'lucide-react';
 import { useFinance } from '../store';
+import { stashGuestMigrationData } from '../services/financeService';
+import { navigateToAuth } from '../lib/domainRouting';
 
 interface CloudSyncModalProps {
   open: boolean;
@@ -26,11 +32,28 @@ interface CloudSyncModalProps {
 }
 
 export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
+  const navigate = useNavigate();
   const { data, update, notify } = useFinance();
   const [syncing, setSyncing] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   if (!data) return null;
+
+  const isGuest = Boolean(data.user?.isGuest);
+
+  const handleRedirectToAuth = (authMode: 'register' | 'login') => {
+    stashGuestMigrationData(data);
+    const dataStr = JSON.stringify(data);
+    const params: Record<string, string> = {
+      migrate_guest: '1',
+      sync: '1'
+    };
+    if (dataStr.length < 3000) {
+      params.guest_payload = encodeURIComponent(dataStr);
+    }
+    onClose();
+    navigateToAuth(authMode, (path) => navigate(path), params);
+  };
 
   const lastSyncStr = localStorage.getItem('finora:last_cloud_sync');
   const txCount = data.transactions.length;
@@ -183,44 +206,105 @@ export function CloudSyncModal({ open, onClose }: CloudSyncModalProps) {
         </Box>
 
         {/* Action Buttons */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<CloudUpload size={16} />}
-            disabled={syncing}
-            onClick={handleSyncToCloud}
-            fullWidth
-            sx={{ py: 1.1, fontWeight: 750 }}
-          >
-            {syncing ? 'Đang đồng bộ...' : 'Đồng bộ lên Cloud theo yêu cầu'}
-          </Button>
+        {isGuest ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Box sx={{ p: 2, borderRadius: '8px', bgcolor: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Sparkles size={18} color="#10B981" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                  Đồng bộ Cloud yêu cầu tài khoản
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary', lineHeight: 1.5, mb: 2 }}>
+                Bạn đang sử dụng phiên <b>Khách Ngoại Tuyến</b>. Để lưu trữ đám mây an toàn và đồng bộ đa thiết bị, hãy tạo tài khoản mới hoặc đăng nhập. <b>Toàn bộ giao dịch và tài khoản bạn đã nhập sẽ được giữ nguyên và tự động đồng bộ ngay sau khi đăng ký!</b>
+              </Typography>
 
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<FileDown size={15} />}
-              onClick={handleExportJson}
-              fullWidth
-              sx={{ fontSize: 12 }}
-            >
-              Tải sao lưu (.json)
-            </Button>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1.2fr 1fr' }, gap: 1 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleRedirectToAuth('register')}
+                  startIcon={<UserPlus size={16} />}
+                  sx={{ py: 1.1, fontWeight: 800, fontSize: 13, textTransform: 'none' }}
+                >
+                  Tạo tài khoản để đồng bộ ngay
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleRedirectToAuth('login')}
+                  startIcon={<LogIn size={15} />}
+                  sx={{ py: 1.1, fontWeight: 700, fontSize: 12.5, textTransform: 'none' }}
+                >
+                  Đăng nhập tài khoản
+                </Button>
+              </Box>
+            </Box>
 
-            <Button
-              variant="outlined"
-              color="inherit"
-              component="label"
-              startIcon={<FileUp size={15} />}
-              fullWidth
-              sx={{ fontSize: 12 }}
-            >
-              Khôi phục tệp (.json)
-              <input type="file" accept=".json" hidden onChange={handleImportJson} />
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1.5 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<FileDown size={15} />}
+                onClick={handleExportJson}
+                fullWidth
+                sx={{ fontSize: 12 }}
+              >
+                Tải sao lưu (.json)
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="inherit"
+                component="label"
+                startIcon={<FileUp size={15} />}
+                fullWidth
+                sx={{ fontSize: 12 }}
+              >
+                Khôi phục tệp (.json)
+                <input type="file" accept=".json" hidden onChange={handleImportJson} />
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<CloudUpload size={16} />}
+              disabled={syncing}
+              onClick={handleSyncToCloud}
+              fullWidth
+              sx={{ py: 1.1, fontWeight: 750 }}
+            >
+              {syncing ? 'Đang đồng bộ...' : 'Đồng bộ lên Cloud theo yêu cầu'}
+            </Button>
+
+            <Box sx={{ display: 'flex', gap: 1.5 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<FileDown size={15} />}
+                onClick={handleExportJson}
+                fullWidth
+                sx={{ fontSize: 12 }}
+              >
+                Tải sao lưu (.json)
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="inherit"
+                component="label"
+                startIcon={<FileUp size={15} />}
+                fullWidth
+                sx={{ fontSize: 12 }}
+              >
+                Khôi phục tệp (.json)
+                <input type="file" accept=".json" hidden onChange={handleImportJson} />
+              </Button>
+            </Box>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>

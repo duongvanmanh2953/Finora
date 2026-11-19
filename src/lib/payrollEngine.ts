@@ -119,6 +119,10 @@ export interface PayrollInput {
   performanceBonus?: number;
   salesCommission?: number;
   dependentCount?: number;
+  isCustomNet?: boolean;
+  customNetSalary?: number;
+  otherDeductions?: number;
+  note?: string;
   status?: 'draft' | 'verified' | 'paid';
   targetAccountId?: string;
   actualPaidDate?: string;
@@ -216,7 +220,12 @@ export function calculatePayroll(input: PayrollInput): PayrollRecord {
   const { pitWithheld } = calculateProgressivePit(assessableIncome);
 
   // 8. Net Take-Home Salary (Lương thực nhận)
-  const netSalary = Math.max(0, grossIncome - totalInsuranceEmployee - pitWithheld);
+  const otherDeductions = input.otherDeductions ?? 0;
+  const calculatedNet = Math.max(0, grossIncome - totalInsuranceEmployee - pitWithheld - otherDeductions);
+  const isCustomNet = Boolean(input.isCustomNet);
+  const netSalary = (isCustomNet && input.customNetSalary != null && input.customNetSalary >= 0)
+    ? input.customNetSalary
+    : calculatedNet;
 
   return {
     id: input.id ?? uid(),
@@ -264,9 +273,73 @@ export function calculatePayroll(input: PayrollInput): PayrollRecord {
     assessableIncome,
     pitWithheld,
 
+    isCustomNet,
+    otherDeductions,
+    note: input.note,
     netSalary,
     targetAccountId: input.targetAccountId,
     actualPaidDate: input.actualPaidDate
   };
+}
+
+/**
+ * Sync quick salary input (from Chat Nhanh / SmartQuickEntry / CommandBar) into Payroll records
+ */
+export function syncSalaryToPayroll(
+  payrolls: PayrollRecord[] = [],
+  salaryTx: {
+    name?: string;
+    amount: number;
+    date: string;
+    accountId?: string;
+    note?: string;
+  }
+): { updatedPayrolls: PayrollRecord[]; month: string } {
+  // Extract month from string: e.g. "Lương tháng 11", "T10", or fallback to transaction date's month
+  const text = `${salaryTx.name || ''} ${salaryTx.note || ''}`;
+  const monthMatch = text.match(/(?:tháng|t)\s*(\d{1,2})/i);
+  let month = salaryTx.date.slice(0, 7);
+
+  if (monthMatch) {
+    const m = parseInt(monthMatch[1], 10);
+    if (m >= 1 && m <= 12) {
+      const year = salaryTx.date.slice(0, 4);
+      month = `${year}-${String(m).padStart(2, '0')}`;
+    }
+  }
+
+  const existingIdx = payrolls.findIndex(p => p.month === month);
+  let updatedPayrolls = [...payrolls];
+
+  if (existingIdx >= 0) {
+    const current = payrolls[existingIdx];
+    updatedPayrolls[existingIdx] = {
+      ...current,
+      status: 'paid',
+      netSalary: salaryTx.amount,
+      isCustomNet: true,
+      actualPaidDate: salaryTx.date,
+      targetAccountId: salaryTx.accountId || current.targetAccountId,
+      note: salaryTx.note || current.note
+    };
+  } else {
+    // Generate new payroll record matching this received salary
+    const newRecord = calculatePayroll({
+      month,
+      contractSalary: Math.round(salaryTx.amount * 1.15),
+      status: 'paid',
+      actualPaidDate: salaryTx.date,
+      targetAccountId: salaryTx.accountId,
+      isCustomNet: true,
+      customNetSalary: salaryTx.amount,
+      note: salaryTx.name || 'Ghi nhận qua Nhập Nhanh / Chat'
+    });
+    updatedPayrolls = [newRecord, ...updatedPayrolls];
+  }
+
+  // Sort descending by month
+  updatedPayrolls.sort((a, b) => b.month.localeCompare(a.month));
+
+  return { updatedPayrolls, month };
 }
 

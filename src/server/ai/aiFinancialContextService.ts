@@ -6,8 +6,7 @@ import {
   analyzeFinancialRisks
 } from '../../lib/riskAndInsightEngine';
 import {
-  calculateComprehensiveNetWorth,
-  getSampleWealthInvestmentNotes
+  calculateComprehensiveNetWorth
 } from '../../lib/investmentProjectionEngine';
 
 export class AIFinancialContextService {
@@ -32,9 +31,7 @@ export class AIFinancialContextService {
       .reduce((sum, d) => sum + debtRemaining(d), 0);
 
     // Wealth Management Smart Ledger Integration
-    const notes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
-      ? data.smartInvestmentNotes
-      : getSampleWealthInvestmentNotes();
+    const notes = data.smartInvestmentNotes || [];
 
     const wealthNetWorth = calculateComprehensiveNetWorth(
       totalBankCash,

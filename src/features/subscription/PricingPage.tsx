@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatVnDate } from '../../lib/dateUtils';
 import {
   Box,
   Typography,
@@ -191,9 +192,9 @@ export default function PricingPage() {
             </Box>
             <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.74rem' }}>
               {trialActive
-                ? `Bạn đang được cấp toàn quyền trải nghiệm Gói Gold trong 30 ngày. Hết hạn ngày: ${user?.trial_ends_at ? new Date(user.trial_ends_at).toLocaleDateString('vi-VN') : '—'}. Khi hết hạn, tài khoản tự động chuyển về Free an toàn.`
+                ? `Bạn đang được cấp toàn quyền trải nghiệm Gói Gold trong 30 ngày. Hết hạn ngày: ${user?.trial_ends_at ? formatVnDate(user.trial_ends_at) : '—'}. Khi hết hạn, tài khoản tự động chuyển về Free an toàn.`
                 : isGold || isPro
-                ? `Thời hạn gói: ${user?.proExpiresAt ? new Date(user.proExpiresAt).toLocaleDateString('vi-VN') : 'Trọn đời'}. Toàn bộ tính năng đã được kích hoạt.`
+                ? `Thời hạn gói: ${user?.proExpiresAt ? formatVnDate(user.proExpiresAt) : 'Trọn đời'}. Toàn bộ tính năng đã được kích hoạt.`
                 : 'Bạn đang sử dụng các tính năng cơ bản. Kích hoạt dùng thử 30 ngày để mở khóa đầy đủ tính năng.'}
             </Typography>
           </Box>
@@ -589,7 +590,7 @@ export default function PricingPage() {
         planId={checkoutModal.planId}
         planName={checkoutModal.planName}
         amount={checkoutModal.amount}
-        userEmail={user?.email || 'user@tichsan.vn'}
+        userEmail={user?.email || 'user@tichsan.site'}
       />
     </Box>
   );

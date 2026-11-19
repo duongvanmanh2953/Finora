@@ -86,15 +86,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.assets[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.assets[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 122,
+            minHeight: { xs: 108, sm: 122 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -127,7 +127,7 @@ export function FinancialOverviewCards({
                 color: isDark ? '#FFFFFF' : '#0F172A',
                 letterSpacing: '-0.02em',
                 fontFeatureSettings: '"tnum"',
-                fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                fontSize: { xs: '1.18rem', sm: '1.45rem' }
               }}
             >
               {mask(money(netWorthSummary.headlineNetWorth))}
@@ -149,15 +149,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.income[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.income[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 122,
+            minHeight: { xs: 108, sm: 122 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -190,7 +190,7 @@ export function FinancialOverviewCards({
                 color: isDark ? '#34D399' : '#059669',
                 letterSpacing: '-0.02em',
                 fontFeatureSettings: '"tnum"',
-                fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                fontSize: { xs: '1.18rem', sm: '1.45rem' }
               }}
             >
               {mask(`+${money(income)}`)}
@@ -213,15 +213,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.expense[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.expense[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 122,
+            minHeight: { xs: 108, sm: 122 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -254,7 +254,7 @@ export function FinancialOverviewCards({
                 color: isDark ? '#F87171' : '#DC2626',
                 letterSpacing: '-0.02em',
                 fontFeatureSettings: '"tnum"',
-                fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                fontSize: { xs: '1.18rem', sm: '1.45rem' }
               }}
             >
               {mask(`-${money(expense)}`)}
@@ -283,15 +283,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.cashflow[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.cashflow[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 122,
+            minHeight: { xs: 108, sm: 122 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -356,15 +356,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.savings[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.savings[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 110,
+            minHeight: { xs: 100, sm: 110 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -398,7 +398,7 @@ export function FinancialOverviewCards({
                   color: isDark ? '#C084FC' : '#7C3AED',
                   letterSpacing: '-0.02em',
                   fontFeatureSettings: '"tnum"',
-                  fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                  fontSize: { xs: '1.18rem', sm: '1.45rem' }
                 }}
               >
                 {savingsRate}%
@@ -417,15 +417,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.budget[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.budget[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 110,
+            minHeight: { xs: 100, sm: 110 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -459,7 +459,7 @@ export function FinancialOverviewCards({
                   color: isDark ? '#FBBF24' : '#D97706',
                   letterSpacing: '-0.02em',
                   fontFeatureSettings: '"tnum"',
-                  fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                  fontSize: { xs: '1.18rem', sm: '1.45rem' }
                 }}
               >
                 {budgetUsagePct}%
@@ -489,15 +489,15 @@ export function FinancialOverviewCards({
         <Paper
           elevation={0}
           sx={{
-            p: { xs: 1.75, sm: 2 },
-            borderRadius: '10px',
+            p: { xs: 1.25, sm: 2 },
+            borderRadius: '6px',
             bgcolor: tokens.debt[modeKey].bg,
             border: '1px solid',
             borderColor: tokens.debt[modeKey].border,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            minHeight: 110,
+            minHeight: { xs: 100, sm: 110 },
             minWidth: 0,
             width: '100%',
             maxWidth: '100%',
@@ -530,7 +530,7 @@ export function FinancialOverviewCards({
                 color: totalDebtOwed > 0 ? (isDark ? '#FB923C' : '#EA580C') : (isDark ? '#34D399' : '#059669'),
                 letterSpacing: '-0.02em',
                 fontFeatureSettings: '"tnum"',
-                fontSize: { xs: '1.25rem', sm: '1.45rem' }
+                fontSize: { xs: '1.18rem', sm: '1.45rem' }
               }}
             >
               {mask(money(totalDebtOwed))}

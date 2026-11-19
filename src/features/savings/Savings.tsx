@@ -20,7 +20,8 @@ import {
   TableRow,
   TablePagination,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  IconButton
 } from '@mui/material';
 
 import { useFinance } from '../../store';
@@ -147,6 +148,18 @@ export default function Savings() {
     setContribute(null);
     setAmount('');
     setError('');
+  };
+
+  const handleDeleteContribution = (goalId: string, contribId: string) => {
+    update(d => ({
+      ...d,
+      goals: d.goals.map(g =>
+        g.id === goalId
+          ? { ...g, contributions: g.contributions.filter(c => c.id !== contribId) }
+          : g
+      )
+    }), 'Đã xóa bản ghi đóng góp tiết kiệm!');
+    setHistory(prev => (prev ? { ...prev, contributions: prev.contributions.filter(c => c.id !== contribId) } : null));
   };
 
   return (
@@ -668,9 +681,20 @@ export default function Savings() {
         <DialogContent dividers>
           <div className="mini-list">
             {history?.contributions.map(c => (
-              <div className="mini-row" key={c.id}>
+              <div className="mini-row" key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>{dateLabel(c.date)}</span>
-                <strong style={{ color: '#059669' }}>+{money(c.amount)}</strong>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <strong style={{ color: '#059669' }}>+{money(c.amount)}</strong>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => history && handleDeleteContribution(history.id, c.id)}
+                    title="Xóa lần đóng góp này"
+                    sx={{ p: 0.5 }}
+                  >
+                    <Trash2 size={14} />
+                  </IconButton>
+                </Box>
               </div>
             ))}
             {history?.contributions.length === 0 && (

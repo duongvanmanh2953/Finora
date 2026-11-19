@@ -19,7 +19,8 @@ import {
   TableRow,
   TablePagination,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  IconButton
 } from '@mui/material';
 
 import { useFinance } from '../../store';
@@ -142,6 +143,18 @@ export default function Debts() {
     setPay(null);
     setAmount('');
     setError('');
+  };
+
+  const handleDeletePayment = (debtId: string, paymentId: string) => {
+    update(d => ({
+      ...d,
+      debts: d.debts.map(debt =>
+        debt.id === debtId
+          ? { ...debt, payments: debt.payments.filter(p => p.id !== paymentId) }
+          : debt
+      )
+    }), 'Đã xóa bản ghi thanh toán nợ!');
+    setHistory(prev => (prev ? { ...prev, payments: prev.payments.filter(p => p.id !== paymentId) } : null));
   };
 
   const owed = data.debts
@@ -766,9 +779,20 @@ export default function Debts() {
         <DialogContent dividers>
           <div className="mini-list">
             {history?.payments.map((p: DebtPayment) => (
-              <div className="mini-row" key={p.id}>
+              <div className="mini-row" key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>{dateLabel(p.date)}</span>
-                <strong style={{ color: '#059669' }}>{money(p.amount)}</strong>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <strong style={{ color: '#059669' }}>{money(p.amount)}</strong>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => history && handleDeletePayment(history.id, p.id)}
+                    title="Xóa lần thanh toán này"
+                    sx={{ p: 0.5 }}
+                  >
+                    <Trash2 size={14} />
+                  </IconButton>
+                </Box>
               </div>
             ))}
             {history?.payments.length === 0 && (

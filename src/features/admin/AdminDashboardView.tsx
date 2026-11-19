@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -16,13 +17,18 @@ import {
   TrendingUp,
   Users,
   ShieldCheck,
-  Activity
+  Activity,
+  ArrowRight,
+  Sliders,
+  Sparkles,
+  Eye
 } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip as RechartsTooltip, CartesianGrid } from 'recharts';
 import { MetricCard, BaseCard } from '../../components/ui/CardVariants';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { FinoraButton } from '../../components/ui/FinoraButton';
 import { money } from '../../lib/finance';
+import { GOLD_COLOR_TOKENS } from '../../lib/subscription';
 
 const REVENUE_TIMELINE = [
   { month: 'T05', mrr: 12500000, users: 180 },
@@ -35,6 +41,7 @@ const REVENUE_TIMELINE = [
 ];
 
 export function AdminDashboardView() {
+  const navigate = useNavigate();
   const [timelinePeriod, setTimelinePeriod] = useState<'6m' | '1y'>('6m');
 
   return (
@@ -58,6 +65,102 @@ export function AdminDashboardView() {
           Admin Console chỉ quản lý siêu dữ liệu thuê bao SaaS, doanh thu nền tảng và sức khỏe máy chủ. Quyền truy cập vào dữ liệu tài chính cá nhân (số dư, giao dịch, tài sản cá nhân) của khách hàng được mã hóa một chiều và <strong>tuyệt đối bị chặn</strong> tại tầng phân quyền.
         </Typography>
       </Alert>
+
+      {/* Quick Navigation Action Hub */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bgcolor: 'action.hover',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: 'primary.main', bgcolor: 'background.paper', transform: 'translateY(-1px)' }
+          }}
+          onClick={() => navigate('/admin/reports')}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ p: 1, borderRadius: '6px', bgcolor: 'rgba(2, 132, 199, 0.12)', color: '#0284C7' }}>
+              <Eye size={20} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                Biểu Đồ & Lượt Người Dùng
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                74.620 pageviews · 1.250 DAU
+              </Typography>
+            </Box>
+          </Box>
+          <ArrowRight size={16} color="#64748B" />
+        </Paper>
+
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bgcolor: 'action.hover',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: GOLD_COLOR_TOKENS.goldMetallic, bgcolor: 'background.paper', transform: 'translateY(-1px)' }
+          }}
+          onClick={() => navigate('/admin/subscriptions')}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ p: 1, borderRadius: '6px', bgcolor: 'rgba(197, 160, 89, 0.15)', color: GOLD_COLOR_TOKENS.goldMetallic }}>
+              <Sliders size={20} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                Sửa Gói Giá & Tích Phân Quyền
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Ma trận 11 dịch vụ theo gói giá
+              </Typography>
+            </Box>
+          </Box>
+          <ArrowRight size={16} color="#64748B" />
+        </Paper>
+
+        <Paper
+          variant="outlined"
+          sx={{
+            p: 2,
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            bgcolor: 'action.hover',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            '&:hover': { borderColor: '#10B981', bgcolor: 'background.paper', transform: 'translateY(-1px)' }
+          }}
+          onClick={() => navigate('/admin/finance')}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ p: 1, borderRadius: '6px', bgcolor: 'rgba(16, 185, 129, 0.15)', color: '#10B981' }}>
+              <Sparkles size={20} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                Khuyến Nghị AI & Chi Phí Thông Minh
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Margin 99.3% · Tiết kiệm token
+              </Typography>
+            </Box>
+          </Box>
+          <ArrowRight size={16} color="#64748B" />
+        </Paper>
+      </Box>
 
       {/* 1. Executive SaaS KPI Grid */}
       <Box
@@ -93,7 +196,7 @@ export function AdminDashboardView() {
           title="Tổng Người Dùng SaaS"
           value="1.650 người"
           trend={28.5}
-          trendPeriod="420 khách hàng Pro"
+          trendPeriod="485 đang dùng thử VIP Gold"
           icon={<Users size={18} />}
           module="accounts"
           statusLabel="Active 94%"
@@ -119,7 +222,7 @@ export function AdminDashboardView() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                Xu hướng Tăng trưởng MRR & Người dùng
+                Xu hướng Tăng trưởng MRR & Lũy Kế Người Dùng
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Dữ liệu đối soát tự động từ cổng thanh toán VietQR / payOS
@@ -181,18 +284,24 @@ export function AdminDashboardView() {
 
         {/* Subscription Plan Mix */}
         <BaseCard>
-          <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 0.5 }}>
-            Cơ cấu Thuê bao & Chuyển đổi
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+              Cơ Cấu Thuê Bao & Phân Tầng
+            </Typography>
+            <FinoraButton size="small" variant="neutral" onClick={() => navigate('/admin/subscriptions')}>
+              Quản lý
+            </FinoraButton>
+          </Box>
           <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
-            Tỷ lệ nâng cấp từ Free lên gói Pro
+            Tỷ lệ chuyển đổi từ Dùng thử sang Gold VIP & Pro
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {[
-              { plan: 'Finora Pro Năm (Khuyên dùng)', users: 260, mrr: '77.870.000 ₫', pct: 62, color: '#10B981' },
-              { plan: 'Finora Pro Tháng', users: 160, mrr: '26.330.000 ₫', pct: 25, color: '#2563EB' },
-              { plan: 'Bản Miễn phí (Free Starter)', users: 1230, mrr: '0 ₫', pct: 13, color: '#94A3B8' }
+              { plan: 'Finora Gold VIP (Năm)', users: 142, mrr: '77.870.000 ₫', pct: 54, color: GOLD_COLOR_TOKENS.goldMetallic },
+              { plan: 'Finora Pro (Năm)', users: 260, mrr: '26.330.000 ₫', pct: 28, color: '#0284C7' },
+              { plan: 'Dùng Thử VIP Gold 30D', users: 485, mrr: '0 ₫ (Trial)', pct: 12, color: '#F59E0B' },
+              { plan: 'Bản Miễn Phí (Starter Free)', users: 763, mrr: '0 ₫', pct: 6, color: '#64748B' }
             ].map(p => (
               <Box key={p.plan}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
@@ -207,7 +316,7 @@ export function AdminDashboardView() {
                   <Box sx={{ height: '100%', width: `${p.pct}%`, bgcolor: p.color, borderRadius: '4px' }} />
                 </Box>
                 <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11, mt: 0.25, display: 'block' }}>
-                  {p.users} khách hàng đăng ký
+                  {p.users} tài khoản
                 </Typography>
               </Box>
             ))}
@@ -220,7 +329,7 @@ export function AdminDashboardView() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-              Giao dịch Thanh toán Doanh nghiệp Gần đây (payOS / VietQR)
+              Giao Dịch Thanh Toán Doanh Nghiệp Gần Đây (payOS / VietQR)
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               Xác thực tức thời qua Webhook có chữ ký mật mã HMAC-SHA256
@@ -233,21 +342,21 @@ export function AdminDashboardView() {
         <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: '6px' }}>
           <Table size="small">
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700 }}>Mã đơn</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Khách hàng</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Số tiền</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Cổng thanh toán</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Chữ ký số (HMAC)</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Trạng thái</TableCell>
+              <TableRow sx={{ bgcolor: 'action.hover' }}>
+                <TableCell sx={{ fontWeight: 800 }}>Mã đơn</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Khách hàng</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Số tiền</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Cổng thanh toán</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Chữ ký số (HMAC)</TableCell>
+                <TableCell sx={{ fontWeight: 800 }}>Trạng thái</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {[
-                { code: 'ORD-98214', email: 'minhanh@finora.vn', amount: 599000, gateway: 'payOS', status: 'completed', time: '10 phút trước' },
-                { code: 'ORD-98215', email: 'tuan.nguyen@tech.io', amount: 599000, gateway: 'VietQR', status: 'completed', time: '45 phút trước' },
-                { code: 'ORD-98216', email: 'thutrang.le@sales.vn', amount: 599000, gateway: 'payOS', status: 'completed', time: '2 giờ trước' },
-                { code: 'ORD-98217', email: 'hoanglong.tran@gmail.com', amount: 599000, gateway: 'payOS', status: 'pending', time: 'Vừa tạo' }
+                { code: 'ORD-98214', email: 'minhanh@finora.vn', amount: 999000, gateway: 'payOS', status: 'completed' },
+                { code: 'ORD-98215', email: 'tuan.nguyen@tech.io', amount: 499000, gateway: 'VietQR', status: 'completed' },
+                { code: 'ORD-98216', email: 'dang.khoa@gold.vn', amount: 999000, gateway: 'payOS', status: 'completed' },
+                { code: 'ORD-98217', email: 'hoanglong.tran@gmail.com', amount: 499000, gateway: 'payOS', status: 'pending' }
               ].map(tx => (
                 <TableRow key={tx.code} hover>
                   <TableCell sx={{ fontWeight: 700, color: 'primary.main' }}>{tx.code}</TableCell>
@@ -257,7 +366,7 @@ export function AdminDashboardView() {
                     <StatusBadge label={tx.gateway} status="info" size="small" />
                   </TableCell>
                   <TableCell>
-                    <StatusBadge label="Verified ✓" status="success" size="small" variant="dot" />
+                    <StatusBadge label="Verified" status="success" size="small" variant="dot" />
                   </TableCell>
                   <TableCell>
                     <StatusBadge label={tx.status === 'completed' ? 'Thành công' : 'Chờ quét QR'} status={tx.status} size="small" />

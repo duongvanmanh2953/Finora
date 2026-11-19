@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import { Box, Typography, IconButton, Tooltip } from '@mui/material';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SemiCircleGauge } from './SemiCircleGauge';
 import { useFinance } from '../../store';
 import { balance, debtRemaining, money } from '../../lib/finance';
-import { getSampleWealthInvestmentNotes } from '../../lib/investmentProjectionEngine';
 
 export function FinancialHealthGaugeCluster() {
   const data = useFinance(s => s.data);
@@ -16,9 +16,7 @@ export function FinancialHealthGaugeCluster() {
   const debtsOwed = (data.debts || []).filter(d => d.kind === 'owed');
   const totalDebtOwed = debtsOwed.reduce((sum, d) => sum + debtRemaining(d), 0);
 
-  const notes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
-    ? data.smartInvestmentNotes
-    : getSampleWealthInvestmentNotes();
+  const notes = data.smartInvestmentNotes || [];
 
   const currentInvestmentValue = notes.reduce((s, n) => s + (n.currentEstimatedValue || 0), 0);
   const highRiskValue = notes.filter(n => n.risk_level === 'HIGH').reduce((s, n) => s + (n.currentEstimatedValue || 0), 0);
@@ -64,6 +62,31 @@ export function FinancialHealthGaugeCluster() {
   const goalProgressPct = primaryGoal ? Math.round((goalCurrent / goalTarget) * 100) : 0;
   const goalFeasibilityScore = primaryGoal ? Math.min(100, Math.round(goalProgressPct * 0.6 + (Number(runwayMonths) >= 3 ? 35 : 15))) : 80;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 5);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
+  }, []);
+
+  useEffect(() => {
+    checkScrollState();
+    window.addEventListener('resize', checkScrollState);
+    return () => window.removeEventListener('resize', checkScrollState);
+  }, [checkScrollState]);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const delta = direction === 'left' ? -300 : 300;
+    el.scrollBy({ left: delta, behavior: 'smooth' });
+    setTimeout(checkScrollState, 350);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: '100%', minWidth: 0 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, flexWrap: 'wrap', gap: 1 }}>
@@ -75,26 +98,71 @@ export function FinancialHealthGaugeCluster() {
             Hệ thống 4 tốc kế đồng bộ 4 vùng trực quan: Áp lực nợ, Thanh khoản dự phòng, Sức khỏe đầu tư & Khả thi mục tiêu
           </Typography>
         </Box>
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'var(--brand-primary)',
-            fontWeight: 750,
-            fontSize: '0.72rem',
-            display: { xs: 'inline-flex', md: 'none' },
-            bgcolor: 'action.hover',
-            px: 1,
-            py: 0.35,
-            borderRadius: '4px',
-            border: '1px solid var(--border-subtle)'
-          }}
-        >
-          ← Vuốt ngang xem 4 chỉ số →
-        </Typography>
+
+        {/* Mobile Navigation Controls: Prev / Next */}
+        <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 0.75 }}>
+          <Tooltip title="Chỉ số trước">
+            <span>
+              <IconButton
+                size="small"
+                onClick={() => handleScroll('left')}
+                disabled={!canScrollLeft}
+                sx={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '6px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+                }}
+              >
+                <ChevronLeft size={16} />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              fontWeight: 700,
+              fontSize: '0.72rem',
+              bgcolor: 'action.hover',
+              px: 1,
+              py: 0.4,
+              borderRadius: '4px',
+              border: '1px solid var(--border-subtle)'
+            }}
+          >
+            Chỉ số sức khỏe
+          </Typography>
+          <Tooltip title="Chỉ số tiếp theo">
+            <span>
+              <IconButton
+                size="small"
+                onClick={() => handleScroll('right')}
+                disabled={!canScrollRight}
+                sx={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '6px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+                }}
+              >
+                <ChevronRight size={16} />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Box>
       </Box>
 
       {/* Grid of Gauges: Smooth horizontal swipe on mobile / tight 2x2 grid on tablet / 4-column on desktop */}
       <Box
+        ref={scrollRef}
+        onScroll={checkScrollState}
         sx={{
           display: { xs: 'flex', md: 'grid' },
           overflowX: { xs: 'auto', md: 'visible' },

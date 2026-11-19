@@ -25,15 +25,18 @@ import EditRounded from '@mui/icons-material/EditRounded';
 import DeleteOutlineRounded from '@mui/icons-material/DeleteOutlineRounded';
 
 import { useFinance } from '../store';
-import { money, todayKey, uid } from '../lib/finance';
+import { money, todayKey, uid, formatVnDate } from '../lib/finance';
 import { BudgetCategoryBadge } from './BudgetCategoryIcons';
 import { AssetLogoBadge } from '../lib/brandBadges';
-import { MuiCurrencyInput, MuiSelect, MuiTextField } from './mui/MuiInputs';
+import { MuiCurrencyInput, MuiSelect, MuiTextField, MuiDatePicker } from './mui/MuiInputs';
 import { Confirm } from './ui';
 import { StatusBadge } from './ui/StatusBadge';
 import { FullscreenModal, FullscreenButton, FullscreenChartContent } from './ui/FullscreenModal';
 import { MobileBottomSheet } from './ui/MobileBottomSheet';
+import { HorizontalScrollBox } from './common/HorizontalScrollBox';
 import { networkManager } from '../lib/offline/networkStatus';
+import { CameraVietQrReceiptScanner, type CameraScanResult } from './camera/CameraVietQrReceiptScanner';
+import { Camera, Zap } from 'lucide-react';
 import type { Transaction, TxType } from '../types';
 
 export function TransactionManagerCRUD() {
@@ -46,6 +49,7 @@ export function TransactionManagerCRUD() {
 
   // Modal State
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addMode, setAddMode] = useState<'form' | 'camera'>('form');
   const [fullscreenTableOpen, setFullscreenTableOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [deletingTx, setDeletingTx] = useState<Transaction | null>(null);
@@ -108,7 +112,41 @@ export function TransactionManagerCRUD() {
       date: todayKey(),
       note: ''
     });
+    setAddMode('form');
     setAddModalOpen(true);
+  };
+
+  const handleScanInModal = (res: CameraScanResult) => {
+    setForm(prev => ({
+      ...prev,
+      name: res.name,
+      amount: res.amount,
+      type: 'expense',
+      categoryId: res.suggestedCategoryId || prev.categoryId,
+      date: res.date || todayKey(),
+      note: res.note || ''
+    }));
+    setAddMode('form');
+    notify(`Đã nhận diện: ${res.name} (${money(res.amount)})`);
+  };
+
+  const crudPresets = useMemo(() => [
+    { label: '☕ Cafe', name: 'Cà phê sáng', amount: 30000, type: 'expense' as TxType, catKey: 'food' },
+    { label: '🍱 Cơm trưa', name: 'Cơm trưa văn phòng', amount: 45000, type: 'expense' as TxType, catKey: 'food' },
+    { label: '⛽ Đổ xăng', name: 'Đổ xăng xe máy', amount: 70000, type: 'expense' as TxType, catKey: 'transport' },
+    { label: '🛒 Siêu thị', name: 'Mua thực phẩm siêu thị', amount: 150000, type: 'expense' as TxType, catKey: 'groceries' },
+    { label: '💰 Tiền lương', name: 'Nhận lương tháng', amount: 25000000, type: 'income' as TxType, catKey: 'salary' }
+  ], []);
+
+  const handleApplyCrudPreset = (preset: typeof crudPresets[0]) => {
+    const matchedCat = categories.find(c => c.id === preset.catKey || c.name.toLowerCase().includes(preset.catKey));
+    setForm(prev => ({
+      ...prev,
+      name: preset.name,
+      amount: preset.amount,
+      type: preset.type,
+      categoryId: matchedCat ? matchedCat.id : prev.categoryId
+    }));
   };
 
   const handleOpenEdit = (tx: Transaction) => {
@@ -281,20 +319,8 @@ export function TransactionManagerCRUD() {
             sx={{ minWidth: 240, flex: { xs: '1 1 100%', sm: 'none' }, '& .MuiOutlinedInput-root': { borderRadius: '4px' } }}
           />
 
-          {/* Type Filter Buttons: Horizontal scrollable on mobile */}
-          <Box
-            sx={{
-              display: 'flex',
-              gap: '8px',
-              overflowX: 'auto',
-              flexWrap: 'nowrap',
-              WebkitOverflowScrolling: 'touch',
-              py: 0.5,
-              maxWidth: '100%',
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' }
-            }}
-          >
+          {/* Type Filter Buttons: Dùng nút Prev/Next cuộn mượt mà */}
+          <HorizontalScrollBox gap="8px" buttonSize={26} scrollStep={180} sx={{ maxWidth: '100%', flex: { xs: '1 1 100%', sm: 'none' } }}>
             {[
               { id: 'all', label: 'Tất cả' },
               { id: 'expense', label: 'Chi tiêu' },
@@ -317,7 +343,7 @@ export function TransactionManagerCRUD() {
                 }}
               />
             ))}
-          </Box>
+          </HorizontalScrollBox>
 
           {/* Category Filter */}
           <Box sx={{ minWidth: 160, flex: { xs: '1 1 100%', sm: 'none' } }}>
@@ -367,7 +393,7 @@ export function TransactionManagerCRUD() {
                 return (
                   <TableRow key={tx.id} hover>
                     <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                      {tx.date}
+                      {formatVnDate(tx.date)}
                     </TableCell>
 
                     <TableCell>
@@ -498,7 +524,7 @@ export function TransactionManagerCRUD() {
                         </Typography>
                       </Box>
                       <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
-                        {tx.date}
+                        {formatVnDate(tx.date)}
                       </Typography>
                     </Box>
                   </Box>
@@ -611,70 +637,147 @@ export function TransactionManagerCRUD() {
         open={addModalOpen}
         onClose={() => setAddModalOpen(false)}
         title="Thêm Giao Dịch Mới"
-        subtitle="Ghi chép tức thì, lưu an toàn Offline ngay cả khi mất mạng"
-        maxWidth="xs"
+        subtitle="Ghi chép tức thì, quét VietQR / Hóa đơn hoặc chọn mẫu 1-chạm"
+        maxWidth="sm"
         actions={
-          <>
-            <Button onClick={() => setAddModalOpen(false)} sx={{ borderRadius: '12px' }}>
-              Hủy
+          addMode === 'form' ? (
+            <>
+              <Button onClick={() => setAddModalOpen(false)} sx={{ borderRadius: '8px' }}>
+                Hủy
+              </Button>
+              <Button variant="contained" onClick={handleSaveAdd} sx={{ borderRadius: '8px', minHeight: 40, px: 2.5 }}>
+                Lưu Giao Dịch
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setAddMode('form')} sx={{ borderRadius: '8px' }}>
+              Quay lại biểu mẫu
             </Button>
-            <Button variant="contained" onClick={handleSaveAdd} sx={{ borderRadius: '12px', minHeight: 40 }}>
-              Lưu Giao Dịch
-            </Button>
-          </>
+          )
         }
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
-          <MuiTextField
-            label="Tên giao dịch / Chi tiết"
-            value={form.name}
-            onChange={e => setForm({ ...form, name: e.target.value })}
-            fullWidth
-          />
-          <MuiCurrencyInput
-            label="Số tiền (₫)"
-            value={form.amount}
-            onChange={val => setForm({ ...form, amount: Number(val) || 0 })}
-          />
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <MuiSelect
-              label="Loại giao dịch"
-              value={form.type}
-              onChange={v => setForm({ ...form, type: v as TxType })}
-              options={[
-                { value: 'expense', label: 'Chi tiêu' },
-                { value: 'income', label: 'Thu nhập' },
-                { value: 'transfer', label: 'Chuyển khoản' }
-              ]}
-            />
-            <MuiSelect
-              label="Danh mục"
-              value={form.categoryId}
-              onChange={v => setForm({ ...form, categoryId: v })}
-              options={categories.map(c => ({ value: c.id, label: c.name }))}
-            />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 0.5 }}>
+          {/* Top Switcher: Biểu mẫu vs Quét Camera VietQR */}
+          <Box sx={{ display: 'flex', gap: 1, p: 0.5, bgcolor: 'action.hover', borderRadius: '10px' }}>
+            <Button
+              size="small"
+              variant={addMode === 'form' ? 'contained' : 'text'}
+              onClick={() => setAddMode('form')}
+              startIcon={<Zap size={15} />}
+              sx={{
+                flex: 1,
+                borderRadius: '8px',
+                textTransform: 'none',
+                fontWeight: 750,
+                fontSize: 13
+              }}
+            >
+              Nhập biểu mẫu
+            </Button>
+            <Button
+              size="small"
+              variant={addMode === 'camera' ? 'contained' : 'text'}
+              onClick={() => setAddMode('camera')}
+              startIcon={<Camera size={15} />}
+              sx={{
+                flex: 1,
+                borderRadius: '8px',
+                textTransform: 'none',
+                fontWeight: 750,
+                fontSize: 13,
+                color: addMode === 'camera' ? '#FFFFFF' : '#3B82F6',
+                bgcolor: addMode === 'camera' ? '#3B82F6' : 'transparent',
+                '&:hover': {
+                  bgcolor: addMode === 'camera' ? '#2563EB' : 'action.selected'
+                }
+              }}
+            >
+              Camera VietQR & Hóa đơn
+            </Button>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
-            <MuiSelect
-              label="Tài khoản thanh toán"
-              value={form.accountId}
-              onChange={v => setForm({ ...form, accountId: v })}
-              options={accounts.map(a => ({ value: a.id, label: a.name }))}
-            />
-            <MuiTextField
-              label="Ngày thực hiện"
-              type="date"
-              value={form.date}
-              onChange={e => setForm({ ...form, date: e.target.value })}
-              fullWidth
-            />
-          </Box>
-          <MuiTextField
-            label="Ghi chú thêm"
-            value={form.note}
-            onChange={e => setForm({ ...form, note: e.target.value })}
-            fullWidth
-          />
+
+          {addMode === 'camera' ? (
+            <CameraVietQrReceiptScanner onScanComplete={handleScanInModal} />
+          ) : (
+            <>
+              {/* Quick 1-Touch Presets Row */}
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', fontSize: 11, textTransform: 'uppercase', mb: 0.75, display: 'block' }}>
+                  ⚡ Mẫu chi tiêu nhanh 1-chạm:
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                  {crudPresets.map((p, idx) => (
+                    <Chip
+                      key={idx}
+                      label={`${p.label} (${money(p.amount)})`}
+                      size="small"
+                      clickable
+                      onClick={() => handleApplyCrudPreset(p)}
+                      sx={{
+                        fontWeight: 750,
+                        fontSize: 11.5,
+                        bgcolor: 'background.paper',
+                        border: '1px solid var(--border-subtle)',
+                        '&:hover': { bgcolor: 'action.hover', borderColor: 'var(--brand-primary)' }
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+
+              <MuiTextField
+                label="Tên giao dịch / Chi tiết"
+                placeholder="VD: Mua thực phẩm, Cơm trưa..."
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                fullWidth
+                autoFocus
+              />
+              <MuiCurrencyInput
+                label="Số tiền (₫)"
+                value={form.amount}
+                onChange={val => setForm({ ...form, amount: Number(val) || 0 })}
+              />
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+                <MuiSelect
+                  label="Loại giao dịch"
+                  value={form.type}
+                  onChange={v => setForm({ ...form, type: v as TxType })}
+                  options={[
+                    { value: 'expense', label: 'Chi tiêu' },
+                    { value: 'income', label: 'Thu nhập' },
+                    { value: 'transfer', label: 'Chuyển khoản' }
+                  ]}
+                />
+                <MuiSelect
+                  label="Danh mục"
+                  value={form.categoryId}
+                  onChange={v => setForm({ ...form, categoryId: v })}
+                  options={categories.map(c => ({ value: c.id, label: c.name }))}
+                />
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+                <MuiSelect
+                  label="Tài khoản thanh toán"
+                  value={form.accountId}
+                  onChange={v => setForm({ ...form, accountId: v })}
+                  options={accounts.map(a => ({ value: a.id, label: a.name }))}
+                />
+                <MuiDatePicker
+                  label="Ngày thực hiện"
+                  value={form.date}
+                  onChange={v => setForm({ ...form, date: v })}
+                />
+              </Box>
+              <MuiTextField
+                label="Ghi chú thêm"
+                placeholder="Ghi chú chi tiết (nếu có)..."
+                value={form.note}
+                onChange={e => setForm({ ...form, note: e.target.value })}
+                fullWidth
+              />
+            </>
+          )}
         </Box>
       </MobileBottomSheet>
 
@@ -684,19 +787,19 @@ export function TransactionManagerCRUD() {
         onClose={() => setEditingTx(null)}
         title="Chỉnh Sửa Giao Dịch"
         subtitle="Cập nhật thông tin giao dịch"
-        maxWidth="xs"
+        maxWidth="sm"
         actions={
           <>
-            <Button onClick={() => setEditingTx(null)} sx={{ borderRadius: '12px' }}>
+            <Button onClick={() => setEditingTx(null)} sx={{ borderRadius: '8px' }}>
               Hủy
             </Button>
-            <Button variant="contained" onClick={handleSaveEdit} sx={{ borderRadius: '12px', minHeight: 40 }}>
+            <Button variant="contained" onClick={handleSaveEdit} sx={{ borderRadius: '8px', minHeight: 40, px: 2.5 }}>
               Cập Nhật
             </Button>
           </>
         }
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 0.5 }}>
           <MuiTextField
             label="Tên giao dịch"
             value={form.name}
@@ -708,7 +811,7 @@ export function TransactionManagerCRUD() {
             value={form.amount}
             onChange={val => setForm({ ...form, amount: Number(val) || 0 })}
           />
-          <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
             <MuiSelect
               label="Loại"
               value={form.type}
@@ -726,12 +829,10 @@ export function TransactionManagerCRUD() {
               options={categories.map(c => ({ value: c.id, label: c.name }))}
             />
           </Box>
-          <MuiTextField
-            label="Ngày"
-            type="date"
+          <MuiDatePicker
+            label="Ngày giao dịch"
             value={form.date}
-            onChange={e => setForm({ ...form, date: e.target.value })}
-            fullWidth
+            onChange={v => setForm({ ...form, date: v })}
           />
           <MuiTextField
             label="Ghi chú"
@@ -751,11 +852,17 @@ export function TransactionManagerCRUD() {
         onClose={() => setDeletingTx(null)}
       />
 
-      {/* 6. Undo Snackbar Toast */}
+      {/* 6. Undo Snackbar Toast displayed at TOP */}
       <Snackbar
         open={undoToastOpen}
         autoHideDuration={6000}
         onClose={() => setUndoToastOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          top: { xs: 16, sm: 24 },
+          zIndex: 99998,
+          maxWidth: { xs: 'calc(100vw - 32px)', sm: 480 }
+        }}
         action={
           <Button
             color="inherit"
@@ -770,7 +877,16 @@ export function TransactionManagerCRUD() {
           </Button>
         }
       >
-        <Alert severity="info" onClose={() => setUndoToastOpen(false)} sx={{ borderRadius: '4px' }}>
+        <Alert
+          severity="info"
+          onClose={() => setUndoToastOpen(false)}
+          sx={{
+            borderRadius: '12px',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.28)',
+            backdropFilter: 'blur(10px)',
+            fontWeight: 650
+          }}
+        >
           Đã xóa giao dịch thành công.
         </Alert>
       </Snackbar>
@@ -801,7 +917,7 @@ export function TransactionManagerCRUD() {
                     const isIncome = tx.type === 'income';
                     return (
                       <TableRow key={tx.id} hover>
-                        <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>{tx.date}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>{formatVnDate(tx.date)}</TableCell>
                         <TableCell><BudgetCategoryBadge categoryKey={tx.categoryId} showLabel size={32} /></TableCell>
                         <TableCell>
                           <Typography variant="body2" sx={{ fontWeight: 700 }}>{tx.name}</Typography>

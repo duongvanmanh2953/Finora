@@ -38,7 +38,7 @@ docker compose logs -f finora
 ### Bước 4: Khởi tạo tài khoản Admin đầu tiên
 Sau khi container khởi chạy, vào shell container để lấy mật khẩu Admin:
 ```bash
-docker compose exec finora ./Tichsan2953@
+docker compose exec finora pnpm admin:reset
 ```
 
 ---

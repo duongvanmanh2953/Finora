@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   TextField,
   type TextFieldProps,
@@ -12,11 +12,16 @@ import {
   Chip,
   ToggleButtonGroup,
   ToggleButton,
-  FormHelperText
+  FormHelperText,
+  IconButton,
+  Popover,
+  Tooltip
 } from '@mui/material';
+import CalculateOutlined from '@mui/icons-material/CalculateOutlined';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight } from 'lucide-react';
+import { CalculatorKeypad } from '../calculator/CalculatorKeypad';
 
 export function MuiTextField(props: TextFieldProps) {
   return (
@@ -42,6 +47,7 @@ export function MuiCurrencyInput({
   label = 'Số tiền',
   ...rest
 }: MuiCurrencyInputProps) {
+  const [calcAnchor, setCalcAnchor] = useState<null | HTMLElement>(null);
   const strVal = String(value ?? '');
   const numericVal = parseInt(strVal.replace(/\D/g, ''), 10) || 0;
   const formattedDisplay = numericVal > 0 ? new Intl.NumberFormat('en-US').format(numericVal) : (strVal === '0' ? '0' : '');
@@ -84,8 +90,20 @@ export function MuiCurrencyInput({
         slotProps={{
           input: {
             endAdornment: (
-              <InputAdornment position="end" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                ₫
+              <InputAdornment position="end" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Tooltip title="Mở máy tính số tiền">
+                  <IconButton
+                    size="small"
+                    onClick={(e) => setCalcAnchor(e.currentTarget)}
+                    aria-label="Mở máy tính số tiền"
+                    sx={{ p: 0.5, color: 'primary.main' }}
+                  >
+                    <CalculateOutlined fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Box component="span" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                  ₫
+                </Box>
               </InputAdornment>
             ),
             sx: {
@@ -98,23 +116,58 @@ export function MuiCurrencyInput({
       />
       {suggestions.length > 0 && (
         <Box sx={{ display: 'flex', gap: 0.75, mt: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Box component="span" sx={{ fontSize: 11, color: 'text.secondary', fontWeight: 600 }}>
-            Gợi ý nhanh:
-          </Box>
-          {suggestions.map(s => (
+          {suggestions.map((amt) => (
             <Chip
-              key={s}
-              label={`${new Intl.NumberFormat('en-US').format(s)} ₫`}
+              key={amt}
+              label={new Intl.NumberFormat('en-US').format(amt) + ' ₫'}
               size="small"
-              clickable
-              color="primary"
+              onClick={() => onChange(String(amt))}
               variant="outlined"
-              onClick={() => onChange(String(s))}
-              sx={{ fontSize: 11, height: 22, fontWeight: 650 }}
+              color="primary"
+              sx={{
+                fontSize: '0.72rem',
+                height: 22,
+                cursor: 'pointer',
+                fontVariantNumeric: 'tabular-nums',
+                '&:hover': { bgcolor: 'primary.lighter' }
+              }}
             />
           ))}
         </Box>
       )}
+
+      {/* Embedded Safe Calculator Popover */}
+      <Popover
+        open={Boolean(calcAnchor)}
+        anchorEl={calcAnchor}
+        onClose={() => setCalcAnchor(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              borderRadius: 3,
+              boxShadow: '0 12px 36px rgba(0,0,0,0.2)'
+            }
+          }
+        }}
+      >
+        <CalculatorKeypad
+          initialValue={numericVal > 0 ? numericVal : ''}
+          onApply={(finalVal) => {
+            onChange(String(finalVal));
+            setCalcAnchor(null);
+          }}
+          onClose={() => setCalcAnchor(null)}
+        />
+      </Popover>
     </Box>
   );
 }
@@ -154,6 +207,57 @@ export function MuiSelect({
         label={label}
         value={value}
         onChange={e => onChange(String(e.target.value))}
+        MenuProps={{
+          disablePortal: false,
+          disableScrollLock: false,
+          BackdropProps: {
+            invisible: true,
+            sx: {
+              backgroundColor: 'transparent !important',
+              backdropFilter: 'none !important',
+              WebkitBackdropFilter: 'none !important'
+            }
+          },
+          slotProps: {
+            backdrop: {
+              invisible: true,
+              sx: {
+                backgroundColor: 'transparent !important',
+                backdropFilter: 'none !important',
+                WebkitBackdropFilter: 'none !important'
+              }
+            },
+            paper: {
+              sx: {
+                zIndex: 1550,
+                maxHeight: 340,
+                borderRadius: '10px',
+                boxShadow: '0 14px 40px rgba(0, 0, 0, 0.18)',
+                border: '1px solid var(--border-subtle)',
+                bgcolor: 'background.paper',
+                backgroundImage: 'none',
+                backdropFilter: 'none !important',
+                WebkitBackdropFilter: 'none !important',
+                '& .MuiMenuItem-root': {
+                  fontSize: '0.85rem',
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: '6px',
+                  m: '2px 6px',
+                  transition: 'background-color 0.12s ease',
+                  '&:hover': {
+                    bgcolor: 'action.hover'
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'action.selected',
+                    fontWeight: 700
+                  }
+                }
+              }
+            }
+          },
+          ...(rest.MenuProps as any)
+        }}
         {...rest}
       >
         {options.map(opt => (
@@ -186,6 +290,9 @@ interface MuiDatePickerProps {
   error?: boolean;
   helperText?: string;
   disabled?: boolean;
+  fullWidth?: boolean;
+  size?: 'small' | 'medium';
+  sx?: any;
 }
 
 export function MuiDatePicker({
@@ -194,7 +301,10 @@ export function MuiDatePicker({
   onChange,
   error,
   helperText,
-  disabled
+  disabled,
+  fullWidth = true,
+  size = 'small',
+  sx
 }: MuiDatePickerProps) {
   const dayjsValue = value ? dayjs(value) : null;
 
@@ -206,15 +316,23 @@ export function MuiDatePicker({
       onChange={(newValue: Dayjs | null) => {
         if (newValue && newValue.isValid()) {
           onChange(newValue.format('YYYY-MM-DD'));
+        } else if (!newValue) {
+          onChange('');
         }
       }}
       format="DD/MM/YYYY"
       slotProps={{
+        popper: {
+          sx: {
+            zIndex: 1550
+          }
+        },
         textField: {
-          fullWidth: true,
-          size: 'small',
+          fullWidth,
+          size,
           error,
-          helperText
+          helperText,
+          sx
         }
       }}
     />
@@ -226,15 +344,22 @@ interface MuiMonthPickerProps {
   value: string; // YYYY-MM
   onChange: (value: string) => void;
   disabled?: boolean;
+  fullWidth?: boolean;
+  size?: 'small' | 'medium';
+  sx?: any;
 }
 
 export function MuiMonthPicker({
   label,
   value,
   onChange,
-  disabled
+  disabled,
+  fullWidth = false,
+  size = 'small',
+  sx
 }: MuiMonthPickerProps) {
-  const dayjsValue = value ? dayjs(value + '-01') : null;
+  const cleanMonth = value ? value.slice(0, 7) : '';
+  const dayjsValue = cleanMonth ? dayjs(cleanMonth + '-01') : null;
 
   return (
     <DatePicker
@@ -245,13 +370,21 @@ export function MuiMonthPicker({
       onChange={(newValue: Dayjs | null) => {
         if (newValue && newValue.isValid()) {
           onChange(newValue.format('YYYY-MM'));
+        } else if (!newValue) {
+          onChange('');
         }
       }}
       format="MM/YYYY"
       slotProps={{
+        popper: {
+          sx: {
+            zIndex: 1550
+          }
+        },
         textField: {
-          size: 'small',
-          sx: { minWidth: 140 }
+          size,
+          fullWidth,
+          sx: fullWidth ? sx : { minWidth: 140, ...sx }
         }
       }}
     />
@@ -277,10 +410,23 @@ export function MuiTransactionTypeToggle({
         if (next) onChange(next);
       }}
       sx={{
-        '& .MuiToggleButton-root': {
-          fontWeight: 600,
+        p: 0.5,
+        bgcolor: 'action.hover',
+        borderRadius: '8px',
+        border: '1px solid var(--border-subtle)',
+        gap: 0.5,
+        '& .MuiToggleButtonGroup-grouped': {
+          border: 'none !important',
+          borderRadius: '6px !important',
+          fontWeight: 700,
+          fontSize: '0.84rem',
           textTransform: 'none',
-          py: 0.8
+          py: 0.8,
+          color: 'text.secondary',
+          transition: 'all 0.15s ease'
+        },
+        '& .MuiToggleButton-root.Mui-selected': {
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
         }
       }}
     >
@@ -288,9 +434,9 @@ export function MuiTransactionTypeToggle({
         value="expense"
         sx={{
           '&.Mui-selected': {
-            bgcolor: 'error.main',
-            color: '#fff',
-            '&:hover': { bgcolor: 'error.dark' }
+            bgcolor: '#EF4444 !important',
+            color: '#FFFFFF !important',
+            '&:hover': { bgcolor: '#DC2626 !important' }
           }
         }}
       >
@@ -300,9 +446,9 @@ export function MuiTransactionTypeToggle({
         value="income"
         sx={{
           '&.Mui-selected': {
-            bgcolor: 'success.main',
-            color: '#fff',
-            '&:hover': { bgcolor: 'success.dark' }
+            bgcolor: '#10B981 !important',
+            color: '#FFFFFF !important',
+            '&:hover': { bgcolor: '#059669 !important' }
           }
         }}
       >
@@ -313,9 +459,9 @@ export function MuiTransactionTypeToggle({
           value="transfer"
           sx={{
             '&.Mui-selected': {
-              bgcolor: 'primary.main',
-              color: '#fff',
-              '&:hover': { bgcolor: 'primary.dark' }
+              bgcolor: '#2563EB !important',
+              color: '#FFFFFF !important',
+              '&:hover': { bgcolor: '#1D4ED8 !important' }
             }
           }}
         >

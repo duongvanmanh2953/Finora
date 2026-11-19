@@ -1,7 +1,15 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Finora - Tích Sản</string>
-    <string name="title_activity_main">Finora - Tích Sản</string>
-    <string name="package_name">vn.finora.app</string>
-    <string name="custom_url_scheme">vn.finora.app</string>
+    <string name="app_name">Tích Sản - Quản lý tài chính cá nhân</string>
+    <string name="title_activity_main">Tích Sản - Quản lý tài chính cá nhân</string>
+    <string name="package_name">Tich.San_2953</string>
+    <string name="custom_url_scheme">Tich.San_2953</string>
+
+    <!-- Google Auth Configuration -->
+    <string name="server_client_id">1012760872089-ed3a19tlm8k2dhd3jr40mi0vpcekvb6d.apps.googleusercontent.com</string>
+
+    <!-- Facebook Login Configuration -->
+    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_client_token">YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    <string name="fb_login_protocol_scheme">fbYOUR_FACEBOOK_APP_ID</string>
 </resources>

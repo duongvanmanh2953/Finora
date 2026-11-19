@@ -62,7 +62,7 @@ export default function Settings() {
       const next = prev.includes(url) ? prev.filter(u => u !== url) : [...prev, url];
       localStorage.setItem('finora_favorite_menus', JSON.stringify(next));
       window.dispatchEvent(new Event('finora-favorites-updated'));
-      notify(next.includes(url) ? 'Đã thêm vào Mục Yêu Thích ⭐' : 'Đã đưa về Mục Gốc');
+      notify(next.includes(url) ? 'Đã thêm vào Mục Yêu Thích' : 'Đã đưa về Mục Gốc');
       return next;
     });
   };
@@ -321,7 +321,7 @@ export default function Settings() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flexWrap: 'wrap' }}>
               <Star size={18} fill="#F59E0B" stroke="none" strokeWidth={0} style={{ flexShrink: 0 }} />
               <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '0.92rem', sm: '1.05rem' }, lineHeight: 1.3 }}>
-                Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích ⭐)
+                Tùy chỉnh Thanh Điều Hướng (Mục Yêu Thích)
               </Typography>
               <Tooltip
                 title="Tích chọn tính năng yêu thích để ghim lên đầu thanh sidebar. Tính năng đã ghim sẽ hiển thị tại Mục Yêu Thích và tự động ẩn khỏi danh mục gốc; bỏ tích sẽ đưa tính năng trở về danh mục ban đầu."

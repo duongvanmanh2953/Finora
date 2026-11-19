@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { mockFinanceService } from '../../services/financeService';
+import { navigateToAuth, navigateToApp } from '../../lib/domainRouting';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   ArrowRight,
+  LayoutDashboard,
   ShieldCheck,
   Crown,
   Sparkles,
@@ -45,7 +48,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  useMediaQuery
 } from '@mui/material';
 import { SemiCircleGauge } from '../../components/gauges/SemiCircleGauge';
 import { GOLD_COLOR_TOKENS } from '../../lib/subscription';
@@ -187,13 +191,26 @@ const LAZY_USER_SOLUTIONS = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const currentUser = mockFinanceService.getCurrentUser();
+  const isMobile = useMediaQuery('(max-width:600px)');
   const rootRef = useRef<HTMLDivElement>(null);
   const [gaugeDemoScore, setGaugeDemoScore] = useState<number>(85);
   const [activeFilterTab, setActiveFilterTab] = useState<string>('all');
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState<boolean>(false);
   const [installGuideOpen, setInstallGuideOpen] = useState<boolean>(false);
-  const [downloadPlatform, setDownloadPlatform] = useState<'android' | 'ios'>('android');
   const [guideModalPlatform, setGuideModalPlatform] = useState<'android' | 'ios'>('android');
+
+  // Auto detect user OS on load (Android / iOS)
+  useEffect(() => {
+    if (typeof navigator !== 'undefined') {
+      const ua = navigator.userAgent || '';
+      if (/iPad|iPhone|iPod/.test(ua)) {
+        setGuideModalPlatform('ios');
+      } else if (/Android/.test(ua)) {
+        setGuideModalPlatform('android');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -244,6 +261,8 @@ export default function LandingPage() {
         color: '#F8FAFC',
         minHeight: '100vh',
         overflowX: 'hidden',
+        maxWidth: '100vw',
+        width: '100%',
         position: 'relative'
       }}
     >
@@ -298,7 +317,7 @@ export default function LandingPage() {
       >
         <Box sx={{ maxWidth: 1240, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
           {/* Logo & Brand Name */}
-          <Link to="/landing" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', flexShrink: 0 }}>
             <Box
               component="img"
               src="/logo.png?v=20261105"
@@ -322,90 +341,110 @@ export default function LandingPage() {
             </Box>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 2.5, fontSize: 13, fontWeight: 650 }}>
-            <a href="#quick-solutions" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
-              Giải pháp nhanh
+          {/* Desktop Nav Links - Cleaned & Balanced */}
+          <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 3, fontSize: 13, fontWeight: 600 }}>
+            <a href="#quick-solutions" style={{ color: '#E2E8F0', textDecoration: 'none', transition: 'color 0.2s' }}>
+              Giải pháp
             </a>
-            <a href="#overview" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
-              7 Thẻ Dòng tiền
+            <a href="#overview" style={{ color: '#E2E8F0', textDecoration: 'none', transition: 'color 0.2s' }}>
+              Dòng tiền
             </a>
-            <a href="#gauges" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
-              Đồng hồ Bán nguyệt
+            <a href="#gauges" style={{ color: '#E2E8F0', textDecoration: 'none', transition: 'color 0.2s' }}>
+              Sức khỏe tài chính
             </a>
-            <a href="#app-download" style={{ color: '#34D399', textDecoration: 'none', fontWeight: 750, transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <AndroidSvgIcon size={15} color="#34D399" />
-              <AppleSvgIcon size={15} color="#E2E8F0" />
-              <span>Tải App</span>
-            </a>
-            <a href="#pricing" style={{ color: '#CBD5E1', textDecoration: 'none', transition: 'color 0.2s' }}>
-              Bảng giá & Trial
+            <a href="#pricing" style={{ color: '#E2E8F0', textDecoration: 'none', transition: 'color 0.2s' }}>
+              Bảng giá
             </a>
           </Box>
 
           {/* Actions: Desktop & Mobile */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.8, sm: 1.2 }, flexShrink: 0 }}>
-            {/* Download App Pill (Only on Desktop/Large Tablet) */}
+            {/* Single Clean Download App Button on Desktop */}
             <Button
               component="a"
               href="#app-download"
               variant="outlined"
               size="small"
-              startIcon={<AndroidSvgIcon size={14} color="#34D399" />}
+              startIcon={<Smartphone size={14} color="#34D399" />}
               sx={{
-                borderColor: 'rgba(52, 211, 153, 0.45)',
+                borderColor: 'rgba(52, 211, 153, 0.4)',
                 color: '#34D399',
-                fontSize: 11.5,
-                fontWeight: 750,
-                borderRadius: '8px',
-                px: 1.2,
+                fontSize: 12,
+                fontWeight: 700,
+                borderRadius: '6px',
+                px: 1.4,
                 height: 34,
                 bgcolor: 'rgba(16, 185, 129, 0.08)',
                 display: { xs: 'none', md: 'inline-flex' },
+                textTransform: 'none',
                 '&:hover': { borderColor: '#34D399', bgcolor: 'rgba(52, 211, 153, 0.16)' }
               }}
             >
-              Tải App
+              Tải ứng dụng
             </Button>
 
-            {/* Login button */}
-            <Button
-              variant="text"
-              onClick={() => navigate('/auth/login')}
-              sx={{
-                color: '#FFFFFF',
-                fontSize: { xs: 12, sm: 13 },
-                fontWeight: 700,
-                px: { xs: 1, sm: 1.5 },
-                height: 34,
-                borderRadius: '8px',
-                whiteSpace: 'nowrap',
-                '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' }
-              }}
-            >
-              Đăng nhập
-            </Button>
+            {/* Login or Enter App button */}
+            {currentUser ? (
+              <Button
+                variant="contained"
+                onClick={() => navigateToApp('/', navigate)}
+                startIcon={<LayoutDashboard size={14} />}
+                sx={{
+                  bgcolor: '#10B981',
+                  color: '#FFFFFF',
+                  fontSize: { xs: 12, sm: 13 },
+                  fontWeight: 800,
+                  px: { xs: 1.5, sm: 2 },
+                  height: 34,
+                  borderRadius: '6px',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: '#059669' }
+                }}
+              >
+                Vào App
+              </Button>
+            ) : (
+              <Button
+                variant="text"
+                onClick={() => navigateToAuth('login', navigate)}
+                sx={{
+                  color: '#FFFFFF',
+                  fontSize: { xs: 12, sm: 13 },
+                  fontWeight: 700,
+                  px: { xs: 1.2, sm: 1.8 },
+                  height: 34,
+                  borderRadius: '6px',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' }
+                }}
+              >
+                Đăng nhập
+              </Button>
+            )}
 
-            {/* Trial Gold Button (Desktop/Tablet only, hidden on small mobile to avoid crowding) */}
+            {/* Trial Gold Button (Desktop/Tablet) */}
             <Button
               variant="contained"
-              onClick={() => navigate('/auth/register')}
+              onClick={() => navigateToAuth('register', navigate)}
               startIcon={<Crown size={14} color="#09261E" />}
               sx={{
                 display: { xs: 'none', sm: 'inline-flex' },
                 bgcolor: GOLD_COLOR_TOKENS.goldMetallic,
                 color: '#09261E',
                 fontSize: { xs: 12, sm: 12.5 },
-                fontWeight: 850,
-                px: { xs: 1.5, sm: 1.8 },
+                fontWeight: 800,
+                px: { xs: 1.5, sm: 2 },
                 height: 34,
-                borderRadius: '8px',
+                borderRadius: '6px',
                 boxShadow: '0 4px 14px rgba(197, 160, 89, 0.35)',
                 whiteSpace: 'nowrap',
+                textTransform: 'none',
                 '&:hover': { bgcolor: GOLD_COLOR_TOKENS.goldLight }
               }}
             >
-              Thử VIP Gold 30 Ngày
+              Trải nghiệm VIP Gold
             </Button>
 
             {/* Hamburger Button for Mobile & Tablet */}
@@ -469,7 +508,7 @@ export default function LandingPage() {
               variant="contained"
               onClick={() => {
                 setMobileDrawerOpen(false);
-                navigate('/auth/register');
+                navigateToAuth('register', navigate);
               }}
               startIcon={<Crown size={15} color="#09261E" />}
               sx={{
@@ -485,25 +524,48 @@ export default function LandingPage() {
               Đăng ký VIP Gold 30 Ngày (0đ)
             </Button>
 
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => {
-                setMobileDrawerOpen(false);
-                navigate('/auth/login');
-              }}
-              sx={{
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                py: 0.9,
-                fontSize: 13,
-                borderRadius: '10px',
-                '&:hover': { borderColor: '#10B981', bgcolor: 'rgba(16, 185, 129, 0.08)' }
-              }}
-            >
-              Đăng nhập tài khoản
-            </Button>
+            {currentUser ? (
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={() => {
+                  setMobileDrawerOpen(false);
+                  navigateToApp('/', navigate);
+                }}
+                startIcon={<LayoutDashboard size={16} />}
+                sx={{
+                  bgcolor: '#10B981',
+                  color: '#FFFFFF',
+                  fontWeight: 800,
+                  py: 1.1,
+                  fontSize: 14,
+                  borderRadius: '10px',
+                  '&:hover': { bgcolor: '#059669' }
+                }}
+              >
+                Vào ứng dụng ngay
+              </Button>
+            ) : (
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => {
+                  setMobileDrawerOpen(false);
+                  navigateToAuth('login', navigate);
+                }}
+                sx={{
+                  borderColor: 'rgba(255, 255, 255, 0.2)',
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  py: 0.9,
+                  fontSize: 13,
+                  borderRadius: '10px',
+                  '&:hover': { borderColor: '#10B981', bgcolor: 'rgba(16, 185, 129, 0.08)' }
+                }}
+              >
+                Đăng nhập tài khoản
+              </Button>
+            )}
           </Box>
 
           {/* Drawer Links */}
@@ -543,23 +605,30 @@ export default function LandingPage() {
         </Box>
 
         {/* Drawer Bottom Actions */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
           <Button
             component="a"
             href="/downloads/finora-latest.apk"
             download="Finora-TichSan.apk"
             fullWidth
-            variant="contained"
-            startIcon={<AndroidSvgIcon size={18} color="#FFFFFF" />}
+            variant="outlined"
+            startIcon={<AndroidSvgIcon size={18} color="#34D399" />}
             sx={{
-              background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+              borderColor: 'rgba(52, 211, 153, 0.35)',
+              bgcolor: 'rgba(16, 185, 129, 0.08)',
               color: '#FFFFFF',
-              fontWeight: 800,
-              py: 1.25,
-              borderRadius: 2
+              fontWeight: 750,
+              py: 1.2,
+              borderRadius: '10px',
+              textTransform: 'none',
+              justifyContent: 'center',
+              '&:hover': {
+                borderColor: '#34D399',
+                bgcolor: 'rgba(16, 185, 129, 0.16)'
+              }
             }}
           >
-            Tải APK Android (13 MB)
+            Tải APK Android (12 MB)
           </Button>
           <Button
             fullWidth
@@ -569,16 +638,19 @@ export default function LandingPage() {
               setGuideModalPlatform('ios');
               setInstallGuideOpen(true);
             }}
-            startIcon={<AppleSvgIcon size={18} color="#FFFFFF" />}
+            startIcon={<AppleSvgIcon size={18} color="#E2E8F0" />}
             sx={{
-              borderColor: 'rgba(255, 255, 255, 0.25)',
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
               color: '#FFFFFF',
               fontWeight: 750,
-              py: 1.1,
-              borderRadius: 2,
+              py: 1.2,
+              borderRadius: '10px',
+              textTransform: 'none',
+              justifyContent: 'center',
               '&:hover': {
                 borderColor: '#FFFFFF',
-                bgcolor: 'rgba(255, 255, 255, 0.08)'
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
               }
             }}
           >
@@ -588,7 +660,7 @@ export default function LandingPage() {
             fullWidth
             variant="contained"
             onClick={() => {
-              navigate('/auth/register');
+              navigateToAuth('register', navigate);
               setMobileDrawerOpen(false);
             }}
             startIcon={<Crown size={16} color="#09261E" />}
@@ -606,7 +678,7 @@ export default function LandingPage() {
             fullWidth
             variant="outlined"
             onClick={() => {
-              navigate('/auth/login');
+              navigateToAuth('login', navigate);
               setMobileDrawerOpen(false);
             }}
             sx={{
@@ -687,34 +759,35 @@ export default function LandingPage() {
           Hệ thống tài chính cá nhân toàn diện: Đồng hồ Bán nguyệt GSAP chuẩn xác, bóc tách vốn đầu tư Tím trần và Trợ lý AI WebMCP 1-chạm — minh bạch, tự động và bảo mật local-first.
         </Typography>
 
-        {/* CTA Buttons (Mobile Stack / Desktop Row) */}
+        {/* CTA Buttons (Mobile Responsive Clean Layout) */}
         <Box
           className="hero-anim"
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            flexDirection: { xs: 'column', md: 'row' },
             justifyContent: 'center',
             alignItems: 'center',
-            gap: { xs: 1.5, sm: 2 },
-            mb: { xs: 5, md: 7 },
+            gap: { xs: 1.25, sm: 1.75 },
+            mb: { xs: 3.5, md: 5 },
             width: '100%',
-            maxWidth: { xs: 380, sm: 'none' },
+            maxWidth: { xs: 440, md: 'none' },
             mx: 'auto'
           }}
         >
+          {/* Main Gold CTA */}
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate('/auth/register')}
+            onClick={() => navigateToAuth('register', navigate)}
             endIcon={<ArrowRight size={18} />}
             sx={{
               backgroundColor: GOLD_COLOR_TOKENS.goldMetallic,
               color: '#09261E',
               fontWeight: 850,
               fontSize: { xs: 14.5, sm: 15 },
-              px: { xs: 3, sm: 3.8 },
-              py: { xs: 1.5, sm: 1.45 },
-              width: { xs: '100%', sm: 'auto' },
+              px: { xs: 3, sm: 3.5 },
+              py: { xs: 1.4, sm: 1.45 },
+              width: { xs: '100%', md: 'auto' },
               borderRadius: 2.5,
               boxShadow: '0 10px 30px rgba(197, 160, 89, 0.4)',
               '&:hover': { backgroundColor: GOLD_COLOR_TOKENS.goldLight }
@@ -723,127 +796,81 @@ export default function LandingPage() {
             Nhận 30 Ngày VIP Gold Miễn Phí
           </Button>
 
-          {/* Android APK Download Button */}
-          <Button
-            component="a"
-            href="/downloads/finora-latest.apk"
-            download="Finora-TichSan.apk"
-            variant="contained"
-            size="large"
-            startIcon={<AndroidSvgIcon size={22} color="#34D399" />}
+          {/* Secondary Buttons Row on Mobile */}
+          <Box
             sx={{
-              background: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #047857 100%)',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: { xs: 14, sm: 15 },
-              px: { xs: 2.2, sm: 2.8 },
-              py: { xs: 1.25, sm: 1.25 },
-              width: { xs: '100%', sm: 'auto' },
-              borderRadius: 2.5,
-              boxShadow: '0 10px 25px rgba(5, 150, 105, 0.35)',
-              border: '1px solid rgba(52, 211, 153, 0.4)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'left',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #065F46 0%, #047857 100%)',
-                boxShadow: '0 12px 30px rgba(16, 185, 129, 0.45)'
-              }
+              display: 'flex',
+              gap: { xs: 1.25, sm: 1.75 },
+              width: { xs: '100%', md: 'auto' }
             }}
           >
-            <Box sx={{ ml: 0.5 }}>
-              <Typography sx={{ fontSize: 10, fontWeight: 700, color: '#34D399', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Bản Android (.APK)
-              </Typography>
-              <Typography sx={{ fontSize: { xs: 13.5, sm: 14.5 }, fontWeight: 850, lineHeight: 1.2 }}>
-                Tải File APK (13 MB)
-              </Typography>
-            </Box>
-          </Button>
+            {/* Direct Login Button */}
+            <Button
+              variant="outlined"
+              size="large"
+              type="button"
+              onClick={() => navigate('/auth/login')}
+              sx={{
+                flex: { xs: 1, md: 'initial' },
+                borderColor: 'rgba(52, 211, 153, 0.35)',
+                color: '#34D399',
+                fontWeight: 750,
+                fontSize: { xs: 13.5, sm: 14.5 },
+                px: { xs: 2, sm: 2.8 },
+                py: { xs: 1.35, sm: 1.45 },
+                borderRadius: 2.5,
+                bgcolor: 'rgba(16, 185, 129, 0.06)',
+                touchAction: 'manipulation',
+                '&:hover': { borderColor: '#34D399', bgcolor: 'rgba(16, 185, 129, 0.14)' }
+              }}
+            >
+              Đăng nhập ngay
+            </Button>
 
-          {/* iOS Web App / PWA Button */}
-          <Button
-            component="a"
-            href="#app-download"
-            onClick={() => {
-              setDownloadPlatform('ios');
-            }}
-            variant="contained"
-            size="large"
-            startIcon={<AppleSvgIcon size={22} color="#FFFFFF" />}
-            sx={{
-              background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: { xs: 14, sm: 15 },
-              px: { xs: 2.2, sm: 2.8 },
-              py: { xs: 1.25, sm: 1.25 },
-              width: { xs: '100%', sm: 'auto' },
-              borderRadius: 2.5,
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.16)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'left',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #334155 0%, #1E293B 100%)',
-                borderColor: 'rgba(255, 255, 255, 0.35)'
-              }
-            }}
-          >
-            <Box sx={{ ml: 0.5 }}>
-              <Typography sx={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                Dành Cho iPhone / iPad
-              </Typography>
-              <Typography sx={{ fontSize: { xs: 13.5, sm: 14.5 }, fontWeight: 850, lineHeight: 1.2 }}>
-                Cài Đặt Trên iOS
-              </Typography>
-            </Box>
-          </Button>
-
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={() => navigate('/')}
-            sx={{
-              borderColor: 'rgba(255, 255, 255, 0.25)',
-              color: '#FFFFFF',
-              fontWeight: 700,
-              fontSize: { xs: 14, sm: 15 },
-              px: { xs: 3, sm: 3.2 },
-              py: { xs: 1.4, sm: 1.45 },
-              width: { xs: '100%', sm: 'auto' },
-              borderRadius: 2.5,
-              bgcolor: 'rgba(255, 255, 255, 0.03)',
-              '&:hover': { borderColor: '#FFFFFF', bgcolor: 'rgba(255,255,255,0.08)' }
-            }}
-          >
-            Khám phá Demo
-          </Button>
+            {/* Jump to App Download Button */}
+            <Button
+              component="a"
+              href="#app-download"
+              variant="outlined"
+              size="large"
+              startIcon={<Smartphone size={16} color="#94A3B8" />}
+              sx={{
+                flex: { xs: 1, md: 'initial' },
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                color: '#E2E8F0',
+                fontWeight: 750,
+                fontSize: { xs: 13.5, sm: 14.5 },
+                px: { xs: 2, sm: 2.8 },
+                py: { xs: 1.35, sm: 1.45 },
+                borderRadius: 2.5,
+                bgcolor: 'rgba(255, 255, 255, 0.04)',
+                '&:hover': { borderColor: '#FFFFFF', bgcolor: 'rgba(255, 255, 255, 0.08)' }
+              }}
+            >
+              Tải App Mobile
+            </Button>
+          </Box>
         </Box>
 
-        {/* Small Guide & QR Jump */}
-        <Box className="hero-anim" sx={{ mb: 6, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
-          <a
-            href="#app-download"
-            style={{
-              color: '#34D399',
-              fontSize: 12.5,
-              fontWeight: 750,
-              textDecoration: 'none',
+        {/* Small Trust Badge */}
+        <Box className="hero-anim" sx={{ mb: { xs: 4, md: 6 }, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box
+            sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              background: 'rgba(16, 185, 129, 0.08)',
-              padding: '6px 14px',
-              borderRadius: 20,
-              border: '1px solid rgba(52, 211, 153, 0.25)'
+              gap: 1,
+              bgcolor: 'rgba(255, 255, 255, 0.03)',
+              px: { xs: 1.8, sm: 2.5 },
+              py: 0.7,
+              borderRadius: '999px',
+              border: '1px solid rgba(255, 255, 255, 0.08)'
             }}
           >
-            <QrCode size={14} /> Quét mã QR & Hướng dẫn cài đặt Android & iOS 30s →
-          </a>
+            <ShieldCheck size={14} color="#34D399" />
+            <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: { xs: '11px', sm: '12px' }, fontWeight: 650 }}>
+              Chạy Ngoại Tuyến 100% · Không Lưu Tài Khoản Ngân Hàng · Không Quảng Cáo
+            </Typography>
+          </Box>
         </Box>
 
         {/* Trust Badges */}
@@ -868,11 +895,12 @@ export default function LandingPage() {
         id="quick-solutions"
         className="reveal-section"
         sx={{
-          py: 10,
+          py: { xs: 6, md: 10 },
           bgcolor: 'rgba(10, 17, 14, 0.75)',
           borderTop: '1px solid rgba(255,255,255,0.08)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
           position: 'relative',
+          overflow: 'hidden',
           zIndex: 1
         }}
       >
@@ -1009,7 +1037,7 @@ export default function LandingPage() {
       </Box>
 
       {/* 4. SHOWCASE: 7 FINANCIAL OVERVIEW CARDS (WITH TÍM TRẦN ACCENTS) */}
-      <Box id="overview" className="reveal-section" sx={{ py: 11, position: 'relative', zIndex: 1 }}>
+      <Box id="overview" className="reveal-section" sx={{ py: { xs: 7, md: 11 }, position: 'relative', overflow: 'hidden', zIndex: 1 }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography variant="overline" sx={{ color: '#A78BFA', fontWeight: 800, letterSpacing: 1.5 }}>
@@ -1078,25 +1106,26 @@ export default function LandingPage() {
         id="gauges"
         className="reveal-section"
         sx={{
-          py: 12,
+          py: { xs: 8, md: 12 },
           bgcolor: 'rgba(10, 17, 14, 0.75)',
           borderTop: '1px solid rgba(255,255,255,0.08)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
           position: 'relative',
+          overflow: 'hidden',
           zIndex: 1
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 6, alignItems: 'center' }}>
-            <Box>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 4, md: 6 }, alignItems: 'center' }}>
+            <Box sx={{ maxWidth: '100%', minWidth: 0 }}>
               <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.5, borderRadius: 50, bgcolor: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', mb: 2 }}>
                 <Activity size={14} />
                 <Typography variant="caption" sx={{ fontWeight: 800 }}>CHUẨN MỰC CHẨN ĐOÁN SỨC KHỎE TÀI CHÍNH</Typography>
               </Box>
-              <Typography variant="h3" sx={{ fontWeight: 850, letterSpacing: -1, mb: 2 }}>
+              <Typography variant="h3" sx={{ fontWeight: 850, letterSpacing: -1, fontSize: { xs: '1.6rem', sm: '2.2rem', md: '2.5rem' }, mb: 2 }}>
                 Speedometer Gauges — Kim Khóa Trục & Sáng Vùng Chỉ Định
               </Typography>
-              <Typography variant="body1" sx={{ color: '#94A3B8', lineHeight: 1.8, mb: 3 }}>
+              <Typography variant="body1" sx={{ color: '#94A3B8', lineHeight: 1.8, fontSize: { xs: '0.9rem', sm: '1rem' }, mb: 3 }}>
                 Kim chỉ được khóa trục toán học chính xác 100% tại tâm xoay SVG. Đặc biệt: <strong>kim trỏ đến phân vùng nào thì màu phân vùng đó sẽ rực sáng và tỏa vầng hào quang</strong>, các vùng còn lại tự động dịu xuống để tạo độ tương phản vượt trội.
               </Typography>
 
@@ -1109,10 +1138,10 @@ export default function LandingPage() {
                   <Box key={idx} sx={{ display: 'flex', gap: 1.5 }}>
                     <CheckCircle2 size={18} color="#06B6D4" style={{ flexShrink: 0, marginTop: 2 }} />
                     <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 750, color: '#F1F5F9' }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 750, color: '#F1F5F9', fontSize: '0.9rem' }}>
                         {item.label}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: '#94A3B8' }}>
+                      <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: '0.8rem' }}>
                         {item.desc}
                       </Typography>
                     </Box>
@@ -1121,7 +1150,7 @@ export default function LandingPage() {
               </Box>
 
               {/* Interactive Gauge Slider demo */}
-              <Box sx={{ p: 2.5, borderRadius: 2.5, bgcolor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <Box sx={{ p: 2, borderRadius: 2.5, bgcolor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                   <Typography variant="caption" sx={{ color: '#E2E8F0', fontWeight: 800 }}>
                     Thử kéo điểm số để kiểm tra kim & độ sáng phân vùng:
@@ -1145,27 +1174,29 @@ export default function LandingPage() {
             <Paper
               elevation={0}
               sx={{
-                p: { xs: 3, sm: 5 },
+                p: { xs: 2.5, sm: 4 },
                 borderRadius: 4,
                 bgcolor: '#091310',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.6)'
+                boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
+                maxWidth: '100%',
+                overflow: 'hidden'
               }}
             >
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#FFFFFF', mb: 1 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#FFFFFF', mb: 1, textAlign: 'center', fontSize: { xs: '0.95rem', sm: '1.05rem' } }}>
                 Chỉ Số Sức Khỏe Toàn Diện (Tích Sản Health)
               </Typography>
-              <SemiCircleGauge score={gaugeDemoScore} size={310} title="Sức Khỏe Tài Chính" />
+              <SemiCircleGauge score={gaugeDemoScore} size={isMobile ? 240 : 310} title="Sức Khỏe Tài Chính" />
             </Paper>
           </Box>
         </Container>
       </Box>
 
       {/* 6. AI COPILOT SECTION (WEBMCP INTEGRATION) */}
-      <Box id="copilot" className="reveal-section" sx={{ py: 12, position: 'relative', zIndex: 1 }}>
+      <Box id="copilot" className="reveal-section" sx={{ py: { xs: 7, md: 12 }, position: 'relative', overflow: 'hidden', zIndex: 1 }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.5, borderRadius: 50, bgcolor: 'rgba(197, 160, 89, 0.15)', color: GOLD_COLOR_TOKENS.goldLight, mb: 2 }}>
@@ -1234,7 +1265,7 @@ export default function LandingPage() {
       </Box>
 
       {/* 6.5. REAL CUSTOMER INTERVIEWS & CASE STUDIES (VOICE OF USERS) */}
-      <Box id="reviews" className="reveal-section" sx={{ py: 12, position: 'relative', zIndex: 1 }}>
+      <Box id="reviews" className="reveal-section" sx={{ py: { xs: 7, md: 12 }, position: 'relative', overflow: 'hidden', zIndex: 1 }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.5, borderRadius: 50, bgcolor: 'rgba(139, 92, 246, 0.15)', color: '#A78BFA', mb: 2 }}>
@@ -1336,15 +1367,15 @@ export default function LandingPage() {
         </Container>
       </Box>
 
-      {/* 6.5 DEDICATED APP DOWNLOAD SHOWCASE SECTION */}
+      {/* 6.5 DEDICATED APP DOWNLOAD SHOWCASE SECTION (MOBILE-OPTIMIZED & STREAMLINED) */}
       <Box
         id="app-download"
         className="reveal-section"
         sx={{
-          py: { xs: 8, md: 12 },
+          py: { xs: 6, md: 10 },
           position: 'relative',
           overflow: 'hidden',
-          background: 'linear-gradient(180deg, rgba(3, 7, 6, 0.95) 0%, rgba(6, 26, 18, 0.7) 50%, rgba(3, 7, 6, 0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(3, 7, 6, 0.98) 0%, rgba(6, 26, 18, 0.75) 50%, rgba(3, 7, 6, 0.98) 100%)',
           borderTop: '1px solid rgba(16, 185, 129, 0.15)',
           borderBottom: '1px solid rgba(16, 185, 129, 0.15)'
         }}
@@ -1356,89 +1387,48 @@ export default function LandingPage() {
             top: '20%',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: { xs: 320, md: 700 },
-            height: { xs: 320, md: 500 },
+            width: { xs: '90%', md: 650 },
+            height: { xs: 250, md: 450 },
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%)',
-            filter: 'blur(50px)',
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(0,0,0,0) 70%)',
+            filter: 'blur(40px)',
             pointerEvents: 'none'
           }}
         />
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, px: { xs: 2, sm: 3 } }}>
           {/* Header */}
-          <Box sx={{ textAlign: 'center', mb: { xs: 5, md: 7 } }}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5, flexWrap: 'wrap', mb: 2.5 }}>
+          <Box sx={{ textAlign: 'center', mb: { xs: 3.5, md: 6 } }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
               <Chip
-                icon={<Smartphone size={16} color="#34D399" />}
-                label="ỨNG DỤNG DI ĐỘNG CHÍNH THỨC · v1.0.0"
+                icon={<Smartphone size={15} color="#34D399" />}
+                label="ỨNG DỤNG DI ĐỘNG FINORA · v1.0.1"
                 sx={{
                   bgcolor: 'rgba(16, 185, 129, 0.12)',
                   color: '#34D399',
                   border: '1px solid rgba(16, 185, 129, 0.35)',
-                  fontWeight: 700,
-                  letterSpacing: 0.8,
-                  px: 1.5,
-                  py: 2.2,
+                  fontWeight: 750,
+                  fontSize: { xs: '11px', sm: '12px' },
+                  letterSpacing: 0.5,
+                  px: 1,
+                  py: 1.8,
                   borderRadius: '999px'
                 }}
               />
             </Box>
 
-            {/* Platform Toggle Pills */}
-            <Box sx={{ display: 'inline-flex', p: 0.6, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', mb: 3 }}>
-              <Button
-                size="small"
-                onClick={() => setDownloadPlatform('android')}
-                startIcon={<AndroidSvgIcon size={18} color={downloadPlatform === 'android' ? '#FFFFFF' : '#34D399'} />}
-                sx={{
-                  borderRadius: '12px',
-                  px: { xs: 2, sm: 2.5 },
-                  py: 0.8,
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  textTransform: 'none',
-                  bgcolor: downloadPlatform === 'android' ? '#059669' : 'transparent',
-                  color: downloadPlatform === 'android' ? '#FFFFFF' : '#94A3B8',
-                  boxShadow: downloadPlatform === 'android' ? '0 4px 15px rgba(5, 150, 105, 0.4)' : 'none',
-                  '&:hover': { bgcolor: downloadPlatform === 'android' ? '#047857' : 'rgba(255,255,255,0.06)' }
-                }}
-              >
-                Bản Android (.APK)
-              </Button>
-              <Button
-                size="small"
-                onClick={() => setDownloadPlatform('ios')}
-                startIcon={<AppleSvgIcon size={18} color={downloadPlatform === 'ios' ? '#FFFFFF' : '#CBD5E1'} />}
-                sx={{
-                  borderRadius: '12px',
-                  px: { xs: 2, sm: 2.5 },
-                  py: 0.8,
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  textTransform: 'none',
-                  bgcolor: downloadPlatform === 'ios' ? '#334155' : 'transparent',
-                  color: downloadPlatform === 'ios' ? '#FFFFFF' : '#94A3B8',
-                  boxShadow: downloadPlatform === 'ios' ? '0 4px 15px rgba(51, 65, 85, 0.4)' : 'none',
-                  '&:hover': { bgcolor: downloadPlatform === 'ios' ? '#1E293B' : 'rgba(255,255,255,0.06)' }
-                }}
-              >
-                Bản iOS (iPhone / iPad)
-              </Button>
-            </Box>
-
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '1.85rem', sm: '2.5rem', md: '3.2rem' },
+                fontSize: { xs: '1.65rem', sm: '2.4rem', md: '3rem' },
                 fontWeight: 900,
-                lineHeight: 1.15,
+                lineHeight: 1.2,
                 color: '#FFFFFF',
-                mb: 2,
+                mb: 1.5,
                 letterSpacing: '-0.02em'
               }}
             >
-              Trải Nghiệm Finora Mượt Mà{' '}
+              Tải Finora Về{' '}
               <Box
                 component="span"
                 sx={{
@@ -1447,45 +1437,50 @@ export default function LandingPage() {
                   WebkitTextFillColor: 'transparent'
                 }}
               >
-                Ngay Trên Smartphone
+                Điện Thoại
               </Box>
             </Typography>
+
             <Typography
               variant="body1"
               sx={{
                 color: '#94A3B8',
-                maxWidth: 720,
+                maxWidth: 600,
                 mx: 'auto',
-                fontSize: { xs: '0.95rem', md: '1.1rem' },
-                lineHeight: 1.6
+                fontSize: { xs: '0.88rem', sm: '1rem' },
+                lineHeight: 1.5,
+                mb: 2.5
               }}
             >
-              Mở app trong chớp mắt, quản lý tài chính chuẩn mực mọi lúc mọi nơi kể cả khi không có kết nối internet. Không quảng cáo, 100% dữ liệu bảo mật trên máy bạn.
+              Ghi chép nhanh không độ trễ, lưu trữ bảo mật 100% trên thiết bị. Hoạt động trơn tru kể cả khi không có mạng.
             </Typography>
-          </Box>
 
-          {/* Main 2-column Showcase */}
+            </Box>
+
+          {/* Main Download Showcase Grid */}
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', lg: '1.4fr 1fr' },
-              gap: { xs: 4, md: 5 },
+              gridTemplateColumns: { xs: '1fr', lg: '1.35fr 0.95fr' },
+              gap: { xs: 3, md: 4 },
               alignItems: 'stretch'
             }}
           >
-            {/* Left Card: App Profile & Highlights */}
+            {/* Primary Action Card */}
             <Paper
               elevation={0}
               sx={{
-                p: { xs: 3, sm: 4, md: 5 },
-                borderRadius: '24px',
-                background: 'rgba(12, 20, 16, 0.85)',
+                p: { xs: 2.5, sm: 3.5, md: 4 },
+                borderRadius: { xs: '20px', md: '24px' },
+                background: 'rgba(12, 20, 16, 0.9)',
                 border: '1px solid rgba(16, 185, 129, 0.25)',
                 backdropFilter: 'blur(20px)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 16px 40px rgba(0, 0, 0, 0.5)',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                maxWidth: '100%',
+                overflow: 'hidden'
               }}
             >
               <Box>
@@ -1493,11 +1488,10 @@ export default function LandingPage() {
                 <Box
                   sx={{
                     display: 'flex',
-                    alignItems: { xs: 'flex-start', sm: 'center' },
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    gap: 2.5,
-                    pb: 3,
-                    mb: 3.5,
+                    alignItems: 'center',
+                    gap: { xs: 1.8, sm: 2.5 },
+                    pb: 2.5,
+                    mb: 2.5,
                     borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
                   }}
                 >
@@ -1506,262 +1500,254 @@ export default function LandingPage() {
                     src="/logo.png"
                     alt="Finora Logo"
                     sx={{
-                      width: { xs: 68, sm: 76 },
-                      height: { xs: 68, sm: 76 },
-                      borderRadius: '20px',
-                      p: 1.2,
+                      width: { xs: 54, sm: 64 },
+                      height: { xs: 54, sm: 64 },
+                      borderRadius: '16px',
+                      p: 0.8,
                       background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 78, 59, 0.4) 100%)',
                       border: '1.5px solid rgba(52, 211, 153, 0.4)',
-                      boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)',
-                      objectFit: 'contain'
+                      boxShadow: '0 6px 18px rgba(5, 150, 105, 0.35)',
+                      objectFit: 'contain',
+                      flexShrink: 0
                     }}
                   />
-                  <Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mb: 0.5 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 900, color: '#FFFFFF', fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+                  <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 0.4 }}>
+                      <Typography variant="h5" sx={{ fontWeight: 900, color: '#FFFFFF', fontSize: { xs: '1.25rem', sm: '1.45rem' } }}>
                         Finora - Tích Sản
                       </Typography>
                       <Chip
                         size="small"
-                        label="v1.0.0 Stable"
+                        label="v1.0.1 Mới Nhất"
                         sx={{
                           bgcolor: 'rgba(52, 211, 153, 0.15)',
                           color: '#34D399',
-                          fontWeight: 700,
-                          fontSize: '0.75rem',
+                          fontWeight: 750,
+                          fontSize: '0.72rem',
+                          height: 22,
                           border: '1px solid rgba(52, 211, 153, 0.3)'
                         }}
                       />
                     </Box>
-                    <Typography variant="body2" sx={{ color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      {downloadPlatform === 'android' ? (
-                        <>
-                          <span>Dung lượng: <strong>~24 MB</strong></span>
-                          <span>•</span>
-                          <span>Yêu cầu: <strong>Android 7.0+</strong></span>
-                          <span>•</span>
-                          <span style={{ color: '#34D399', fontWeight: 600 }}>Miễn phí 100%</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Chuẩn: <strong>PWA Web App</strong></span>
-                          <span>•</span>
-                          <span>Yêu cầu: <strong>iOS 15+ (Safari)</strong></span>
-                          <span>•</span>
-                          <span style={{ color: '#38BDF8', fontWeight: 600 }}>Zero Cài Đặt · Không Tốn Bộ Nhớ</span>
-                        </>
-                      )}
+                    <Typography variant="caption" sx={{ color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', fontSize: { xs: '0.78rem', sm: '0.85rem' } }}>
+                      <span>Dung lượng: <strong style={{ color: '#34D399' }}>12 MB</strong></span>
+                      <span>•</span>
+                      <span>Hỗ trợ: <strong>Android 7.0+ & iOS 15+</strong></span>
+                      <span>•</span>
+                      <span style={{ color: '#F59E0B', fontWeight: 700 }}>Miễn phí 100%</span>
                     </Typography>
                   </Box>
                 </Box>
 
-                {/* Key App Features */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2.5, mb: 4 }}>
+                {/* 2 Equal Basic Download Buttons */}
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                    gap: 1.75,
+                    mb: 2.5
+                  }}
+                >
+                  {/* Button 1: Android APK */}
+                  <Button
+                    component="a"
+                    href="/downloads/finora-latest.apk"
+                    download="Finora-TichSan.apk"
+                    variant="outlined"
+                    startIcon={<AndroidSvgIcon size={22} color="#34D399" />}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textAlign: 'left',
+                      py: 1.5,
+                      px: 2,
+                      borderRadius: '12px',
+                      borderColor: 'rgba(52, 211, 153, 0.35)',
+                      bgcolor: 'rgba(16, 185, 129, 0.08)',
+                      color: '#FFFFFF',
+                      textTransform: 'none',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        borderColor: '#34D399',
+                        bgcolor: 'rgba(16, 185, 129, 0.16)',
+                        transform: 'translateY(-1px)'
+                      }
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
+                      <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.25, color: '#FFFFFF' }}>
+                        Tải cho Android
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.78rem', color: '#94A3B8', mt: 0.2 }}>
+                        Bản APK • <strong style={{ color: '#34D399' }}>12 MB</strong>
+                      </Typography>
+                    </Box>
+                    <DownloadCloud size={20} color="#34D399" style={{ flexShrink: 0 }} />
+                  </Button>
+
+                  {/* Button 2: iOS iPhone/iPad */}
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setGuideModalPlatform('ios');
+                      setInstallGuideOpen(true);
+                    }}
+                    startIcon={<AppleSvgIcon size={22} color="#E2E8F0" />}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textAlign: 'left',
+                      py: 1.5,
+                      px: 2,
+                      borderRadius: '12px',
+                      borderColor: 'rgba(255, 255, 255, 0.2)',
+                      bgcolor: 'rgba(255, 255, 255, 0.05)',
+                      color: '#FFFFFF',
+                      textTransform: 'none',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        borderColor: '#FFFFFF',
+                        bgcolor: 'rgba(255, 255, 255, 0.1)',
+                        transform: 'translateY(-1px)'
+                      }
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0, flex: 1, pr: 1 }}>
+                      <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.25, color: '#FFFFFF' }}>
+                        Cài đặt cho iOS
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.78rem', color: '#94A3B8', mt: 0.2 }}>
+                        PWA Safari • <strong style={{ color: '#38BDF8' }}>0 MB (Web)</strong>
+                      </Typography>
+                    </Box>
+                    <ExternalLink size={18} color="#94A3B8" style={{ flexShrink: 0 }} />
+                  </Button>
+                </Box>
+
+                {/* Safety Badges List */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8, px: 0.5, mb: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CheckCircle2 size={14} color="#10B981" />
+                    <Typography variant="caption" sx={{ color: '#CBD5E1', fontSize: '0.78rem' }}>
+                      File APK chính thức 12 MB, ký số sạch, không quảng cáo hay mã theo dõi.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CheckCircle2 size={14} color="#10B981" />
+                    <Typography variant="caption" sx={{ color: '#CBD5E1', fontSize: '0.78rem' }}>
+                      Khởi chạy ngoại tuyến 100% với SQLite/IndexedDB an toàn trên điện thoại.
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Quick Guides Links (Android & iOS) */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, px: 0.5 }}>
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                      setGuideModalPlatform('android');
+                      setInstallGuideOpen(true);
+                    }}
+                    startIcon={<HelpCircle size={14} color="#34D399" />}
+                    endIcon={<ArrowRight size={13} />}
+                    sx={{
+                      color: '#34D399',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      textTransform: 'none',
+                      p: 0,
+                      '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                    }}
+                  >
+                    Hướng dẫn cài đặt file APK trên Android (30s)
+                  </Button>
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                      setGuideModalPlatform('ios');
+                      setInstallGuideOpen(true);
+                    }}
+                    startIcon={<HelpCircle size={14} color="#38BDF8" />}
+                    endIcon={<ArrowRight size={13} />}
+                    sx={{
+                      color: '#38BDF8',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      textTransform: 'none',
+                      p: 0,
+                      '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+                    }}
+                  >
+                    Hướng dẫn ghim ra MH chính iPhone (iOS)
+                  </Button>
+                </Box>
+
+                {/* 4 Feature Highlights Grid (2x2 Compact) */}
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr' }, gap: 1.5, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
                   {[
-                    {
-                      icon: Zap,
-                      title: 'Khởi động 0.2s',
-                      desc: downloadPlatform === 'android' ? 'Không cần load trình duyệt, mở là ghi nhận thu chi ngay.' : 'Khởi chạy toàn màn hình từ Home Screen như ứng dụng Native.',
-                      color: '#F59E0B'
-                    },
-                    {
-                      icon: ShieldCheck,
-                      title: 'Bảo Mật Local-First',
-                      desc: 'Dữ liệu được lưu trữ trực tiếp trên thiết bị của bạn, bảo mật tuyệt đối.',
-                      color: '#10B981'
-                    },
-                    {
-                      icon: Activity,
-                      title: 'Đồng Hồ Sức Khỏe',
-                      desc: 'Theo dõi 6 chỉ số dòng tiền trực quan qua bán nguyệt tương tác.',
-                      color: '#38BDF8'
-                    },
-                    {
-                      icon: EyeOff,
-                      title: 'Zero-Telemetry',
-                      desc: 'Không gắn mã theo dõi quảng cáo, tôn trọng quyền riêng tư 100%.',
-                      color: '#A78BFA'
-                    }
+                    { icon: Zap, label: 'Khởi động 0.2s', desc: 'Mở app ghi chép ngay', color: '#F59E0B' },
+                    { icon: ShieldCheck, label: 'Bảo mật Offline', desc: 'Dữ liệu lưu trên máy', color: '#10B981' },
+                    { icon: Activity, label: 'Đồng Hồ GSAP', desc: 'Đo 6 chỉ số dòng tiền', color: '#38BDF8' },
+                    { icon: EyeOff, label: 'Zero-Telemetry', desc: '100% không quảng cáo', color: '#A78BFA' }
                   ].map((feat, idx) => {
                     const FeatIcon = feat.icon;
                     return (
                       <Box
                         key={idx}
                         sx={{
-                          p: 2,
-                          borderRadius: '16px',
-                          bgcolor: 'rgba(255, 255, 255, 0.03)',
-                          border: '1px solid rgba(255, 255, 255, 0.06)',
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(255, 255, 255, 0.05)',
-                            borderColor: 'rgba(16, 185, 129, 0.3)'
-                          }
+                          p: 1.25,
+                          borderRadius: '12px',
+                          bgcolor: 'rgba(255, 255, 255, 0.02)',
+                          border: '1px solid rgba(255, 255, 255, 0.05)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-                          <Box
-                            sx={{
-                              width: 32,
-                              height: 32,
-                              borderRadius: '8px',
-                              bgcolor: `${feat.color}20`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: feat.color
-                            }}
-                          >
-                            <FeatIcon size={18} />
-                          </Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#FFFFFF' }}>
-                            {feat.title}
+                        <Box
+                          sx={{
+                            width: 28,
+                            height: 28,
+                            borderRadius: '6px',
+                            bgcolor: `${feat.color}15`,
+                            color: feat.color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}
+                        >
+                          <FeatIcon size={15} />
+                        </Box>
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 750, color: '#FFFFFF', fontSize: '0.78rem', lineHeight: 1.2 }}>
+                            {feat.label}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: '0.68rem', display: 'block', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                            {feat.desc}
                           </Typography>
                         </Box>
-                        <Typography variant="caption" sx={{ color: '#94A3B8', lineHeight: 1.5, display: 'block' }}>
-                          {feat.desc}
-                        </Typography>
                       </Box>
                     );
                   })}
                 </Box>
               </Box>
-
-              {/* Action Buttons */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  gap: 2,
-                  pt: 2,
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)'
-                }}
-              >
-                {downloadPlatform === 'android' ? (
-                  <>
-                    <Button
-                      component="a"
-                      href="/downloads/finora-latest.apk"
-                      download="Finora-TichSan.apk"
-                      variant="contained"
-                      startIcon={<DownloadCloud size={20} />}
-                      sx={{
-                        flex: 1.3,
-                        py: 1.8,
-                        px: 3,
-                        borderRadius: '14px',
-                        fontWeight: 800,
-                        fontSize: '1rem',
-                        textTransform: 'none',
-                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                        boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)',
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
-                          boxShadow: '0 12px 30px rgba(16, 185, 129, 0.55)',
-                          transform: 'translateY(-2px)'
-                        },
-                        transition: 'all 0.25s ease'
-                      }}
-                    >
-                      TẢI FINORA CHO ANDROID (.APK)
-                    </Button>
-
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setGuideModalPlatform('android');
-                        setInstallGuideOpen(true);
-                      }}
-                      startIcon={<HelpCircle size={18} />}
-                      sx={{
-                        flex: 1,
-                        py: 1.8,
-                        px: 2.5,
-                        borderRadius: '14px',
-                        fontWeight: 700,
-                        fontSize: '0.95rem',
-                        textTransform: 'none',
-                        borderColor: 'rgba(255, 255, 255, 0.15)',
-                        color: '#E2E8F0',
-                        '&:hover': {
-                          borderColor: '#34D399',
-                          bgcolor: 'rgba(52, 211, 153, 0.08)'
-                        }
-                      }}
-                    >
-                      Cách Cài Đặt APK
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      component={Link}
-                      to="/auth/register"
-                      variant="contained"
-                      startIcon={<ExternalLink size={20} />}
-                      sx={{
-                        flex: 1.3,
-                        py: 1.8,
-                        px: 3,
-                        borderRadius: '14px',
-                        fontWeight: 800,
-                        fontSize: '1rem',
-                        textTransform: 'none',
-                        background: 'linear-gradient(135deg, #334155 0%, #0F172A 100%)',
-                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.4)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #475569 0%, #1E293B 100%)',
-                          transform: 'translateY(-2px)'
-                        },
-                        transition: 'all 0.25s ease'
-                      }}
-                    >
-                      MỞ APP TRÊN SAFARI (iOS)
-                    </Button>
-
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        setGuideModalPlatform('ios');
-                        setInstallGuideOpen(true);
-                      }}
-                      startIcon={<HelpCircle size={18} />}
-                      sx={{
-                        flex: 1,
-                        py: 1.8,
-                        px: 2.5,
-                        borderRadius: '14px',
-                        fontWeight: 700,
-                        fontSize: '0.95rem',
-                        textTransform: 'none',
-                        borderColor: 'rgba(255, 255, 255, 0.15)',
-                        color: '#E2E8F0',
-                        '&:hover': {
-                          borderColor: '#38BDF8',
-                          bgcolor: 'rgba(56, 189, 248, 0.08)'
-                        }
-                      }}
-                    >
-                      4 Bước Ghim Màn Hình iOS
-                    </Button>
-                  </>
-                )}
-              </Box>
             </Paper>
 
-            {/* Right Card: QR Scan & 3-Step Quick Guide */}
+            {/* Right Card: QR Code (DESKTOP ONLY, HIDDEN ON MOBILE) */}
             <Paper
               elevation={0}
               sx={{
-                p: { xs: 3, sm: 4 },
+                p: 3.5,
                 borderRadius: '24px',
                 background: 'rgba(12, 20, 16, 0.75)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(20px)',
-                display: 'flex',
+                display: { xs: 'none', lg: 'flex' },
                 flexDirection: 'column',
                 alignItems: 'center',
                 textAlign: 'center',
@@ -1771,79 +1757,75 @@ export default function LandingPage() {
               {/* QR Code Container */}
               <Box
                 sx={{
-                  p: 2.5,
-                  borderRadius: '20px',
+                  p: 2,
+                  borderRadius: '16px',
                   bgcolor: '#FFFFFF',
                   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                  mb: 3,
+                  mb: 2.5,
                   position: 'relative'
                 }}
               >
                 <Box
                   component="img"
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
                     typeof window !== 'undefined'
                       ? window.location.origin + '/downloads/finora-latest.apk'
                       : 'https://finora.app/downloads/finora-latest.apk'
-                  )}&color=064e3b&margin=6`}
+                  )}&color=064e3b&margin=4`}
                   alt="QR Code Tải Finora APK"
                   onError={(e: any) => {
-                    // Fallback to static direct link notice if offline or API blocked
                     e.currentTarget.style.display = 'none';
                   }}
                   sx={{
-                    width: { xs: 170, sm: 190 },
-                    height: { xs: 170, sm: 190 },
+                    width: 160,
+                    height: 160,
                     display: 'block'
                   }}
                 />
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.8 }}>
                 <QrCode size={18} color="#34D399" />
-                <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1.1rem' }}>
-                  Quét Mã Để Tải Ngay
+                <Typography variant="h6" sx={{ fontWeight: 800, color: '#FFFFFF', fontSize: '1rem' }}>
+                  Quét Mã Tải Trên Điện Thoại
                 </Typography>
               </Box>
 
-              <Typography variant="body2" sx={{ color: '#94A3B8', mb: 3.5, maxWidth: 280, fontSize: '0.85rem' }}>
-                Bật Camera điện thoại Android và hướng vào mã QR để bắt đầu tải file APK tự động.
+              <Typography variant="body2" sx={{ color: '#94A3B8', mb: 2.5, maxWidth: 260, fontSize: '0.82rem', lineHeight: 1.4 }}>
+                Dùng camera điện thoại Android để quét mã QR và tải nhanh file APK về máy.
               </Typography>
 
-              {/* 3 Quick Step Pills */}
-              <Box sx={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>
-                  Quy trình cài đặt 3 bước:
-                </Typography>
+              {/* 3 Quick Steps for Desktop Scan */}
+              <Box sx={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {[
-                  { step: '1', title: 'Tải file APK', desc: 'Nhấn nút Tải hoặc quét mã QR phía trên' },
-                  { step: '2', title: 'Xác nhận cài đặt', desc: 'Chọn "Vẫn tải xuống" & "Cho phép cài đặt từ nguồn này"' },
-                  { step: '3', title: 'Mở app & Quản lý', desc: 'Đăng nhập hoặc tạo sổ tài chính bắt đầu tích sản' }
+                  { step: '1', title: 'Quét mã QR', desc: 'Mở camera điện thoại quét mã' },
+                  { step: '2', title: 'Tải file APK (12 MB)', desc: 'Chọn "Vẫn tải xuống"' },
+                  { step: '3', title: 'Cài đặt và sử dụng', desc: 'Mở app và bắt đầu quản lý' }
                 ].map((s, idx) => (
                   <Box
                     key={idx}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 1.5,
-                      p: 1.2,
-                      px: 2,
-                      borderRadius: '12px',
+                      gap: 1.2,
+                      p: 0.8,
+                      px: 1.5,
+                      borderRadius: '10px',
                       bgcolor: 'rgba(255, 255, 255, 0.03)',
                       border: '1px solid rgba(255, 255, 255, 0.05)'
                     }}
                   >
                     <Box
                       sx={{
-                        width: 22,
-                        height: 22,
+                        width: 20,
+                        height: 20,
                         borderRadius: '50%',
                         bgcolor: 'rgba(16, 185, 129, 0.2)',
                         color: '#34D399',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '0.75rem',
+                        fontSize: '0.72rem',
                         fontWeight: 800,
                         flexShrink: 0
                       }}
@@ -1851,10 +1833,10 @@ export default function LandingPage() {
                       {s.step}
                     </Box>
                     <Box sx={{ minWidth: 0, flex: 1 }}>
-                      <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.82rem', lineHeight: 1.2 }}>
+                      <Typography variant="subtitle2" sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.78rem', lineHeight: 1.2 }}>
                         {s.title}
                       </Typography>
-                      <Typography variant="caption" noWrap sx={{ color: '#94A3B8', fontSize: '0.72rem', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                      <Typography variant="caption" noWrap sx={{ color: '#94A3B8', fontSize: '0.7rem', display: 'block' }}>
                         {s.desc}
                       </Typography>
                     </Box>
@@ -1871,11 +1853,12 @@ export default function LandingPage() {
         id="pricing"
         className="reveal-section"
         sx={{
-          py: 12,
+          py: { xs: 8, md: 12 },
           bgcolor: 'rgba(10, 17, 14, 0.75)',
           borderTop: '1px solid rgba(255,255,255,0.08)',
           borderBottom: '1px solid rgba(255,255,255,0.08)',
           position: 'relative',
+          overflow: 'hidden',
           zIndex: 1
         }}
       >
@@ -1932,7 +1915,7 @@ export default function LandingPage() {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={() => navigate('/auth/register')}
+                  onClick={() => navigateToAuth('register', navigate)}
                   sx={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF', fontWeight: 700 }}
                 >
                   Tạo tài khoản Free
@@ -2002,7 +1985,7 @@ export default function LandingPage() {
                 <Button
                   fullWidth
                   variant="contained"
-                  onClick={() => navigate('/auth/register')}
+                  onClick={() => navigateToAuth('register', navigate)}
                   sx={{
                     bgcolor: GOLD_COLOR_TOKENS.goldMetallic,
                     color: '#09261E',
@@ -2061,7 +2044,7 @@ export default function LandingPage() {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={() => navigate('/pricing')}
+                  onClick={() => navigateToApp('/pricing', navigate)}
                   sx={{ borderColor: 'rgba(255,255,255,0.3)', color: '#FFFFFF', fontWeight: 700 }}
                 >
                   Xem chi tiết bảng giá
@@ -2073,23 +2056,23 @@ export default function LandingPage() {
       </Box>
 
       {/* 8. SECURITY & ZERO-ACCESS GUARANTEE */}
-      <Box id="security" className="reveal-section" sx={{ py: 10, position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="md" sx={{ textAlign: 'center' }}>
+      <Box id="security" className="reveal-section" sx={{ py: { xs: 6, md: 10 }, position: 'relative', overflow: 'hidden', zIndex: 1 }}>
+        <Container maxWidth="md" sx={{ textAlign: 'center', px: { xs: 2, sm: 3 } }}>
           <Box sx={{ width: 56, height: 56, borderRadius: 3, bgcolor: 'rgba(16, 185, 129, 0.15)', display: 'grid', placeItems: 'center', mx: 'auto', mb: 2.5 }}>
             <Lock size={28} color="#34D399" />
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 850, mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 850, fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' }, mb: 2 }}>
             Triết lý Bảo mật Local-First & Zero-Knowledge
           </Typography>
-          <Typography variant="body1" sx={{ color: '#94A3B8', lineHeight: 1.8, mb: 4 }}>
+          <Typography variant="body1" sx={{ color: '#94A3B8', lineHeight: 1.8, fontSize: { xs: '0.88rem', sm: '1rem' }, mb: 4 }}>
             Tích Sản không bao giờ lưu trữ mật khẩu ngân hàng, mã OTP hay thông tin thẻ tín dụng của bạn. Toàn bộ sổ ghi chép, tài sản và danh mục được lưu trữ trực tiếp trên thiết bị của bạn với chuẩn mã hóa cao nhất. Ngay cả đội ngũ quản trị viên Tích Sản cũng không thể truy cập vào sổ sách của bạn.
           </Typography>
         </Container>
       </Box>
 
       {/* 9. FAQ ACCORDION */}
-      <Box className="reveal-section" sx={{ py: 10, bgcolor: 'rgba(10, 17, 14, 0.75)', borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="md">
+      <Box className="reveal-section" sx={{ py: { xs: 6, md: 10 }, bgcolor: 'rgba(10, 17, 14, 0.75)', borderTop: '1px solid rgba(255,255,255,0.08)', position: 'relative', overflow: 'hidden', zIndex: 1 }}>
+        <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>
           <Typography variant="h4" sx={{ fontWeight: 850, textAlign: 'center', mb: 6 }}>
             Câu hỏi Thường gặp
           </Typography>
@@ -2141,58 +2124,79 @@ export default function LandingPage() {
       </Box>
 
       {/* 10. FOOTER & FINAL CTA */}
-      <Box sx={{ py: 10, bgcolor: '#020504', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center', position: 'relative', zIndex: 1 }}>
-        <Container maxWidth="md">
-          <Typography variant="h3" sx={{ fontWeight: 900, mb: 2 }}>
+      <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: '#020504', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center', position: 'relative', overflow: 'hidden', zIndex: 1 }}>
+        <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>
+          <Typography variant="h3" sx={{ fontWeight: 900, fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }, mb: 2 }}>
             Sẵn sàng làm chủ dòng tiền hôm nay?
           </Typography>
-          <Typography variant="body1" sx={{ color: '#94A3B8', mb: 4 }}>
+          <Typography variant="body1" sx={{ color: '#94A3B8', fontSize: { xs: '0.9rem', sm: '1rem' }, mb: 4 }}>
             Đăng ký chỉ mất 30 giây. Bắt đầu ngay với 30 ngày VIP Gold hoàn toàn miễn phí.
           </Typography>
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate('/auth/register')}
+            onClick={() => navigateToAuth('register', navigate)}
             startIcon={<Crown size={18} color="#09261E" />}
             sx={{
               bgcolor: GOLD_COLOR_TOKENS.goldMetallic,
               color: '#09261E',
               fontWeight: 850,
-              fontSize: 15,
-              px: 4,
+              fontSize: { xs: 14, sm: 15 },
+              px: { xs: 3, sm: 4 },
               py: 1.5,
               borderRadius: 2.5,
+              maxWidth: '100%',
               '&:hover': { bgcolor: GOLD_COLOR_TOKENS.goldLight }
             }}
           >
             Đăng Ký & Trải Nghiệm VIP Gold Ngay
           </Button>
 
-          <Box sx={{ mt: 8, pt: 4, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="caption" sx={{ color: '#64748B' }}>
-              © {new Date().getFullYear()} Tích Sản Platform. Bản quyền thuộc về Tích Sản Team.
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 3, fontSize: 13, alignItems: 'center', flexWrap: 'wrap' }}>
-              <a
-                href="/downloads/finora-latest.apk"
-                download="Finora.apk"
-                style={{
-                  color: '#34D399',
-                  textDecoration: 'none',
-                  fontWeight: 750,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px'
-                }}
-              >
-                <Smartphone size={14} /> Tải App Android (APK)
-              </a>
-              <Link to="/legal" style={{ color: '#94A3B8', textDecoration: 'none' }}>
-                Chính sách bảo mật & Pháp lý
-              </Link>
-              <Link to="/pricing" style={{ color: '#94A3B8', textDecoration: 'none' }}>
-                Bảng giá chi tiết
-              </Link>
+          <Box sx={{ mt: 8, pt: 4, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 2.5, textAlign: 'left' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ maxWidth: 460 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#F8FAFC', mb: 0.5 }}>
+                  TÍCH SẢN — Nền Tảng Quản Lý Tài Chính & Tích Lũy Cá Nhân
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#94A3B8', display: 'block', lineHeight: 1.6 }}>
+                  Ứng dụng tài chính thông minh theo chuẩn kiến trúc Zero-Knowledge và bảo vệ dữ liệu cá nhân theo Luật 91/2025/QH15, Nghị định 356/2025/NĐ-CP và Luật Trí tuệ nhân tạo 134/2025/QH15.
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mt: 0.5 }}>
+                  Liên hệ & Tiếp nhận hỗ trợ DPO: <span style={{ color: '#34D399' }}>hotro@tichsan.site</span>
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 3, fontSize: 13, alignItems: 'center', flexWrap: 'wrap' }}>
+                <a
+                  href="/downloads/finora-latest.apk"
+                  download="Finora.apk"
+                  style={{
+                    color: '#34D399',
+                    textDecoration: 'none',
+                    fontWeight: 750,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                >
+                  <Smartphone size={14} /> Tải App Android (APK)
+                </a>
+                <Link to="/legal" style={{ color: '#94A3B8', textDecoration: 'none' }}>
+                  Chính sách bảo mật & Pháp lý
+                </Link>
+                <Link to="/pricing" style={{ color: '#94A3B8', textDecoration: 'none' }}>
+                  Bảng giá chi tiết
+                </Link>
+              </Box>
+            </Box>
+
+            <Box sx={{ pt: 2, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+              <Typography variant="caption" sx={{ color: '#64748B' }}>
+                © {new Date().getFullYear()} Tích Sản Platform. Toàn bộ quyền được bảo lưu.
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#475569' }}>
+                Phiên bản v2.0-Legal-Compliant
+              </Typography>
             </Box>
           </Box>
         </Container>
@@ -2466,15 +2470,16 @@ export default function LandingPage() {
                 '&:hover': { bgcolor: '#059669' }
               }}
             >
-              Tải Ngay APK (24 MB)
+              Tải Bản APK (12 MB)
             </Button>
           ) : (
             <Button
-              component={Link}
-              to="/auth/register"
               variant="contained"
               startIcon={<ExternalLink size={18} />}
-              onClick={() => setInstallGuideOpen(false)}
+              onClick={() => {
+                setInstallGuideOpen(false);
+                navigateToAuth('register', navigate);
+              }}
               sx={{
                 bgcolor: '#0284C7',
                 color: '#FFFFFF',

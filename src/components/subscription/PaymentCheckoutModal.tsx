@@ -52,7 +52,7 @@ export function PaymentCheckoutModal({
       },
       body: JSON.stringify({
         planId,
-        userEmail: userEmail || 'user@tichsan.vn',
+        userEmail: userEmail || 'user@tichsan.site',
         amount
       })
     })

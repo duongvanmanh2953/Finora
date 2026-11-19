@@ -327,5 +327,78 @@ export const seed: FinanceData = {
     }
   ],
   investmentTransactions: getSeedInvestmentTransactions(day(0)),
-  payrolls: initialPayrolls
+  payrolls: initialPayrolls,
+  incomeContracts: [
+    {
+      id: 'ic-freelance-1',
+      title: 'Thiết kế & Lập trình Landing Page Tích Sản',
+      clientName: 'Công ty Cổ phần Alpha Tech',
+      sourceType: 'freelance',
+      totalContractValue: 10000000,
+      startDate: day(20),
+      expectedEndDate: day(-10),
+      status: 'in_progress',
+      notes: 'Hợp đồng phát triển giao diện web ứng dụng quản lý tài chính cá nhân',
+      createdAt: day(20),
+      updatedAt: day(2),
+      milestones: [
+        {
+          id: 'ms-1',
+          name: 'Đợt 1 - Tạm ứng ký hợp đồng (30%)',
+          amount: 3000000,
+          expectedDate: day(20),
+          receivedDate: day(18),
+          status: 'received',
+          transactionId: 'tx-seed-income-1',
+          accountId: 'bank'
+        },
+        {
+          id: 'ms-2',
+          name: 'Đợt 2 - Bàn giao bản Beta & UI (50%)',
+          amount: 5000000,
+          expectedDate: day(5),
+          status: 'pending'
+        },
+        {
+          id: 'ms-3',
+          name: 'Đợt 3 - Nghiệm thu & Bàn giao mã nguồn (20%)',
+          amount: 2000000,
+          expectedDate: day(-10),
+          status: 'pending'
+        }
+      ]
+    },
+    {
+      id: 'ic-consulting-2',
+      title: 'Tư vấn Kiến trúc Hệ thống & Tối ưu Cloud',
+      clientName: 'Fintech Solutions VN',
+      sourceType: 'business',
+      totalContractValue: 15000000,
+      startDate: day(15),
+      expectedEndDate: day(-20),
+      status: 'in_progress',
+      notes: 'Hợp đồng tư vấn hạ tầng đám mây và tối ưu hóa ngân sách AWS',
+      createdAt: day(15),
+      updatedAt: day(1),
+      milestones: [
+        {
+          id: 'ms-c1',
+          name: 'Đợt 1 - Cọc tư vấn giai đoạn 1 (50%)',
+          amount: 7500000,
+          expectedDate: day(14),
+          receivedDate: day(14),
+          status: 'received',
+          transactionId: 'tx-seed-income-2',
+          accountId: 'bank'
+        },
+        {
+          id: 'ms-c2',
+          name: 'Đợt 2 - Bàn giao báo cáo kiến trúc (50%)',
+          amount: 7500000,
+          expectedDate: day(-15),
+          status: 'pending'
+        }
+      ]
+    }
+  ]
 };

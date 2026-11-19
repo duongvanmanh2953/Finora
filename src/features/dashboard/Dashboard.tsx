@@ -16,6 +16,7 @@ import {
   EyeOff,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
   Calendar,
   Search,
   Sparkles
@@ -34,7 +35,11 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import {
   ResponsiveContainer,
@@ -63,7 +68,7 @@ import {
   shortMoney,
   totals
 } from '../../lib/finance';
-import { calculateComprehensiveNetWorth, getSampleWealthInvestmentNotes } from '../../lib/investmentProjectionEngine';
+import { calculateComprehensiveNetWorth } from '../../lib/investmentProjectionEngine';
 import { getHiddenAssetIds } from '../../components/smartLedger/UnrecoveredAssetsTable';
 import { Empty, FinoraButton } from '../../components/ui';
 import { MagicQuickBar } from '../../components/MagicQuickBar';
@@ -72,6 +77,7 @@ import { FinancialHealthGaugeCluster } from '../../components/gauges/FinancialHe
 import { FinancialOverviewCards } from '../../components/dashboard/FinancialOverviewCards';
 import { HelpButton } from '../../components/HelpButton';
 import { FullscreenModal, FullscreenButton, FullscreenChartContent } from '../../components/ui/FullscreenModal';
+import { HorizontalScrollBox } from '../../components/common/HorizontalScrollBox';
 
 type CashflowPeriod = '7days' | '30days' | '3months' | '6months' | 'year';
 
@@ -84,7 +90,7 @@ export default function Dashboard() {
   const currentMonthKey = monthKey(selectedMonthDate);
 
   // Privacy: Show or hide financial balances
-  const [showBalance, setShowBalance] = useState<boolean>(true);
+  const [showBalance, setShowBalance] = useState<boolean>(false);
 
   // Cashflow chart period filter
   const [cashflowPeriod, setCashflowPeriod] = useState<CashflowPeriod>('30days');
@@ -99,6 +105,27 @@ export default function Dashboard() {
   const handlePrevMonth = () => setSelectedMonthDate(prev => subMonths(prev, 1));
   const handleNextMonth = () => setSelectedMonthDate(prev => addMonths(prev, 1));
   const handleCurrentMonth = () => setSelectedMonthDate(new Date());
+
+  const monthOptions = useMemo(() => {
+    const list = [];
+    const base = new Date();
+    for (let i = -18; i <= 6; i++) {
+      const d = addMonths(base, i);
+      const val = format(d, 'yyyy-MM');
+      const isCurrent = val === format(base, 'yyyy-MM');
+      list.push({
+        value: val,
+        label: `Tháng ${format(d, 'MM/yyyy')}${isCurrent ? ' (Hiện tại)' : ''}`,
+        date: d
+      });
+    }
+    return list;
+  }, []);
+
+  const handleMonthSelect = (val: string) => {
+    const [y, m] = val.split('-').map(Number);
+    setSelectedMonthDate(new Date(y, m - 1, 1));
+  };
 
   // Greeting based on time of day
   const greeting = useMemo(() => {
@@ -162,9 +189,7 @@ export default function Dashboard() {
 
   // Comprehensive Net Worth (incorporating investment notes & safe mode & hidden assets sync)
   const netWorthSummary = useMemo(() => {
-    const rawNotes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
-      ? data.smartInvestmentNotes
-      : getSampleWealthInvestmentNotes();
+    const rawNotes = data.smartInvestmentNotes || [];
     const hiddenSet = new Set(getHiddenAssetIds());
     const notes = rawNotes.map(n => ({
       ...n,
@@ -211,18 +236,44 @@ export default function Dashboard() {
     const days = differenceInCalendarDays(parseISO(cashflowBounds.to), parseISO(cashflowBounds.from)) + 1;
     const isDayAggregate = days <= 35;
 
-    const map = new Map<string, { date: string; income: number; expense: number; net: number }>();
+    const map = new Map<
+      string,
+      {
+        key: string;
+        date: string;
+        displayDate: string;
+        fullDate: string;
+        income: number;
+        expense: number;
+        net: number;
+      }
+    >();
     const filteredTx = data.transactions.filter(t => inRange(t, cashflowBounds.from, cashflowBounds.to));
 
     for (const t of filteredTx) {
       if (t.type === 'transfer' || t.status !== 'completed') continue;
-      const key = isDayAggregate ? t.date.slice(5, 10) : t.date.slice(0, 7);
-      const row = map.get(key) || { date: key, income: 0, expense: 0, net: 0 };
+      const groupKey = isDayAggregate ? t.date : t.date.slice(0, 7);
+      const display = isDayAggregate
+        ? format(parseISO(t.date), 'dd/MM')
+        : format(parseISO(t.date.slice(0, 7) + '-01'), 'MM/yyyy');
+      const full = isDayAggregate
+        ? format(parseISO(t.date), 'dd/MM/yyyy')
+        : `Tháng ${format(parseISO(t.date.slice(0, 7) + '-01'), 'MM/yyyy')}`;
+
+      const row = map.get(groupKey) || {
+        key: groupKey,
+        date: groupKey,
+        displayDate: display,
+        fullDate: full,
+        income: 0,
+        expense: 0,
+        net: 0
+      };
       row[t.type] += t.amount;
       row.net = row.income - row.expense;
-      map.set(key, row);
+      map.set(groupKey, row);
     }
-    return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
+    return [...map.values()].sort((a, b) => a.key.localeCompare(b.key));
   }, [data.transactions, cashflowBounds]);
 
   // Deterministic Cashflow Insight
@@ -327,7 +378,7 @@ export default function Dashboard() {
             justifyContent: { xs: 'flex-start', sm: 'flex-end' }
           }}
         >
-          {/* Month Selector Pill */}
+          {/* Month Selector Pill with MUI Select */}
           <Paper
             variant="outlined"
             sx={{
@@ -336,34 +387,47 @@ export default function Dashboard() {
               borderRadius: '6px',
               p: 0.5,
               bgcolor: 'background.paper',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              gap: 0.25
             }}
           >
+            <Tooltip title="Về tháng hiện tại">
+              <IconButton size="small" onClick={handleCurrentMonth} sx={{ p: 0.5, color: 'var(--brand-primary)' }}>
+                <Calendar size={15} />
+              </IconButton>
+            </Tooltip>
+
             <Tooltip title="Tháng trước">
               <IconButton size="small" onClick={handlePrevMonth} sx={{ p: 0.5 }}>
                 <ChevronLeft size={16} />
               </IconButton>
             </Tooltip>
 
-            <Box
-              component="button"
-              onClick={handleCurrentMonth}
-              sx={{
-                background: 'none',
-                border: 'none',
-                px: { xs: 0.75, sm: 1.25 },
-                fontSize: { xs: 11.5, sm: 12.5 },
-                fontWeight: 750,
-                color: 'text.primary',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.75
-              }}
-            >
-              <Calendar size={13} style={{ color: 'var(--brand-primary)' }} />
-              <span>Tháng {format(selectedMonthDate, 'MM/yyyy')}</span>
-            </Box>
+            <FormControl size="small" variant="standard" sx={{ minWidth: { xs: 125, sm: 155 }, mx: 0.5 }}>
+              <Select
+                value={monthKey(selectedMonthDate)}
+                onChange={e => handleMonthSelect(e.target.value)}
+                disableUnderline
+                sx={{
+                  fontSize: { xs: 12, sm: 12.5 },
+                  fontWeight: 800,
+                  color: 'text.primary',
+                  '& .MuiSelect-select': {
+                    py: 0.25,
+                    px: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5
+                  }
+                }}
+              >
+                {monthOptions.map(opt => (
+                  <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12.5, fontWeight: opt.value === monthKey(new Date()) ? 800 : 500 }}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Tooltip title="Tháng tiếp theo">
               <IconButton size="small" onClick={handleNextMonth} sx={{ p: 0.5 }}>
@@ -419,6 +483,11 @@ export default function Dashboard() {
         </Box>
       </Box>
 
+      {/* 5.1. HABIT LOOP - MAGIC QUICK-BAR (NHẬP NHANH CHI TIÊU ĐƯỢC ĐƯA LÊN ĐẦU TRANG CHO USER TIẾP CẬN) */}
+      <Box id="tour-quick-bar" sx={{ width: '100%', maxWidth: '100%', minWidth: 0, mb: 3 }}>
+        <MagicQuickBar onOpenPricing={openPricing} />
+      </Box>
+
       {/* 5.2. MAIN FINANCIAL SUMMARY (7 Key Financial Overview Cards) */}
       <Box id="tour-net-worth-card">
         <FinancialOverviewCards
@@ -449,11 +518,6 @@ export default function Dashboard() {
       {/* 5.3. FINANCIAL HEALTH SPEEDOMETER GAUGES CLUSTER */}
       <Box id="tour-gauges-cluster" sx={{ mb: 3 }}>
         <FinancialHealthGaugeCluster />
-      </Box>
-
-      {/* 5.4. HABIT LOOP - MAGIC QUICK-BAR (1-TAP QUICK CHIPS & SMS PARSER) */}
-      <Box id="tour-quick-bar" sx={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
-        <MagicQuickBar onOpenPricing={openPricing} />
       </Box>
 
       {/* 6 & 7. CASH FLOW ANALYTICS & EXPENSE DONUT */}
@@ -496,65 +560,44 @@ export default function Dashboard() {
               mb: 2
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-              <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
-                  Dòng tiền Hợp nhất
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
-                  Biểu đồ kết hợp: Cột Thu/Chi và Đường cong Thặng dư ròng
-                </Typography>
-              </Box>
-              <FullscreenButton onClick={() => setFullscreenCashflowOpen(true)} title="Xem biểu đồ dòng tiền toàn màn hình" />
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 16 }}>
+                Dòng tiền Hợp nhất
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 12 }}>
+                Biểu đồ kết hợp: Cột Thu/Chi và Đường cong Thặng dư ròng
+              </Typography>
             </Box>
 
-            {/* Time Controls */}
-            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' }, pt: { xs: 0.5, sm: 0 } }}>
-              {[
-                { id: '7days', label: '7 ngày' },
-                { id: '30days', label: '30 ngày' },
-                { id: '3months', label: '3 tháng' },
-                { id: '6months', label: '6 tháng' },
-                { id: 'year', label: '12 tháng' }
-              ].map(p => (
-                <Chip
-                  key={p.id}
-                  label={p.label}
-                  size="small"
-                  clickable
-                  color={cashflowPeriod === p.id ? 'primary' : 'default'}
-                  variant={cashflowPeriod === p.id ? 'filled' : 'outlined'}
-                  onClick={() => setCashflowPeriod(p.id as CashflowPeriod)}
-                  sx={{
-                    height: 24,
-                    fontSize: 10.5,
-                    fontWeight: cashflowPeriod === p.id ? 800 : 600,
-                    bgcolor: cashflowPeriod === p.id ? 'primary.main' : 'transparent'
-                  }}
-                />
-              ))}
+            {/* Top-Right Controls: MUI Period Select + Top-Right Fullscreen Expand Button */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, alignSelf: { xs: 'flex-end', sm: 'center' } }}>
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel id="cashflow-period-label" sx={{ fontSize: 12 }}>Chọn thời gian</InputLabel>
+                <Select
+                  labelId="cashflow-period-label"
+                  label="Chọn thời gian"
+                  value={cashflowPeriod}
+                  onChange={e => setCashflowPeriod(e.target.value as CashflowPeriod)}
+                  sx={{ height: 34, fontSize: 12, fontWeight: 700, borderRadius: '6px' }}
+                >
+                  <MenuItem value="7days">7 ngày qua</MenuItem>
+                  <MenuItem value="30days">30 ngày qua</MenuItem>
+                  <MenuItem value="3months">3 tháng gần nhất</MenuItem>
+                  <MenuItem value="6months">6 tháng gần nhất</MenuItem>
+                  <MenuItem value="year">12 tháng qua</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FullscreenButton
+                onClick={() => setFullscreenCashflowOpen(true)}
+                title="Mở rộng xem biểu đồ toàn màn hình (Góc trên bên phải)"
+                size={17}
+              />
             </Box>
           </Box>
 
-          {/* Composed Chart Visualization with Horizontal Scroll Support */}
-          <Box
-            sx={{
-              width: '100%',
-              maxWidth: '100%',
-              minWidth: 0,
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              WebkitOverflowScrolling: 'touch',
-              pb: 0.5,
-              '&::-webkit-scrollbar': { height: 6 },
-              '&::-webkit-scrollbar-track': { bgcolor: 'transparent' },
-              '&::-webkit-scrollbar-thumb': {
-                bgcolor: 'var(--border-subtle)',
-                borderRadius: 3,
-                '&:hover': { bgcolor: 'var(--text-muted)' }
-              }
-            }}
-          >
+          {/* Composed Chart Visualization with Horizontal Scroll & Prev/Next Support */}
+          <HorizontalScrollBox buttonSize={28} scrollStep={240}>
             <Box
               sx={{
                 width: '100%',
@@ -564,10 +607,10 @@ export default function Dashboard() {
             >
               {cashflowDataset.length ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 10, left: -15, bottom: 20 }}>
+                  <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 15, left: 10, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
                     <XAxis
-                      dataKey="date"
+                      dataKey="displayDate"
                       stroke="var(--text-secondary)"
                       fontSize={11}
                       tickLine={false}
@@ -579,7 +622,7 @@ export default function Dashboard() {
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={val => shortMoney(val)}
-                      width={45}
+                      width={62}
                     />
                     <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
                     <RechartsTooltip
@@ -592,14 +635,14 @@ export default function Dashboard() {
                             sx={{
                               bgcolor: 'background.paper',
                               border: '1px solid var(--border-subtle)',
-                              borderRadius: '4px',
+                              borderRadius: '6px',
                               p: 1.5,
                               boxShadow: '0 8px 20px rgba(0,0,0,0.22)',
-                              minWidth: 190
+                              minWidth: 200
                             }}
                           >
                             <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.primary', display: 'block', mb: 0.75 }}>
-                              {label}
+                              {d.fullDate || label}
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                               <Typography variant="caption" sx={{ color: 'text.secondary' }}>Thu nhập:</Typography>
@@ -640,7 +683,7 @@ export default function Dashboard() {
                 <Empty text="Chưa có dữ liệu dòng tiền trong khoảng thời gian này" />
               )}
             </Box>
-          </Box>
+          </HorizontalScrollBox>
 
           {/* Cashflow Insight Pill */}
           <Box
@@ -689,10 +732,11 @@ export default function Dashboard() {
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <FullscreenButton onClick={() => setFullscreenExpenseOpen(true)} title="Xem cơ cấu chi tiêu toàn màn hình" />
-              <Link to="/reports" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
-                Chi tiết →
+              <Link to="/reports" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                <span>Chi tiết</span>
+                <ArrowRight size={13} />
               </Link>
+              <FullscreenButton onClick={() => setFullscreenExpenseOpen(true)} title="Mở rộng xem cơ cấu chi tiêu toàn màn hình" />
             </Box>
           </Box>
 
@@ -730,20 +774,45 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </Box>
 
-              {/* Top 3 Categories */}
+              {/* Top 3 Categories - Card Dòng Phân Tách Rõ Ràng */}
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, mt: 1 }}>
-                {expenseCategories.slice(0, 3).map(c => (
-                  <Box key={c.id}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.25 }}>
+                {expenseCategories.slice(0, 3).map((c, idx) => (
+                  <Box
+                    key={c.id}
+                    sx={{
+                      p: 1.25,
+                      borderRadius: '8px',
+                      bgcolor: 'action.hover',
+                      border: '1px solid var(--border-subtle)',
+                      transition: 'background-color 0.2s ease, transform 0.15s ease',
+                      '&:hover': {
+                        bgcolor: 'action.selected',
+                        borderColor: 'var(--brand-primary)',
+                        transform: 'translateX(2px)'
+                      }
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Chip
+                          label={`#${idx + 1}`}
+                          size="small"
+                          sx={{
+                            height: 18,
+                            fontSize: 9.5,
+                            fontWeight: 800,
+                            bgcolor: idx === 0 ? 'rgba(21, 150, 107, 0.15)' : 'action.selected',
+                            color: idx === 0 ? 'var(--accent-income)' : 'text.secondary'
+                          }}
+                        />
                         <CategoryAvatarBadge categoryId={c.id} categoryName={c.name} txType="expense" />
-                        <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 12.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 750, fontSize: 13 }}>
                           {c.name}
                         </Typography>
                       </Box>
-                      <Typography variant="caption" sx={{ fontWeight: 800 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 850, fontVariantNumeric: 'tabular-nums', fontSize: 12.5 }}>
                         {money(c.value)}{' '}
-                        <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>({c.pct}%)</span>
+                        <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>({c.pct}%)</span>
                       </Typography>
                     </Box>
                     <LinearProgress
@@ -751,8 +820,8 @@ export default function Dashboard() {
                       value={c.pct}
                       sx={{
                         height: 5,
-                        borderRadius: '6px',
-                        bgcolor: 'action.hover',
+                        borderRadius: '4px',
+                        bgcolor: 'background.paper',
                         '& .MuiLinearProgress-bar': {
                           bgcolor: c.color || 'primary.main',
                           borderRadius: '4px'
@@ -839,13 +908,17 @@ export default function Dashboard() {
               <Link
                 to="/transactions"
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 3,
                   fontSize: 12,
                   fontWeight: 750,
                   color: 'var(--brand-primary)',
                   textDecoration: 'none'
                 }}
               >
-                Xem tất cả →
+                <span>Xem tất cả</span>
+                <ArrowRight size={13} />
               </Link>
             </Box>
           </Box>
@@ -1035,8 +1108,9 @@ export default function Dashboard() {
                   Đã chi {mask(money(totalBudgetSpent))} / {mask(money(totalBudgetLimit))}
                 </Typography>
               </Box>
-              <Link to="/budgets" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
-                Quản lý →
+              <Link to="/budgets" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                <span>Quản lý</span>
+                <ArrowRight size={13} />
               </Link>
             </Box>
 
@@ -1133,8 +1207,9 @@ export default function Dashboard() {
               <Typography variant="subtitle1" sx={{ fontWeight: 800, fontSize: 15 }}>
                 Tài khoản & Mục tiêu
               </Typography>
-              <Link to="/accounts" style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
-                Tài khoản →
+              <Link to="/accounts" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                <span>Tài khoản</span>
+                <ArrowRight size={13} />
               </Link>
             </Box>
 
@@ -1184,8 +1259,9 @@ export default function Dashboard() {
                   <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary' }}>
                     MỤC TIÊU TÍCH LŨY
                   </Typography>
-                  <Link to="/savings" style={{ fontSize: 11, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
-                    Xem {data.goals.length} mục tiêu →
+                  <Link to="/savings" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, fontWeight: 700, color: 'var(--brand-primary)', textDecoration: 'none' }}>
+                    <span>Xem {data.goals.length} mục tiêu</span>
+                    <ArrowRight size={12} />
                   </Link>
                 </Box>
                 {data.goals.slice(0, 2).map(g => {
@@ -1238,10 +1314,10 @@ export default function Dashboard() {
           {({ width, height }) => (
             <Box sx={{ width, height, minHeight: height }}>
               <ResponsiveContainer width={width} height={height}>
-                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 20, left: -5, bottom: 25 }}>
+                <ComposedChart data={cashflowDataset} margin={{ top: 15, right: 20, left: 10, bottom: 25 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" />
-                  <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
-                  <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={val => shortMoney(val)} width={48} />
+                  <XAxis dataKey="displayDate" stroke="var(--text-secondary)" fontSize={11} tickLine={false} />
+                  <YAxis stroke="var(--text-secondary)" fontSize={11} tickLine={false} axisLine={false} tickFormatter={val => shortMoney(val)} width={62} />
                   <ReferenceLine y={0} stroke="var(--border-subtle)" strokeWidth={1} />
                   <Bar dataKey="income" name="Thu nhập" fill="var(--accent-income)" radius={[4, 4, 0, 0]} maxBarSize={45} />
                   <Bar dataKey="expense" name="Chi tiêu" fill="var(--accent-expense)" radius={[4, 4, 0, 0]} maxBarSize={45} />

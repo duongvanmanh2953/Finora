@@ -87,8 +87,9 @@ export function MobileBottomSheet({
         },
         backdrop: {
           sx: {
-            backdropFilter: 'blur(4px)',
-            bgcolor: isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(15, 23, 42, 0.45)'
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            bgcolor: isDark ? 'rgba(6, 11, 20, 0.75)' : 'rgba(15, 23, 42, 0.65)'
           }
         }
       }}

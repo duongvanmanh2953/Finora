@@ -27,13 +27,18 @@ import {
   Banknote,
   Server,
   Star,
-  LogOut
+  LogOut,
+  CheckCheck,
+  Trash2,
+  BellOff,
+  AlertTriangle,
+  Calendar,
+  Sparkles,
+  Briefcase
 } from 'lucide-react';
 import {
   Button,
   Chip,
-  Snackbar,
-  Alert,
   Tooltip,
   Box,
   IconButton,
@@ -42,7 +47,9 @@ import {
   Menu as MuiMenu,
   MenuItem,
   Avatar,
-  Divider
+  Divider,
+  Badge,
+  Popover
 } from '@mui/material';
 import { useFinance } from '../store';
 import {
@@ -59,6 +66,10 @@ import { TierBadgeIcon } from './subscription/TierBadgeIcon';
 import { AiAssistantDrawer } from './AiAssistantDrawer';
 import { CloudSyncModal } from './CloudSyncModal';
 import { SyncStatusBadge } from './offline/SyncStatusBadge';
+import { SwipeToRefresh } from './ui/SwipeToRefresh';
+import { networkManager } from '../lib/offline/networkStatus';
+import { navigateToAuth } from '../lib/domainRouting';
+import { LogoutConfirmDialog } from './common/LogoutConfirmDialog';
 
 export interface NavItemConfig {
   url: string;
@@ -75,6 +86,7 @@ const navOverview: NavItemConfig[] = [
 const navFinance: NavItemConfig[] = [
   { url: '/transactions', label: 'Giao dịch', icon: ArrowLeftRight },
   { url: '/accounts', label: 'Tài khoản & Ví', icon: Wallet },
+  { url: '/income', label: 'Thu nhập & Hợp đồng', icon: Briefcase },
   { url: '/budgets', label: 'Ngân sách', icon: ChartPie },
   { url: '/categories', label: 'Danh mục thu chi', icon: CircleDollarSign },
   { url: '/payroll', label: 'Lương & Thuế', icon: Banknote, isPro: true }
@@ -105,31 +117,109 @@ const nav = allNavItems.map(n => [n.url, n.label, n.icon] as const);
 export function Layout() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [notis, setNotis] = useState(false);
+  const [notiAnchorEl, setNotiAnchorEl] = useState<null | HTMLElement>(null);
+  const notiOpen = Boolean(notiAnchorEl);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [cloudSyncOpen, setCloudSyncOpen] = useState(false);
   const {
     data,
     theme,
     setTheme,
-    toast,
-    clearToast,
     update,
     notify,
     pricingOpen,
     pricingFeature,
     openPricing,
     closePricing,
-    logout
+    logout,
+    syncNow
   } = useFinance();
   const loc = useLocation();
   const navigate = useNavigate();
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleLogout = async () => {
+  const notifications = data?.notifications || [];
+  const unreadNotiCount = notifications.filter(n => !n.read).length;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const justMigrated = localStorage.getItem('finora:just_migrated_guest');
+      if (justMigrated === 'true') {
+        localStorage.removeItem('finora:just_migrated_guest');
+        notify({
+          message: 'Đã bảo lưu và đồng bộ toàn bộ dữ liệu từ phiên Khách vào tài khoản mới của bạn!',
+          severity: 'success'
+        });
+        void syncNow();
+      }
+    }
+  }, [notify, syncNow]);
+
+  const handleMarkAllNotisRead = () => {
+    update(d => ({
+      ...d,
+      notifications: d.notifications.map(n => ({ ...n, read: true }))
+    }));
+  };
+
+  const handleClearAllNotis = () => {
+    update(d => ({
+      ...d,
+      notifications: []
+    }));
+    setNotiAnchorEl(null);
+  };
+
+  const handleToggleNotiRead = (id: string) => {
+    update(d => ({
+      ...d,
+      notifications: d.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+    }));
+  };
+
+  const handleDeleteNoti = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    update(d => ({
+      ...d,
+      notifications: d.notifications.filter(n => n.id !== id)
+    }));
+  };
+
+  const getNotiIconProps = (title: string) => {
+    const lower = title.toLowerCase();
+    if (lower.includes('chào mừng') || lower.includes('vip') || lower.includes('gold')) {
+      return {
+        icon: <Sparkles size={16} color="#D97706" />,
+        style: { bgcolor: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.25)' }
+      };
+    }
+    if (lower.includes('cảnh báo') || lower.includes('vượt') || lower.includes('ngân sách')) {
+      return {
+        icon: <AlertTriangle size={16} color="#EF4444" />,
+        style: { bgcolor: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.25)' }
+      };
+    }
+    if (lower.includes('hạn') || lower.includes('thuê') || lower.includes('nợ') || lower.includes('lịch')) {
+      return {
+        icon: <Calendar size={16} color="#3B82F6" />,
+        style: { bgcolor: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.25)' }
+      };
+    }
+    return {
+      icon: <Bell size={16} color="#10B981" />,
+      style: { bgcolor: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.25)' }
+    };
+  };
+
+  const handleOpenLogout = () => {
     setUserMenuAnchor(null);
+    setLogoutDialogOpen(true);
+  };
+
+  const handleConfirmLogout = async () => {
     await logout();
-    navigate('/auth/login');
+    navigateToAuth('login', navigate, { logout: 'true' });
   };
 
   const title = nav.find(n => n[0] === loc.pathname)?.[1] || 'Tích Sản';
@@ -699,7 +789,7 @@ export function Layout() {
                   size="small"
                   onClick={e => {
                     e.stopPropagation();
-                    void handleLogout();
+                    handleOpenLogout();
                   }}
                   sx={{
                     color: 'text.secondary',
@@ -775,8 +865,8 @@ export function Layout() {
             </div>
 
             <div className="topactions" style={{ display: 'flex', alignItems: 'center' }}>
-              {/* Offline-First Sync Status Indicator */}
-              <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center' }}>
+              {/* Offline-First Sync Status Indicator (Wi-Fi & Sync on Mobile & Desktop) */}
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <SyncStatusBadge />
               </Box>
 
@@ -1034,79 +1124,285 @@ export function Layout() {
               </IconButton>
 
               {/* Notifications */}
-              <Box sx={{ position: 'relative', display: { xs: 'none', sm: 'block' } }}>
-                <IconButton
-                  size="small"
-                  onClick={() => setNotis(!notis)}
-                  sx={{
-                    color: 'text.primary',
-                    border: '1px solid var(--border-subtle)',
-                    width: 36,
-                    height: 36,
-                    minWidth: 36,
-                    minHeight: 36,
-                    borderRadius: '10px'
-                  }}
-                  aria-label="Thông báo"
-                >
-                  <Bell size={17} />
-                </IconButton>
-                {notis && (
-                  <div className="card pad" style={{ position: 'absolute', right: 0, top: 44, width: 280, zIndex: 40, boxShadow: '0 12px 36px rgba(0,0,0,0.15)' }}>
-                    <div className="section-head">
-                      <h3>Thông báo</h3>
-                    </div>
-                    {data?.notifications.map(n => (
-                      <div className="mini-row" key={n.id} style={{ padding: '8px 0', fontSize: 12 }}>
-                        <span>{n.title}</span>
-                        {!n.read && <span className="dot" style={{ background: '#10b981' }} />}
-                      </div>
-                    ))}
-                    <Button
-                      fullWidth
-                      size="small"
-                      variant="outlined"
-                      sx={{ mt: 1, borderRadius: '8px' }}
-                      onClick={() => {
-                        update(d => ({
-                          ...d,
-                          notifications: d.notifications.map(n => ({ ...n, read: true }))
-                        }));
-                        setNotis(false);
+              <Box sx={{ position: 'relative' }}>
+                <Tooltip title="Thông báo hệ thống">
+                  <IconButton
+                    size="small"
+                    onClick={(e) => setNotiAnchorEl(notiOpen ? null : e.currentTarget)}
+                    sx={{
+                      color: 'text.primary',
+                      border: '1px solid var(--border-subtle)',
+                      width: 36,
+                      height: 36,
+                      minWidth: 36,
+                      minHeight: 36,
+                      borderRadius: '10px',
+                      position: 'relative',
+                      bgcolor: notiOpen ? 'action.selected' : 'transparent',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                        borderColor: 'var(--border-strong)'
+                      }
+                    }}
+                    aria-label="Thông báo"
+                  >
+                    <Badge
+                      badgeContent={unreadNotiCount}
+                      color="error"
+                      overlap="circular"
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          fontSize: '0.65rem',
+                          height: 16,
+                          minWidth: 16,
+                          px: 0.5,
+                          top: -2,
+                          right: -2,
+                          bgcolor: '#EF4444',
+                          fontWeight: 800
+                        }
                       }}
                     >
-                      Đánh dấu đã đọc
-                    </Button>
-                  </div>
-                )}
-              </Box>
+                      <Bell size={17} />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
 
-              {/* Add transaction quick button */}
-              <Tooltip title="Thêm giao dịch mới">
-                <IconButton
-                  size="small"
-                  onClick={() => navigate('/transactions?add=1')}
-                  sx={{
-                    display: { xs: 'inline-flex', sm: 'none' },
-                    width: 36,
-                    height: 36,
-                    minWidth: 36,
-                    minHeight: 36,
-                    borderRadius: '10px',
-                    bgcolor: '#10B981',
-                    color: '#FFFFFF',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)',
-                    transition: 'all 0.15s ease',
-                    '&:hover': {
-                      bgcolor: '#059669',
-                      transform: 'scale(1.05)'
+                <Popover
+                  open={notiOpen}
+                  anchorEl={notiAnchorEl}
+                  onClose={() => setNotiAnchorEl(null)}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                  }}
+                  slotProps={{
+                    backdrop: {
+                      invisible: false,
+                      sx: {
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === 'dark' ? 'rgba(6, 11, 20, 0.72)' : 'rgba(15, 23, 42, 0.58)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)'
+                      }
+                    },
+                    paper: {
+                      sx: {
+                        width: { xs: 320, sm: 380 },
+                        maxWidth: 'calc(100vw - 24px)',
+                        mt: 1.2,
+                        borderRadius: '16px',
+                        bgcolor: 'background.paper',
+                        border: '1px solid var(--border-subtle)',
+                        boxShadow: '0 18px 48px rgba(0, 0, 0, 0.25)',
+                        overflow: 'hidden'
+                      }
                     }
                   }}
-                  aria-label="Thêm giao dịch mới nhanh"
                 >
-                  <Plus size={18} strokeWidth={2.8} color="#FFFFFF" />
-                </IconButton>
-              </Tooltip>
+                  {/* Header */}
+                  <Box
+                    sx={{
+                      p: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      bgcolor: 'action.hover',
+                      borderBottom: '1px solid var(--border-subtle)'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800, fontSize: '0.92rem' }}>
+                        Thông báo
+                      </Typography>
+                      {unreadNotiCount > 0 ? (
+                        <Chip
+                          label={`${unreadNotiCount} mới`}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.68rem',
+                            fontWeight: 800,
+                            bgcolor: 'rgba(16, 185, 129, 0.15)',
+                            color: '#10B981',
+                            border: '1px solid rgba(16, 185, 129, 0.3)'
+                          }}
+                        />
+                      ) : (
+                        <Chip
+                          label="Đã xem hết"
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            bgcolor: 'action.selected',
+                            color: 'text.secondary'
+                          }}
+                        />
+                      )}
+                    </Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      {unreadNotiCount > 0 && (
+                        <Tooltip title="Đánh dấu tất cả đã đọc">
+                          <IconButton
+                            size="small"
+                            onClick={handleMarkAllNotisRead}
+                            sx={{
+                              p: 0.6,
+                              borderRadius: '8px',
+                              color: 'primary.main',
+                              '&:hover': { bgcolor: 'rgba(16, 185, 129, 0.12)' }
+                            }}
+                          >
+                            <CheckCheck size={16} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {notifications.length > 0 && (
+                        <Tooltip title="Xóa tất cả thông báo">
+                          <IconButton
+                            size="small"
+                            onClick={handleClearAllNotis}
+                            sx={{
+                              p: 0.6,
+                              borderRadius: '8px',
+                              color: 'text.secondary',
+                              '&:hover': { color: '#EF4444', bgcolor: 'rgba(239, 68, 68, 0.1)' }
+                            }}
+                          >
+                            <Trash2 size={15} />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </Box>
+
+                  {/* Notification List */}
+                  <Box sx={{ maxHeight: 380, overflowY: 'auto' }}>
+                    {notifications.length === 0 ? (
+                      <Box sx={{ p: 4, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ p: 1.5, borderRadius: '50%', bgcolor: 'action.hover', color: 'text.secondary', mb: 0.5 }}>
+                          <BellOff size={28} />
+                        </Box>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                          Không có thông báo nào
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', maxWidth: 220 }}>
+                          Mọi cập nhật tài chính, nhắc nợ và cảnh báo ngân sách sẽ hiển thị tại đây.
+                        </Typography>
+                      </Box>
+                    ) : (
+                      notifications.map(n => {
+                        const iconProps = getNotiIconProps(n.title);
+                        return (
+                          <Box
+                            key={n.id}
+                            onClick={() => handleToggleNotiRead(n.id)}
+                            sx={{
+                              p: '12px 16px',
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: 1.5,
+                              cursor: 'pointer',
+                              transition: 'background-color 0.15s ease',
+                              bgcolor: !n.read ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                              borderBottom: '1px solid var(--border-subtle)',
+                              '&:hover': {
+                                bgcolor: 'action.hover',
+                                '& .noti-del-btn': { opacity: 1 }
+                              }
+                            }}
+                          >
+                            {/* Avatar Icon */}
+                            <Box
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                minWidth: 32,
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                mt: 0.3,
+                                ...iconProps.style
+                              }}
+                            >
+                              {iconProps.icon}
+                            </Box>
+
+                            {/* Content */}
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 0.4 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: !n.read ? 700 : 500,
+                                    fontSize: '0.84rem',
+                                    color: !n.read ? 'text.primary' : 'text.secondary',
+                                    lineHeight: 1.35
+                                  }}
+                                >
+                                  {n.title}
+                                </Typography>
+                                {!n.read && (
+                                  <Box
+                                    sx={{
+                                      width: 7,
+                                      height: 7,
+                                      minWidth: 7,
+                                      borderRadius: '50%',
+                                      bgcolor: '#10B981',
+                                      boxShadow: '0 0 6px rgba(16, 185, 129, 0.6)'
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                                {n.date || 'Hôm nay'}
+                              </Typography>
+                            </Box>
+
+                            {/* Delete Single Button */}
+                            <IconButton
+                              size="small"
+                              className="noti-del-btn"
+                              onClick={(e) => handleDeleteNoti(e, n.id)}
+                              sx={{
+                                opacity: { xs: 1, sm: 0 },
+                                transition: 'opacity 0.15s ease',
+                                p: 0.5,
+                                borderRadius: '6px',
+                                color: 'text.secondary',
+                                '&:hover': { color: '#EF4444', bgcolor: 'rgba(239, 68, 68, 0.1)' }
+                              }}
+                              aria-label="Xóa thông báo này"
+                            >
+                              <Trash2 size={13} />
+                            </IconButton>
+                          </Box>
+                        );
+                      })
+                    )}
+                  </Box>
+
+                  {/* Footer */}
+                  {notifications.length > 0 && (
+                    <Box sx={{ p: '8px 16px', bgcolor: 'action.hover', display: 'flex', justifyContent: 'center' }}>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>
+                        Nhấn vào thông báo để đánh dấu đã đọc
+                      </Typography>
+                    </Box>
+                  )}
+                </Popover>
+              </Box>
+
+
 
               <Button
                 variant="contained"
@@ -1244,7 +1540,7 @@ export function Layout() {
                   <Divider sx={{ my: 0.8 }} />
 
                   <MenuItem
-                    onClick={() => void handleLogout()}
+                    onClick={handleOpenLogout}
                     sx={{
                       borderRadius: '8px',
                       fontSize: 13,
@@ -1264,7 +1560,14 @@ export function Layout() {
           </header>
 
           <main className="content">
-            <Outlet />
+            <SwipeToRefresh
+              onRefresh={async () => {
+                await networkManager.checkRealConnection();
+                await syncNow();
+              }}
+            >
+              <Outlet />
+            </SwipeToRefresh>
           </main>
 
           {/* Mobile Bottom Navigation Bar with prominent Center Add Button */}
@@ -1324,13 +1627,17 @@ export function Layout() {
                 width: 38,
                 height: 38,
                 borderRadius: '50%',
-                bgcolor: '#10B981',
+                bgcolor: 'var(--brand-primary, #1E5A48)',
                 color: '#FFFFFF',
-                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.45)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.2)',
+                border: '1.5px solid rgba(255, 255, 255, 0.25)',
                 cursor: 'pointer',
                 zIndex: 95,
                 transition: 'all 0.15s ease',
+                '&:hover': {
+                  bgcolor: 'var(--brand-primary-hover, #164638)',
+                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.25)'
+                },
                 '&:active': {
                   transform: 'scale(0.92)'
                 }
@@ -1341,40 +1648,6 @@ export function Layout() {
             </Box>
           </Tooltip>
         </div>
-
-        {/* Global Snackbar with Undo */}
-        <Snackbar
-          open={!!toast}
-          autoHideDuration={5000}
-          onClose={clearToast}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          {toast ? (
-            <Alert
-              onClose={clearToast}
-              severity={toast.severity || 'success'}
-              variant="filled"
-              action={
-                toast.actionLabel && toast.onAction ? (
-                  <Button
-                    color="inherit"
-                    size="small"
-                    onClick={() => {
-                      toast.onAction?.();
-                      clearToast();
-                    }}
-                    sx={{ fontWeight: 800, textDecoration: 'underline' }}
-                  >
-                    {toast.actionLabel}
-                  </Button>
-                ) : undefined
-              }
-              sx={{ width: '100%', borderRadius: '4px', fontWeight: 600, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }}
-            >
-              {toast.message}
-            </Alert>
-          ) : undefined}
-        </Snackbar>
 
         {/* Paywall / Pricing Dialog */}
         <PricingDialog
@@ -1393,6 +1666,13 @@ export function Layout() {
         <CloudSyncModal
           open={cloudSyncOpen}
           onClose={() => setCloudSyncOpen(false)}
+        />
+
+        {/* Logout & Local Cache Clear Confirmation Dialog */}
+        <LogoutConfirmDialog
+          open={logoutDialogOpen}
+          onClose={() => setLogoutDialogOpen(false)}
+          onConfirmLogout={handleConfirmLogout}
         />
       </div>
     </div>

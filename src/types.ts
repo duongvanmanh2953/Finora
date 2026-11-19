@@ -22,6 +22,7 @@ export interface User {
   lastCheckInDate?: string;
   defaultAccountId?: string;
   nlpUsageToday?: { date: string; count: number };
+  isGuest?: boolean;
 }
 
 export interface Account {
@@ -68,6 +69,7 @@ export interface Transaction {
   recurringId?: string;
   incomeSourceType?: 'active' | 'passive' | 'business' | 'investment_yield';
   receiptUrl?: string; // Base64 data URL or image preview
+  paymentIntentId?: string; // Linked Payment Intent from Smart QR
   paidByMember?: string; // for shared wallet expenses
   isSharedExpense?: boolean;
   is_synced?: boolean;
@@ -260,6 +262,9 @@ export interface PayrollRecord {
 
   // 9. Net Take-Home Salary
   netSalary: Money;
+  isCustomNet?: boolean;
+  otherDeductions?: Money;
+  note?: string;
   targetAccountId?: string;
   actualPaidDate?: string;
 }
@@ -292,6 +297,73 @@ export interface SixJarsConfig {
   give: number; // 5%
 }
 
+export type IncomeSourceType = 'salary' | 'freelance' | 'business' | 'investment' | 'commission' | 'other';
+
+export interface IncomeMilestone {
+  id: string;
+  name: string; // e.g. "Đợt 1 - Cọc 30%", "Đợt 2", "Nghiệm thu"
+  amount: Money;
+  expectedDate?: string;
+  receivedDate?: string;
+  status: 'pending' | 'received';
+  transactionId?: string; // links to completed Transaction
+  accountId?: string;
+  note?: string;
+}
+
+export interface IncomeContract {
+  id: string;
+  title: string;
+  clientName?: string;
+  sourceType: IncomeSourceType;
+  totalContractValue: Money;
+  startDate: string;
+  expectedEndDate?: string;
+  status: 'in_progress' | 'completed' | 'canceled';
+  milestones: IncomeMilestone[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PaymentIntentStatus =
+  | 'SCANNED'
+  | 'PENDING_PAYMENT'
+  | 'AWAITING_CONFIRMATION'
+  | 'CONFIRMED'
+  | 'FAILED'
+  | 'EXPIRED'
+  | 'REVIEW_REQUIRED';
+
+export type ConfirmationSource =
+  | 'NOTIFICATION_LISTENER'
+  | 'OPEN_BANKING_WEBHOOK'
+  | 'RECEIPT_OCR'
+  | 'MANUAL_ONE_TAP';
+
+export interface PaymentIntent {
+  id: string;
+  user_id: string;
+  source_qr_payload: string;
+  destination_bank: string;
+  destination_account: string;
+  beneficiary_name: string | null;
+  amount: number | null;
+  currency: string;
+  transfer_description: string | null;
+  predicted_category_id: string | null;
+  selected_source_bank: string | null;
+  scanned_at: string;
+  payment_started_at: string | null;
+  confirmed_at: string | null;
+  status: PaymentIntentStatus;
+  confirmation_source: ConfirmationSource | null;
+  matched_transaction_id: string | null;
+  confidence_score: number | null;
+  qr_type: 'VIETQR_STATIC' | 'VIETQR_DYNAMIC' | 'INVOICE_RECEIPT' | 'URL_SAFE' | 'UNKNOWN';
+  crc_valid?: boolean;
+}
+
 export interface FinanceData {
   user: User;
   accounts: Account[];
@@ -306,6 +378,8 @@ export interface FinanceData {
   investments?: InvestmentAsset[];
   investmentTransactions?: InvestmentTransaction[];
   payrolls?: PayrollRecord[];
+  incomeContracts?: IncomeContract[];
+  paymentIntents?: PaymentIntent[];
   sixJarsConfig?: SixJarsConfig;
   userMcpConfig?: import('./types/unifiedInvestment').UserMcpConfig;
   smartInvestmentNotes?: import('./types/smartLedger').InvestmentNote[];

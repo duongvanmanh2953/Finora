@@ -11,7 +11,7 @@ Tài liệu này hướng dẫn Quản trị viên hệ thống cách sử dụn
 
 ---
 
-## 2. Hướng Dẫn Thực Thi Lệnh `Tichsan2953@`
+## 2. Hướng Dẫn Thực Thi Lệnh `pnpm admin:reset`
 
 ### Bước 1: SSH vào máy chủ Production
 ```bash
@@ -26,18 +26,14 @@ cd /app/tich-san # Hoặc đường dẫn thư mục cài đặt dự án
 ### Bước 3: Chạy lệnh Bootstrap
 Bạn có thể chạy trực tiếp lệnh:
 ```bash
-./Tichsan2953@
+pnpm admin:reset
 ```
 *Hoặc thông qua script:*
 ```bash
 bash scripts/admin-bootstrap.sh
 ```
 
-*(Tùy chọn) Để lệnh có thể gọi từ bất kỳ đâu trên máy chủ:*
-```bash
-sudo ln -sf "$(pwd)/Tichsan2953@" /usr/local/bin/Tichsan2953@
-```
-Sau đó chỉ cần gõ `Tichsan2953@` từ terminal.
+Hệ thống sẽ yêu cầu nhập Master Key (cấu hình trong `ADMIN_SECURITY_KEY` của `.env`) để xác thực trước khi cấp mật khẩu.
 
 ---
 

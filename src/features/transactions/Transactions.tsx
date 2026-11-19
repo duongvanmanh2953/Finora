@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
+import { format, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { z } from 'zod';
 import {
   Search,
@@ -18,7 +19,12 @@ import {
   Calendar,
   List,
   LayoutGrid,
-  RotateCcw
+  RotateCcw,
+  Zap,
+  ArrowRight,
+  ChevronUp,
+  Paperclip,
+  QrCode
 } from 'lucide-react';
 import {
   Box,
@@ -45,6 +51,7 @@ import {
   Tabs,
   Tab
 } from '@mui/material';
+import HistoryRounded from '@mui/icons-material/HistoryRounded';
 
 import { useFinance } from '../../store';
 import { balance, dateLabel, downloadCsv, money, uid, todayKey } from '../../lib/finance';
@@ -61,6 +68,11 @@ import {
 import { BankLogoBadge, CategoryAvatarBadge } from '../../lib/brandBadges';
 import { SmartQuickEntry } from '../../components/SmartQuickEntry';
 import { TransactionManagerCRUD } from '../../components/TransactionManagerCRUD';
+import { SmartCalendarView } from '../calendar/SmartCalendarView';
+import { DataImportWizard } from '../../components/import/DataImportWizard';
+import { SmartQrTransactionModal } from '../../components/payment/SmartQrTransactionModal';
+import { HorizontalScrollBox } from '../../components/common/HorizontalScrollBox';
+import { getSavedQuickNotes, saveQuickNote } from '../../lib/savedNotesStorage';
 import { FullscreenModal, FullscreenButton, FullscreenChartContent } from '../../components/ui/FullscreenModal';
 import type { Transaction, TxType } from '../../types';
 
@@ -104,7 +116,9 @@ export default function Transactions() {
   const [deleting, setDeleting] = useState<Transaction | null>(null);
   const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
   const [receiptUrl, setReceiptUrl] = useState<string>('');
+  const [receiptExpanded, setReceiptExpanded] = useState(false);
   const [open, setOpen] = useState(params.get('add') === '1');
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   // Submenu tabs: 'ledger' (Sổ giao dịch CRUD) vs 'timeline' (Dòng thời gian & Hóa đơn)
   const activeSubTab = (params.get('tab') as 'ledger' | 'timeline') || 'ledger';
@@ -117,21 +131,55 @@ export default function Transactions() {
     });
   };
 
-  // View mode: 'timeline' (revolutionary feed) vs 'table' (classic grid)
-  const [viewMode, setViewMode] = useState<'timeline' | 'table'>('timeline');
+  // View mode: 'timeline' (feed) vs 'table' (grid) vs 'calendar' (smart calendar)
+  const [viewMode, setViewMode] = useState<'timeline' | 'table' | 'calendar'>(
+    (params.get('mode') as 'timeline' | 'table' | 'calendar') || 'timeline'
+  );
   const [fullscreenTxTableOpen, setFullscreenTxTableOpen] = useState(false);
+  const [importWizardOpen, setImportWizardOpen] = useState(false);
+  const [qrScannerOpen, setQrScannerOpen] = useState(false);
 
   // Filters
   const [search, setSearch] = useState(params.get('search') || '');
   const [type, setType] = useState('all');
   const [category, setCategory] = useState('all');
   const [account, setAccount] = useState('all');
+  const [datePreset, setDatePreset] = useState('all');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [sort, setSort] = useState('new');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [formError, setFormError] = useState('');
+
+  const handleDatePresetChange = (preset: string) => {
+    setDatePreset(preset);
+    const now = new Date();
+    if (preset === 'all') {
+      setFrom('');
+      setTo('');
+    } else if (preset === 'today') {
+      const todayStr = format(now, 'yyyy-MM-dd');
+      setFrom(todayStr);
+      setTo(todayStr);
+    } else if (preset === '7days') {
+      setFrom(format(subDays(now, 6), 'yyyy-MM-dd'));
+      setTo(format(now, 'yyyy-MM-dd'));
+    } else if (preset === '30days') {
+      setFrom(format(subDays(now, 29), 'yyyy-MM-dd'));
+      setTo(format(now, 'yyyy-MM-dd'));
+    } else if (preset === 'thisMonth') {
+      setFrom(format(startOfMonth(now), 'yyyy-MM-dd'));
+      setTo(format(endOfMonth(now), 'yyyy-MM-dd'));
+    } else if (preset === 'lastMonth') {
+      const lastM = subMonths(now, 1);
+      setFrom(format(startOfMonth(lastM), 'yyyy-MM-dd'));
+      setTo(format(endOfMonth(lastM), 'yyyy-MM-dd'));
+    } else if (preset === 'thisYear') {
+      setFrom(format(new Date(now.getFullYear(), 0, 1), 'yyyy-MM-dd'));
+      setTo(format(now, 'yyyy-MM-dd'));
+    }
+  };
 
   const defaults: FormValues = {
     name: '',
@@ -151,12 +199,14 @@ export default function Transactions() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting }
   } = useForm<FormValues>({
     defaultValues: defaults
   });
 
   const formType = watch('type');
+  const savedModalNotes = useMemo(() => getSavedQuickNotes(data.transactions), [data.transactions]);
 
   useEffect(() => {
     if (params.get('add') === '1') setOpen(true);
@@ -170,13 +220,28 @@ export default function Transactions() {
     setOpen(false);
     setEditing(null);
     setReceiptUrl('');
+    setReceiptExpanded(false);
     setFormError('');
     setParams({});
+  };
+
+  const handleOpenCreateWithDate = (selectedDate: string, txType: TxType = 'expense') => {
+    setEditing(null);
+    setReceiptUrl('');
+    setReceiptExpanded(false);
+    setFormError('');
+    reset({
+      ...defaults,
+      type: txType,
+      date: selectedDate
+    });
+    setOpen(true);
   };
 
   const startEdit = (t: Transaction) => {
     setEditing(t);
     setReceiptUrl(t.receiptUrl || '');
+    setReceiptExpanded(Boolean(t.receiptUrl));
     reset({
       name: t.name,
       amount: String(t.amount),
@@ -329,6 +394,12 @@ export default function Transactions() {
       editing ? 'Đã cập nhật giao dịch' : 'Đã thêm giao dịch mới'
     );
 
+    if (tx.note) {
+      saveQuickNote(tx.note);
+    } else if (tx.name) {
+      saveQuickNote(tx.name);
+    }
+
     close();
     reset(defaults);
   });
@@ -368,6 +439,45 @@ export default function Transactions() {
               Xuất CSV
             </Button>
             <Button
+              variant="outlined"
+              color="inherit"
+              startIcon={<UploadCloud size={14} />}
+              onClick={() => setImportWizardOpen(true)}
+              sx={{ fontWeight: 600, fontSize: 13 }}
+            >
+              Nhập CSV
+            </Button>
+            <Button
+              variant="outlined"
+              color="inherit"
+              startIcon={<QrCode size={14} />}
+              onClick={() => setQrScannerOpen(true)}
+              sx={{ fontWeight: 600, fontSize: 13 }}
+            >
+              Quét VietQR
+            </Button>
+            <Button
+              id="tour-tx-quick-btn"
+              variant="outlined"
+              startIcon={<Zap size={14} style={{ color: '#10B981' }} />}
+              onClick={() => setQuickAddOpen(true)}
+              sx={{
+                fontWeight: 750,
+                fontSize: { xs: '0.82rem', sm: '0.88rem' },
+                borderColor: 'rgba(16, 185, 129, 0.4)',
+                color: '#10B981',
+                bgcolor: 'rgba(16, 185, 129, 0.05)',
+                '&:hover': {
+                  bgcolor: 'rgba(16, 185, 129, 0.12)',
+                  borderColor: '#10B981'
+                },
+                textTransform: 'none',
+                minHeight: { xs: 36, sm: 34 }
+              }}
+            >
+              Thêm nhanh (AI)
+            </Button>
+            <Button
               id="tour-tx-add-btn"
               variant="contained"
               startIcon={<Plus size={15} style={{ color: '#fff' }} />}
@@ -392,6 +502,15 @@ export default function Transactions() {
           </Box>
         }
       />
+
+      {/* Smart NLP Quick Entry Bar: Đưa lên đầu trang cho user tiếp cận nhanh nhất */}
+      <Box id="tour-tx-quick-bar" sx={{ mb: 2.5 }}>
+        <SmartQuickEntry
+          open={quickAddOpen}
+          onClose={() => setQuickAddOpen(false)}
+          onOpenModal={() => setQuickAddOpen(true)}
+        />
+      </Box>
 
       {/* Submenu Navigation: Sổ giao dịch (CRUD) vs Dòng thời gian & Hóa đơn */}
       <Box id="tour-tx-subtabs" sx={{ borderBottom: 1, borderColor: 'divider', mb: 2.5 }}>
@@ -431,11 +550,6 @@ export default function Transactions() {
             iconPosition="start"
           />
         </Tabs>
-      </Box>
-
-      {/* Smart NLP Quick Entry Bar */}
-      <Box id="tour-tx-quick-bar" sx={{ mb: 3 }}>
-        <SmartQuickEntry />
       </Box>
 
       {/* SUBMENU 1: Full CRUD Transaction Manager Table & Filters */}
@@ -587,23 +701,25 @@ export default function Transactions() {
             }}
           >
             {/* Unified Segmented Type Control (Linear / iOS Style) */}
-            <ToggleButtonGroup
-              value={type}
-              exclusive
-              onChange={(_, next) => {
-                if (next) {
-                  setType(next);
-                  setPage(0);
-                }
-              }}
-              size="small"
-              sx={{
-                bgcolor: 'action.hover',
-                p: 0.5,
-                borderRadius: '6px',
-                border: '1px solid var(--border-subtle)',
-                overflowX: 'auto',
-                maxWidth: '100%',
+            <HorizontalScrollBox buttonSize={26} scrollStep={180} sx={{ maxWidth: '100%', minWidth: 0, flex: { xs: '1 1 100%', sm: 'none' } }}>
+              <ToggleButtonGroup
+                value={type}
+                exclusive
+                onChange={(_, next) => {
+                  if (next) {
+                    setType(next);
+                    setPage(0);
+                  }
+                }}
+                size="small"
+                sx={{
+                  bgcolor: 'action.hover',
+                  p: 0.5,
+                  borderRadius: '6px',
+                  border: '1px solid var(--border-subtle)',
+                  overflowX: 'auto',
+                  maxWidth: '100%',
+                  flexShrink: 0,
                 '& .MuiToggleButtonGroup-grouped': {
                   border: 'none',
                   borderRadius: '6px !important',
@@ -739,8 +855,9 @@ export default function Transactions() {
                 </Box>
               </ToggleButton>
             </ToggleButtonGroup>
+            </HorizontalScrollBox>
 
-            {/* View Mode Toggle: Timeline vs Table */}
+            {/* View Mode Toggle: Timeline vs Calendar vs Table */}
             <ToggleButtonGroup
               value={viewMode}
               exclusive
@@ -775,6 +892,12 @@ export default function Transactions() {
                 <ToggleButton value="timeline">
                   <List size={15} />
                   <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Dòng thời gian</Box>
+                </ToggleButton>
+              </Tooltip>
+              <Tooltip title="Chế độ Lịch thu chi thông minh">
+                <ToggleButton value="calendar">
+                  <Calendar size={15} />
+                  <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Lịch</Box>
                 </ToggleButton>
               </Tooltip>
               <Tooltip title="Chế độ bảng dữ liệu">
@@ -840,6 +963,25 @@ export default function Transactions() {
           />
 
           <MuiSelect
+            label="Chọn thời gian"
+            value={datePreset}
+            onChange={val => {
+              handleDatePresetChange(val);
+              setPage(0);
+            }}
+            options={[
+              { value: 'all', label: 'Tất cả thời gian' },
+              { value: 'today', label: 'Hôm nay' },
+              { value: '7days', label: '7 ngày qua' },
+              { value: '30days', label: '30 ngày qua' },
+              { value: 'thisMonth', label: 'Tháng này' },
+              { value: 'lastMonth', label: 'Tháng trước' },
+              { value: 'thisYear', label: 'Năm nay' },
+              { value: 'custom', label: 'Tùy chỉnh khoảng ngày...' }
+            ]}
+          />
+
+          <MuiSelect
             label="Sắp xếp"
             value={sort}
             onChange={val => setSort(val)}
@@ -851,23 +993,27 @@ export default function Transactions() {
             ]}
           />
 
-          <MuiDatePicker
-            label="Từ ngày"
-            value={from}
-            onChange={val => {
-              setFrom(val);
-              setPage(0);
-            }}
-          />
+          {datePreset === 'custom' && (
+            <>
+              <MuiDatePicker
+                label="Từ ngày"
+                value={from}
+                onChange={val => {
+                  setFrom(val);
+                  setPage(0);
+                }}
+              />
 
-          <MuiDatePicker
-            label="Đến ngày"
-            value={to}
-            onChange={val => {
-              setTo(val);
-              setPage(0);
-            }}
-          />
+              <MuiDatePicker
+                label="Đến ngày"
+                value={to}
+                onChange={val => {
+                  setTo(val);
+                  setPage(0);
+                }}
+              />
+            </>
+          )}
         </Box>
 
         {/* Row 3: Active Filters Summary & Quick Reset */}
@@ -920,13 +1066,14 @@ export default function Transactions() {
                   sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
                 />
               )}
-              {(from || to) && (
+              {(from || to || datePreset !== 'all') && (
                 <Chip
                   size="small"
-                  label={`Thời gian: ${from || '...'} → ${to || '...'}`}
+                  label={`Thời gian: ${from || '...'} đến ${to || '...'}`}
                   onDelete={() => {
                     setFrom('');
                     setTo('');
+                    setDatePreset('all');
                   }}
                   sx={{ fontSize: 11, height: 24, bgcolor: 'action.hover' }}
                 />
@@ -944,6 +1091,7 @@ export default function Transactions() {
                 setAccount('all');
                 setFrom('');
                 setTo('');
+                setDatePreset('all');
                 setSort('new');
                 setPage(0);
               }}
@@ -1138,7 +1286,7 @@ export default function Transactions() {
                               </Typography>
                               {toAcc && (
                                 <>
-                                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>→</span>
+                                  <ArrowRight size={11} style={{ color: 'var(--text-muted)' }} />
                                   <BankLogoBadge accountName={toAcc.name} accountType={toAcc.type} size="small" />
                                   <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11.5 }}>
                                     {toAcc.name}
@@ -1251,6 +1399,14 @@ export default function Transactions() {
             );
           })}
         </Box>
+      ) : viewMode === 'calendar' ? (
+        /* REVOLUTIONARY SMART CALENDAR VIEW */
+        <SmartCalendarView
+          onAddTransaction={(date, type) => handleOpenCreateWithDate(date, type || 'expense')}
+          onEditTransaction={startEdit}
+          onDeleteTransaction={setDeleting}
+          onViewTransaction={setDetail}
+        />
       ) : (
         /* DATA GRID / TABLE VIEW */
         <TableContainer
@@ -1352,7 +1508,7 @@ export default function Transactions() {
                         </Typography>
                         {toAcc && (
                           <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
-                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>→</span>
+                            <ArrowRight size={11} style={{ color: 'var(--text-muted)' }} />
                             <BankLogoBadge accountName={toAcc.name} accountType={toAcc.type} size="small" />
                             <Typography variant="body2" sx={{ fontSize: 12.5, color: 'text.secondary' }}>
                               {toAcc.name}
@@ -1619,7 +1775,7 @@ export default function Transactions() {
       </>
       )}
 
-      {/* MUI Modal: Add / Edit Transaction (100% MUI, Zero native inputs) */}
+      {/* MUI Modal: Add / Edit Transaction (Compact, Focused, Zero Horizontal Stretch) */}
       <Dialog
         open={open}
         onClose={close}
@@ -1629,314 +1785,454 @@ export default function Transactions() {
           paper: {
             sx: {
               m: { xs: 1, sm: 2 },
-              width: { xs: 'calc(100% - 16px)', sm: 'auto' },
-              borderRadius: '6px',
-              maxHeight: 'calc(100% - 32px)'
+              width: { xs: 'calc(100% - 16px)', sm: '100%' },
+              maxWidth: { xs: '100%', sm: 540 },
+              borderRadius: '12px',
+              maxHeight: { xs: '94vh', sm: '88vh' },
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              boxShadow: 'var(--card-box-shadow)'
             }
           }
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, fontSize: 18 }}>
-          {editing ? 'Sửa giao dịch' : 'Thêm giao dịch mới'}
+        <DialogTitle
+          sx={{
+            py: 1.75,
+            px: { xs: 2, sm: 3 },
+            borderBottom: '1px solid var(--border-subtle)',
+            bgcolor: 'background.paper',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1.5
+          }}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 800, fontSize: { xs: '1.05rem', sm: '1.2rem' }, color: 'text.primary', lineHeight: 1.3 }}>
+              {editing ? 'Chỉnh sửa giao dịch' : 'Thêm giao dịch mới'}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.78rem', display: 'block', mt: 0.25 }}>
+              {editing ? 'Cập nhật lại thông tin thu chi hoặc chuyển khoản' : 'Ghi chép thu chi & quản lý dòng tiền tức thì'}
+            </Typography>
+          </Box>
+          <IconButton onClick={close} size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary', bgcolor: 'action.hover' } }}>
+            <X size={18} />
+          </IconButton>
         </DialogTitle>
-        <DialogContent dividers sx={{ display: 'grid', gap: 2, pt: '16px !important' }}>
+
+        <DialogContent
+          dividers
+          sx={{
+            p: { xs: 2, sm: 3 },
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2.5
+          }}
+        >
           {formError && (
-            <Alert severity="error" sx={{ mb: 1 }}>
+            <Alert severity="error" sx={{ borderRadius: '6px' }}>
               {formError}
             </Alert>
           )}
 
           {/* Toggle Type */}
-          <Controller
-            name="type"
-            control={control}
-            render={({ field }) => (
-              <MuiTransactionTypeToggle
-                value={field.value}
-                onChange={val => field.onChange(val)}
-              />
-            )}
-          />
-
-          {/* Transaction Name */}
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: 'Vui lòng nhập tên giao dịch' }}
-            render={({ field }) => (
-              <MuiTextField
-                label="Tên giao dịch"
-                placeholder="VD: Mua thực phẩm, Ăn trưa..."
-                value={field.value}
-                onChange={field.onChange}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                autoFocus
-              />
-            )}
-          />
-
-          {/* Amount with Smart VND Denominations */}
-          <Controller
-            name="amount"
-            control={control}
-            rules={{ required: 'Vui lòng nhập số tiền' }}
-            render={({ field }) => (
-              <MuiCurrencyInput
-                label="Số tiền (₫)"
-                value={field.value}
-                onChange={val => field.onChange(val)}
-                error={!!errors.amount}
-                helperText={errors.amount?.message}
-              />
-            )}
-          />
-
-          {/* Category Select (with color dot) */}
-          {formType !== 'transfer' && (
+          <Box sx={{ width: '100%' }}>
             <Controller
-              name="categoryId"
+              name="type"
               control={control}
               render={({ field }) => (
-                <MuiSelect
-                  label="Danh mục"
+                <MuiTransactionTypeToggle
                   value={field.value}
-                  onChange={field.onChange}
-                  options={data.categories
-                    .filter(c => c.type === formType && !c.hidden)
-                    .map(c => ({
-                      value: c.id,
-                      label: c.name,
-                      icon: (
-                        <Box
-                          sx={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            bgcolor: c.color,
-                            flexShrink: 0
-                          }}
-                        />
-                      )
-                    }))}
-                />
-              )}
-            />
-          )}
-
-          {/* Source Account (with balance) */}
-          <Controller
-            name="accountId"
-            control={control}
-            render={({ field }) => (
-              <MuiSelect
-                label={formType === 'transfer' ? 'Tài khoản gửi' : 'Tài khoản thanh toán'}
-                value={field.value}
-                onChange={field.onChange}
-                options={data.accounts
-                  .filter(a => a.active)
-                  .map(a => ({
-                    value: a.id,
-                    label: a.name,
-                    subtitle: `Số dư: ${money(balance(a, data.transactions))}`
-                  }))}
-              />
-            )}
-          />
-
-          {/* Target Account for Transfer */}
-          {formType === 'transfer' && (
-            <Controller
-              name="toAccountId"
-              control={control}
-              render={({ field }) => (
-                <MuiSelect
-                  label="Tài khoản nhận"
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={data.accounts
-                    .filter(a => a.active)
-                    .map(a => ({
-                      value: a.id,
-                      label: a.name,
-                      subtitle: `Số dư: ${money(balance(a, data.transactions))}`
-                    }))}
-                />
-              )}
-            />
-          )}
-
-          {/* Date Picker */}
-          <Controller
-            name="date"
-            control={control}
-            render={({ field }) => (
-              <MuiDatePicker
-                label="Ngày giao dịch"
-                value={field.value}
-                onChange={field.onChange}
-              />
-            )}
-          />
-
-          {/* Method & Status */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <Controller
-              name="method"
-              control={control}
-              render={({ field }) => (
-                <MuiSelect
-                  label="Phương thức"
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={[
-                    { value: 'Chuyển khoản', label: 'Chuyển khoản' },
-                    { value: 'Tiền mặt', label: 'Tiền mặt' },
-                    { value: 'Ví điện tử', label: 'Ví điện tử' },
-                    { value: 'Thẻ', label: 'Thẻ tín dụng / ghi nợ' }
-                  ]}
-                />
-              )}
-            />
-
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <MuiSelect
-                  label="Trạng thái"
-                  value={field.value}
-                  onChange={val => field.onChange(val as 'completed' | 'pending')}
-                  options={[
-                    { value: 'completed', label: 'Hoàn tất' },
-                    { value: 'pending', label: 'Chờ xử lý' }
-                  ]}
+                  onChange={val => field.onChange(val)}
                 />
               )}
             />
           </Box>
 
-          {/* Note */}
-          <Controller
-            name="note"
-            control={control}
-            render={({ field }) => (
-              <MuiTextField
-                label="Ghi chú (Tùy chọn)"
-                placeholder="Ghi chú chi tiết về giao dịch..."
-                value={field.value}
-                onChange={field.onChange}
-                multiline
-                rows={2}
-              />
-            )}
-          />
-
-          {/* Receipt / Bill Attachment */}
-          <Box sx={{ border: '1px dashed var(--border-subtle)', borderRadius: '6px', p: 2, bgcolor: 'action.hover' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ReceiptText size={18} color="#059669" />
-                <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                  Đính kèm hóa đơn / biên lai (Receipt)
-                </Typography>
-              </Box>
-              {receiptUrl && (
-                <Button
-                  size="small"
-                  color="error"
-                  startIcon={<X size={14} />}
-                  onClick={() => setReceiptUrl('')}
-                >
-                  Gỡ ảnh
-                </Button>
+          {/* Form Layout: Clean, compact and zero horizontal stretch */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Transaction Name */}
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: 'Vui lòng nhập tên giao dịch' }}
+              render={({ field }) => (
+                <MuiTextField
+                  label="Tên giao dịch"
+                  placeholder="VD: Mua thực phẩm, Ăn trưa..."
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  autoFocus
+                />
               )}
+            />
+
+            {/* Amount with Smart VND Denominations */}
+            <Controller
+              name="amount"
+              control={control}
+              rules={{ required: 'Vui lòng nhập số tiền' }}
+              render={({ field }) => (
+                <MuiCurrencyInput
+                  label="Số tiền (₫)"
+                  value={field.value}
+                  onChange={val => field.onChange(val)}
+                  error={!!errors.amount}
+                  helperText={errors.amount?.message}
+                />
+              )}
+            />
+
+            {/* Category & Account Row */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+              {formType !== 'transfer' ? (
+                <Controller
+                  name="categoryId"
+                  control={control}
+                  render={({ field }) => (
+                    <MuiSelect
+                      label="Danh mục"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={data.categories
+                        .filter(c => c.type === formType && !c.hidden)
+                        .map(c => ({
+                          value: c.id,
+                          label: c.name,
+                          icon: (
+                            <Box
+                              sx={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: '50%',
+                                bgcolor: c.color,
+                                flexShrink: 0
+                              }}
+                            />
+                          )
+                        }))}
+                    />
+                  )}
+                />
+              ) : (
+                <Controller
+                  name="toAccountId"
+                  control={control}
+                  render={({ field }) => (
+                    <MuiSelect
+                      label="Tài khoản nhận"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={data.accounts
+                        .filter(a => a.active)
+                        .map(a => ({
+                          value: a.id,
+                          label: a.name,
+                          subtitle: `Số dư: ${money(balance(a, data.transactions))}`
+                        }))}
+                    />
+                  )}
+                />
+              )}
+
+              {/* Source Account (with balance) */}
+              <Controller
+                name="accountId"
+                control={control}
+                render={({ field }) => (
+                  <MuiSelect
+                    label={formType === 'transfer' ? 'Tài khoản gửi' : 'Tài khoản thanh toán'}
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={data.accounts
+                      .filter(a => a.active)
+                      .map(a => ({
+                        value: a.id,
+                        label: a.name,
+                        subtitle: `Số dư: ${money(balance(a, data.transactions))}`
+                      }))}
+                  />
+                )}
+              />
             </Box>
 
-            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1.5 }}>
-              Lưu trữ biên lai để đối soát chi tiêu khi cần. Tải ảnh từ máy hoặc chọn hóa đơn mẫu demo:
-            </Typography>
+            {/* Date Picker & Method Row */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <MuiDatePicker
+                    label="Ngày giao dịch"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
 
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1.5, alignItems: 'center' }}>
-              <Button
-                variant="outlined"
-                component="label"
-                size="small"
-                startIcon={<UploadCloud size={14} />}
-              >
-                Chọn ảnh từ máy
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={e => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = ev => {
-                        if (ev.target?.result) setReceiptUrl(ev.target.result as string);
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }}
-                />
-              </Button>
-
-              {SAMPLE_RECEIPTS.map((s, idx) => (
-                <Chip
-                  key={idx}
-                  label={s.name}
-                  size="small"
-                  onClick={() => setReceiptUrl(s.url)}
-                  variant="outlined"
-                  sx={{ cursor: 'pointer', fontSize: 11 }}
-                />
-              ))}
+              <Controller
+                name="method"
+                control={control}
+                render={({ field }) => (
+                  <MuiSelect
+                    label="Phương thức"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={[
+                      { value: 'Chuyển khoản', label: 'Chuyển khoản' },
+                      { value: 'Tiền mặt', label: 'Tiền mặt' },
+                      { value: 'Ví điện tử', label: 'Ví điện tử' },
+                      { value: 'Thẻ', label: 'Thẻ tín dụng / ghi nợ' }
+                    ]}
+                  />
+                )}
+              />
             </Box>
 
-            {receiptUrl && (
-              <Box
-                sx={{
-                  mt: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  p: 1,
-                  borderRadius: '4px',
-                  bgcolor: 'background.paper',
-                  border: '1px solid var(--border-subtle)'
-                }}
-              >
-                <img
-                  src={receiptUrl}
-                  alt="Biên lai đính kèm"
-                  style={{ width: 60, height: 60, objectFit: 'contain', borderRadius: 4, background: '#fff' }}
-                />
-                <Box>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    Đã đính kèm ảnh biên lai
-                  </Typography>
+            {/* Status & Note Row */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '150px 1fr' }, gap: 1.5 }}>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <MuiSelect
+                    label="Trạng thái"
+                    value={field.value}
+                    onChange={val => field.onChange(val as 'completed' | 'pending')}
+                    options={[
+                      { value: 'completed', label: 'Hoàn tất' },
+                      { value: 'pending', label: 'Chờ xử lý' }
+                    ]}
+                  />
+                )}
+              />
+
+              <Controller
+                name="note"
+                control={control}
+                render={({ field }) => (
+                  <MuiTextField
+                    label="Ghi chú (Tùy chọn)"
+                    placeholder="Ghi chú chi tiết về giao dịch..."
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </Box>
+
+            {/* Ghi chú đã dùng gần đây */}
+            {savedModalNotes.length > 0 && (
+              <Box sx={{ mt: -0.5 }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11, fontWeight: 700, mb: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <HistoryRounded sx={{ fontSize: 14 }} />
+                  Ghi chú hay dùng:
+                </Typography>
+                <HorizontalScrollBox gap="6px" buttonSize={22} scrollStep={160}>
+                  {savedModalNotes.slice(0, 8).map(n => (
+                    <Chip
+                      key={n}
+                      label={n}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => setValue('note', n)}
+                      sx={{
+                        fontSize: 11,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        borderRadius: '4px',
+                        '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.main' }
+                      }}
+                    />
+                  ))}
+                </HorizontalScrollBox>
+              </Box>
+            )}
+          </Box>
+
+          {/* Receipt / Bill Attachment (Collapsible & Compact) */}
+          <Box
+            sx={{
+              border: '1px solid',
+              borderColor: receiptUrl ? 'primary.main' : 'divider',
+              borderRadius: '8px',
+              p: 1.5,
+              bgcolor: receiptUrl ? 'rgba(16, 185, 129, 0.03)' : 'action.hover'
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ReceiptText size={16} color="#059669" />
+                <Typography variant="subtitle2" sx={{ fontWeight: 750, fontSize: '0.85rem' }}>
+                  Hóa đơn / Biên lai đính kèm
+                </Typography>
+                {receiptUrl && (
+                  <Chip label="Đã đính kèm ảnh" size="small" color="success" sx={{ height: 20, fontSize: 10, fontWeight: 700 }} />
+                )}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                {receiptUrl ? (
+                  <Button
+                    size="small"
+                    color="error"
+                    startIcon={<X size={13} />}
+                    onClick={() => setReceiptUrl('')}
+                    sx={{ fontSize: '0.75rem', py: 0.25 }}
+                  >
+                    Gỡ ảnh
+                  </Button>
+                ) : (
                   <Button
                     size="small"
                     variant="text"
-                    onClick={() => setViewingReceipt(receiptUrl)}
-                    sx={{ p: 0, fontSize: 11, minWidth: 'auto', textTransform: 'none' }}
+                    startIcon={receiptExpanded ? <ChevronUp size={14} /> : <Paperclip size={14} />}
+                    onClick={() => setReceiptExpanded(v => !v)}
+                    sx={{ fontSize: '0.75rem', py: 0.25, color: 'primary.main', fontWeight: 700 }}
                   >
-                    Xem phóng to
+                    {receiptExpanded ? 'Thu gọn biên lai' : 'Đính kèm biên lai'}
                   </Button>
+                )}
+              </Box>
+            </Box>
+
+            {(receiptExpanded || receiptUrl) && (
+              <Box sx={{ mt: 1.5, pt: 1.25, borderTop: '1px solid var(--border-subtle)' }}>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1.25, alignItems: 'center' }}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    size="small"
+                    startIcon={<UploadCloud size={14} />}
+                    sx={{ fontSize: '0.75rem', borderRadius: '4px' }}
+                  >
+                    Tải ảnh từ máy
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = ev => {
+                            if (ev.target?.result) setReceiptUrl(ev.target.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </Button>
+
+                  <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem', mr: 0.5 }}>
+                    Hoặc chọn mẫu:
+                  </Typography>
+
+                  {SAMPLE_RECEIPTS.map((s, idx) => (
+                    <Chip
+                      key={idx}
+                      label={s.name}
+                      size="small"
+                      onClick={() => setReceiptUrl(s.url)}
+                      variant={receiptUrl === s.url ? 'filled' : 'outlined'}
+                      color={receiptUrl === s.url ? 'primary' : 'default'}
+                      sx={{ cursor: 'pointer', fontSize: 10.5, height: 22 }}
+                    />
+                  ))}
                 </Box>
+
+                {receiptUrl && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      p: 1,
+                      borderRadius: '6px',
+                      bgcolor: 'background.paper',
+                      border: '1px solid var(--border-subtle)'
+                    }}
+                  >
+                    <img
+                      src={receiptUrl}
+                      alt="Biên lai đính kèm"
+                      style={{ width: 50, height: 50, objectFit: 'contain', borderRadius: 4, background: '#fff' }}
+                    />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.82rem' }}>
+                        Ảnh biên lai đã được liên kết
+                      </Typography>
+                      <Button
+                        size="small"
+                        variant="text"
+                        onClick={() => setViewingReceipt(receiptUrl)}
+                        sx={{ p: 0, fontSize: 11, minWidth: 'auto', textTransform: 'none', color: 'primary.main' }}
+                      >
+                        Xem phóng to
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
               </Box>
             )}
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={close} color="inherit">
-            Hủy
-          </Button>
-          <Button variant="contained" color="primary" onClick={save} disabled={isSubmitting}>
-            {isSubmitting ? 'Đang lưu...' : 'Lưu giao dịch'}
-          </Button>
+        <DialogActions
+          sx={{
+            px: { xs: 2, sm: 3 },
+            py: 1.75,
+            borderTop: '1px solid var(--border-subtle)',
+            bgcolor: 'background.paper',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {watch('amount') && Number(watch('amount')) > 0 ? (
+              <Chip
+                label={`${formType === 'income' ? '+' : formType === 'expense' ? '-' : '⇄'} ${money(Number(watch('amount')) || 0)}`}
+                size="small"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.8rem',
+                  bgcolor: formType === 'income' ? 'rgba(16, 185, 129, 0.12)' : formType === 'expense' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(37, 99, 235, 0.12)',
+                  color: formType === 'income' ? '#10B981' : formType === 'expense' ? '#EF4444' : '#2563EB',
+                  borderRadius: '4px'
+                }}
+              />
+            ) : (
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+                Nhập đầy đủ thông tin để lưu
+              </Typography>
+            )}
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button onClick={close} color="inherit" sx={{ fontWeight: 650, borderRadius: '6px' }}>
+              Hủy
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={save}
+              disabled={isSubmitting}
+              sx={{
+                fontWeight: 750,
+                borderRadius: '6px',
+                px: 2.5,
+                bgcolor: '#10B981',
+                '&:hover': { bgcolor: '#059669' }
+              }}
+            >
+              {isSubmitting ? 'Đang lưu...' : (editing ? 'Cập nhật' : 'Lưu giao dịch')}
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
 
@@ -2150,6 +2446,18 @@ export default function Transactions() {
           )}
         </FullscreenChartContent>
       </FullscreenModal>
+
+      {/* 8-STEP DATA IMPORT & MIGRATION WIZARD */}
+      <DataImportWizard
+        open={importWizardOpen}
+        onClose={() => setImportWizardOpen(false)}
+      />
+
+      {/* SMART VIETQR PAYMENT SCANNER & AUTO CONFIRMATION MODAL */}
+      <SmartQrTransactionModal
+        open={qrScannerOpen}
+        onClose={() => setQrScannerOpen(false)}
+      />
     </>
   );
 }

@@ -258,7 +258,14 @@ export function AssetProjectionSection({
       </Paper>
 
       {/* 3. Multi-Scenario Line Chart */}
-      <Box sx={{ width: '100%', height: { xs: 260, sm: 290 }, minHeight: { xs: 260, sm: 290 }, minWidth: 0, maxWidth: '100%', overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative', width: '100%', height: { xs: 260, sm: 290 }, minHeight: { xs: 260, sm: 290 }, minWidth: 0, maxWidth: '100%', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: 6, right: 8, zIndex: 10 }}>
+          <FullscreenButton
+            onClick={() => setFullscreenOpen(true)}
+            title="Mở rộng xem biểu đồ toàn màn hình (Góc trên bên phải)"
+            size={16}
+          />
+        </Box>
         {renderProjectionChart()}
       </Box>
 

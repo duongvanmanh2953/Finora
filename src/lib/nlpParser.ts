@@ -1,14 +1,41 @@
 import type { Category, Account, TxType } from '../types';
 import { todayKey } from './finance';
 import { MARKET_PRICES } from './riskAndInsightEngine';
+import { parseMultiTransactions, type MultiParsedDraft } from './aiMultiTransactionParser';
+import {
+  extractAmount as extractAmountCore,
+  extractDate,
+  detectType,
+  smartSuggestCategory,
+  smartSuggestAccount,
+  detectDuplicateTransaction,
+  parseNaturalLanguageTransaction,
+  type ParsedTransactionResult
+} from './transactionParser';
+
+export {
+  extractDate,
+  detectType,
+  smartSuggestCategory,
+  smartSuggestAccount,
+  detectDuplicateTransaction,
+  parseNaturalLanguageTransaction,
+  type ParsedTransactionResult
+};
+
+export const extractAmount = extractAmountCore;
 
 export type CommandIntent =
   | 'transaction'
+  | 'multi_transaction'
   | 'investment'
   | 'credit_installment'
   | 'split_bill'
   | 'reconcile'
-  | 'business_bundle';
+  | 'business_bundle'
+  | 'salary_and_saving'
+  | 'savings_deposit'
+  | 'query_view';
 
 export interface ParsedCommand {
   raw: string;
@@ -17,6 +44,9 @@ export interface ParsedCommand {
   explanation: string;
   badgeLabel: string;
   badgeColor: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'secondary';
+
+  // 0. Multi-Transaction (Compound sentences)
+  multiTransactions?: MultiParsedDraft[];
 
   // 1. Standard Transaction
   transaction?: {
@@ -37,6 +67,7 @@ export interface ParsedCommand {
     totalCostBasis: number;
     currentUnitPrice: number;
     accountId: string;
+    categoryId?: string;
   };
 
   // 3. Credit Installment
@@ -74,6 +105,34 @@ export interface ParsedCommand {
     revenueCategoryId: string;
     costCategoryId: string;
     accountId: string;
+  };
+
+  // 7. Salary and Saving Compound Allocation
+  salaryAndSaving?: {
+    salaryAmount: number;
+    salaryName: string;
+    salaryAccountId?: string;
+    month: string;
+    savingAmount: number;
+    savingGoalName?: string;
+    savingGoalId?: string;
+    sourceAccountId?: string;
+  };
+
+  // 8. Savings Deposit
+  savingsDeposit?: {
+    amount: number;
+    goalName?: string;
+    goalId?: string;
+    sourceAccountId?: string;
+    categoryId?: string;
+  };
+
+  // 9. Query & View Financial Data
+  queryView?: {
+    target: 'expense' | 'income' | 'balance' | 'savings' | 'investment' | 'all';
+    title: string;
+    period: 'today' | 'month' | 'all';
   };
 }
 
@@ -138,52 +197,6 @@ const incomeKeywords = [
 ];
 
 /**
- * Helper to extract monetary amount from Vietnamese string
- */
-export function extractAmount(text: string): { amount: number; matchedStr: string } {
-  const lower = text.toLowerCase();
-  // 1. Try matching number with explicit currency unit first
-  const unitRegex = /(\d+(?:[.,]\d+)?)\s*(k|nghìn|ngàn|tr|triệu|củ|lít|m|tỷ|vnd|đ|₫)(?:\s|$|[.,;])/i;
-  let match = lower.match(unitRegex);
-
-  // 2. Fallback to generic number
-  if (!match) {
-    const amountRegex = /(\d+(?:[.,]\d+)?)\s*(k|nghìn|ngàn|tr|triệu|củ|lít|m|tỷ|vnd|đ|₫)?(?:\s|$)/i;
-    match = lower.match(amountRegex);
-  }
-
-  if (!match) return { amount: 0, matchedStr: '' };
-
-  const matchedStr = match[0].trim();
-  const numPart = match[1].replace(',', '.');
-  const unit = (match[2] || '').toLowerCase();
-  const baseNum = parseFloat(numPart);
-
-  let amount = 0;
-  if (!isNaN(baseNum)) {
-    if (unit === 'k' || unit === 'nghìn' || unit === 'ngàn') {
-      amount = Math.round(baseNum * 1000);
-    } else if (unit === 'tr' || unit === 'triệu' || unit === 'củ' || unit === 'm') {
-      amount = Math.round(baseNum * 1000000);
-    } else if (unit === 'lít') {
-      amount = Math.round(baseNum * 100000);
-    } else if (unit === 'tỷ') {
-      amount = Math.round(baseNum * 1000000000);
-    } else {
-      if (numPart.includes('.') && !numPart.includes('.5') && !numPart.includes('.25')) {
-        amount = parseInt(match[1].replace(/[.,]/g, ''), 10);
-      } else if (baseNum < 1000 && !unit) {
-        amount = Math.round(baseNum * 1000);
-      } else {
-        amount = Math.round(baseNum);
-      }
-    }
-  }
-
-  return { amount, matchedStr };
-}
-
-/**
  * Match account from text or fallback to default
  */
 export function matchAccount(text: string, accounts: Account[], defaultAccountId?: string): string {
@@ -240,6 +253,187 @@ export function parseVietnameseCommand(
 
   const raw = input.trim();
   const lower = raw.toLowerCase();
+
+  // INTENT -1: Xem / Tra cứu dữ liệu tài chính (Query / View Insight)
+  // Ví dụ: "xem chi tiêu hôm nay", "xem số dư", "xem tài khoản", "xem tiết kiệm", "xem đầu tư", "báo cáo tháng này"
+  const isViewQuery =
+    lower.startsWith('xem') ||
+    lower.startsWith('kiểm tra') ||
+    lower.startsWith('tra cứu') ||
+    lower.startsWith('báo cáo') ||
+    lower.startsWith('thống kê') ||
+    lower.includes('bao nhiêu tiền') ||
+    lower.includes('còn bao nhiêu');
+
+  if (isViewQuery) {
+    let target: 'expense' | 'income' | 'balance' | 'savings' | 'investment' | 'all' = 'all';
+    let title = 'Tổng quan tài chính';
+    let badgeLabel = 'Tra cứu dữ liệu';
+
+    const period: 'today' | 'month' | 'all' =
+      lower.includes('hôm nay') || lower.includes('nay')
+        ? 'today'
+        : lower.includes('tháng') || lower.includes('tháng này')
+        ? 'month'
+        : 'all';
+
+    if (lower.includes('đầu tư') || lower.includes('cổ phiếu') || lower.includes('vàng') || lower.includes('crypto')) {
+      target = 'investment';
+      title = 'Danh mục Đầu tư';
+      badgeLabel = 'Tra cứu Đầu tư';
+    } else if (lower.includes('tiết kiệm') || lower.includes('sổ') || lower.includes('quỹ')) {
+      target = 'savings';
+      title = 'Mục tiêu Tiết kiệm';
+      badgeLabel = 'Tra cứu Tiết kiệm';
+    } else if (lower.includes('số dư') || lower.includes('tài khoản') || lower.includes('ví') || lower.includes('ngân hàng')) {
+      target = 'balance';
+      title = 'Số dư các Tài khoản';
+      badgeLabel = 'Tra cứu Số dư';
+    } else if (lower.includes('thu') || lower.includes('lương') || lower.includes('thưởng')) {
+      target = 'income';
+      title = period === 'today' ? 'Thu nhập hôm nay' : period === 'month' ? 'Thu nhập tháng này' : 'Tổng thu nhập';
+      badgeLabel = 'Tra cứu Thu nhập';
+    } else if (lower.includes('chi') || lower.includes('tiêu') || lower.includes('tiền ăn') || lower.includes('xài')) {
+      target = 'expense';
+      title = period === 'today' ? 'Chi tiêu hôm nay' : period === 'month' ? 'Chi tiêu tháng này' : 'Tổng chi tiêu';
+      badgeLabel = 'Tra cứu Chi tiêu';
+    }
+
+    return {
+      raw,
+      intent: 'query_view',
+      confidence: 0.95,
+      badgeLabel,
+      badgeColor: 'info',
+      explanation: `Hệ thống hiển thị trực tiếp dữ liệu: ${title} (${period === 'today' ? 'Hôm nay' : period === 'month' ? 'Tháng này' : 'Tất cả'})`,
+      queryView: {
+        target,
+        title,
+        period
+      }
+    };
+  }
+
+  // INTENT 0: Nhận lương & Gửi tiết kiệm (Compound Multi-Action Allocation)
+  // Ví dụ: "tôi nhận lương 5 gửi tiết kiệm 2m", "nhận lương 20tr gửi tiết kiệm 5tr", "lương 15tr cất tiết kiệm 3tr vào quỹ khẩn cấp"
+  const hasSalaryKeyword = lower.includes('lương') || lower.includes('thu nhập');
+  const hasSavingKeyword =
+    lower.includes('tiết kiệm') ||
+    lower.includes('sổ tiết kiệm') ||
+    lower.includes('gửi tk') ||
+    lower.includes('gửi sổ') ||
+    lower.includes('quỹ khẩn cấp');
+
+  if (hasSalaryKeyword && hasSavingKeyword) {
+    const splitRegex = /(?:gửi|trích|cất|bỏ|chuyển|cho)?\s*(?:vào\s*)?(?:tiết\s*kiệm|sổ\s*tiết\s*kiệm|sổ\s*tk|quỹ\s*khẩn\s*cấp|quỹ|tk)/i;
+    const splitMatch = lower.match(splitRegex);
+
+    if (splitMatch && splitMatch.index !== undefined) {
+      const salaryPart = lower.slice(0, splitMatch.index);
+      const savingPart = lower.slice(splitMatch.index);
+
+      let { amount: salaryAmt } = extractAmount(salaryPart);
+      let { amount: savingAmt } = extractAmount(savingPart);
+
+      if (salaryAmt > 0 && salaryAmt < 1000) {
+        salaryAmt = salaryAmt * 1000000;
+      } else if (salaryAmt >= 1000 && salaryAmt <= 100000) {
+        salaryAmt = salaryAmt * 1000;
+      }
+
+      if (savingAmt > 0 && savingAmt < 1000) {
+        savingAmt = savingAmt * 1000000;
+      } else if (savingAmt >= 1000 && savingAmt <= 100000) {
+        savingAmt = savingAmt * 1000;
+      }
+
+      // Fallback matching if regex split missed an un-spaced number
+      if (salaryAmt <= 0 || savingAmt <= 0) {
+        const allAmounts = [...lower.matchAll(/(\d+(?:[.,]\d+)?)\s*(k|nghìn|ngàn|tr|triệu|củ|lít|m|tỷ|vnd|đ|₫)?/gi)];
+        if (allAmounts.length >= 2) {
+          const num1 = parseFloat(allAmounts[0][1].replace(',', '.'));
+          const unit1 = (allAmounts[0][2] || '').toLowerCase();
+          const num2 = parseFloat(allAmounts[1][1].replace(',', '.'));
+          const unit2 = (allAmounts[1][2] || '').toLowerCase();
+
+          salaryAmt = unit1 === 'm' || unit1 === 'tr' || unit1 === 'triệu' || unit1 === 'củ'
+            ? Math.round(num1 * 1000000)
+            : (num1 < 1000 ? Math.round(num1 * 1000000) : Math.round(num1));
+
+          savingAmt = unit2 === 'm' || unit2 === 'tr' || unit2 === 'triệu' || unit2 === 'củ'
+            ? Math.round(num2 * 1000000)
+            : (num2 < 1000 ? Math.round(num2 * 1000000) : Math.round(num2));
+        }
+      }
+
+      if (salaryAmt > 0 && savingAmt > 0) {
+        let goalName: string | undefined;
+        const goalMatch = savingPart.match(/(?:vào|cho|sổ)\s+([a-zA-Z0-9\sàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)/i);
+        if (goalMatch) {
+          goalName = goalMatch[1].replace(/(?:tiết\s*kiệm|\d+.*)/i, '').trim();
+          if (goalName.length < 2) goalName = undefined;
+        }
+
+        const targetAccId = matchAccount(lower, accounts, defaultAccountId);
+        const currentMonth = todayKey().slice(0, 7);
+
+        return {
+          raw,
+          intent: 'salary_and_saving',
+          confidence: 0.96,
+          badgeLabel: 'Phân bổ Lương & Tiết kiệm',
+          badgeColor: 'primary',
+          explanation: `Nhận lương ${new Intl.NumberFormat('vi-VN').format(salaryAmt)} ₫ và gửi tiết kiệm ${new Intl.NumberFormat('vi-VN').format(savingAmt)} ₫`,
+          salaryAndSaving: {
+            salaryAmount: salaryAmt,
+            salaryName: `Lương tháng ${currentMonth.slice(5)}/${currentMonth.slice(0, 4)}`,
+            salaryAccountId: targetAccId,
+            month: currentMonth,
+            savingAmount: savingAmt,
+            savingGoalName: goalName,
+            sourceAccountId: targetAccId
+          }
+        };
+      }
+    }
+  }
+
+  // INTENT 0.5: Gửi tiết kiệm đơn lẻ
+  const isSavingDeposit =
+    (lower.includes('gửi') || lower.includes('trích') || lower.includes('cất') || lower.includes('bỏ')) &&
+    (lower.includes('tiết kiệm') || lower.includes('sổ') || lower.includes('quỹ'));
+
+  if (isSavingDeposit && !hasSalaryKeyword) {
+    let { amount } = extractAmount(lower);
+    if (amount > 0 && amount < 1000) {
+      amount = amount * 1000000;
+    } else if (amount >= 1000 && amount <= 100000) {
+      amount = amount * 1000;
+    }
+    if (amount > 0) {
+      let goalName: string | undefined;
+      const goalMatch = lower.match(/(?:vào|cho|sổ)\s+([a-zA-Z0-9\sàáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]+)/i);
+      if (goalMatch) {
+        goalName = goalMatch[1].replace(/(?:tiết\s*kiệm|\d+.*)/i, '').trim();
+        if (goalName.length < 2) goalName = undefined;
+      }
+      const targetAccId = matchAccount(lower, accounts, defaultAccountId);
+
+      return {
+        raw,
+        intent: 'savings_deposit',
+        confidence: 0.94,
+        badgeLabel: 'Gửi tiết kiệm',
+        badgeColor: 'success',
+        explanation: `Gửi ${new Intl.NumberFormat('vi-VN').format(amount)} ₫ vào mục tiêu tiết kiệm`,
+        savingsDeposit: {
+          amount,
+          goalName,
+          sourceAccountId: targetAccId
+        }
+      };
+    }
+  }
 
   // INTENT 1: Cân bằng số dư nhanh (Reconcile)
   // Ví dụ: "số dư ví tiền mặt còn 350k", "số dư bank còn 40tr", "cân bằng số dư ví 500k"
@@ -465,6 +659,20 @@ export function parseVietnameseCommand(
         }
       };
     }
+  }
+
+  // INTENT 5.5: Multi-Transaction (Câu phức gồm nhiều giao dịch riêng biệt)
+  const multiRes = parseMultiTransactions(raw, categories, accounts, defaultAccountId || accounts[0]?.id || 'wallet');
+  if (multiRes.drafts.length >= 2) {
+    return {
+      raw,
+      intent: 'multi_transaction',
+      confidence: 0.92,
+      badgeLabel: `Nhận diện ${multiRes.drafts.length} giao dịch`,
+      badgeColor: 'info',
+      explanation: `Tách câu phức thành ${multiRes.drafts.length} giao dịch: ${multiRes.drafts.map(d => `${d.name} (${d.amount.toLocaleString('vi-VN')}₫)`).join(', ')}`,
+      multiTransactions: multiRes.drafts
+    };
   }
 
   // INTENT 6: Standard Transaction (Thu nhập / Chi tiêu thông thường)

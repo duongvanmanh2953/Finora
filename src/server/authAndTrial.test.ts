@@ -122,7 +122,7 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
   });
 
   it('7. 120-Day session refresh token rotation and token reuse detection', () => {
-    const user = db.register('User Refresh Test', `refresh_${Date.now()}@tichsan.vn`);
+    const user = db.register('User Refresh Test', `refresh_${Date.now()}@tichsan.site`);
     const initialRefresh = user.refreshToken;
 
     // Normal rotation
@@ -136,7 +136,7 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
   });
 
   it('8. Server Admin CLI password rotation enforces 7-day cooldown', () => {
-    const adminEmail = `admin_test_${Date.now()}@tichsan.vn`;
+    const adminEmail = `admin_test_${Date.now()}@tichsan.site`;
     // First rotation succeeds
     const firstRotation = db.rotateAdminPassword('InitialPass123!@#', adminEmail);
     expect(firstRotation.admin.role).toBe('admin');
@@ -144,5 +144,79 @@ describe('Finora Authentication, 30-Day VIP Gold Trial & Ownership Protection', 
 
     // Immediate second rotation must fail due to 7-day cooldown
     expect(() => db.rotateAdminPassword('SecondPass456!@#', adminEmail)).toThrowError(/7 ngày/);
+  });
+
+  it('9. Logout completely revokes and deletes session & refresh tokens in database', () => {
+    const email = `logout_test_${Date.now()}@tichsan.site`;
+    const reg = db.register('Logout User', email);
+    const accessToken = reg.accessToken;
+    const refreshToken = reg.refreshToken;
+
+    // Verify token can retrieve user
+    expect(db.getUserByToken(accessToken)?.id).toBe(reg.user.id);
+
+    // Call logout
+    db.logout(accessToken, refreshToken, reg.user.id);
+
+    // Verify accessToken no longer exists in DB sessions
+    expect(db.getUserByToken(accessToken)).toBeNull();
+
+    // Verify refreshToken cannot be rotated anymore
+    expect(() => db.rotateRefreshToken(refreshToken, '127.0.0.1', 'Vitest')).toThrow();
+  });
+
+  it('10. Registration strictly checks duplicate email and prevents re-registering existing accounts', () => {
+    const dupEmail = `dup_check_${Date.now()}@finora.vn`;
+    expect(db.isEmailRegistered(dupEmail)).toBe(false);
+
+    db.register('User Original', dupEmail, 'Password123');
+    expect(db.isEmailRegistered(dupEmail)).toBe(true);
+
+    // Attempting to register the same email must throw
+    expect(() => db.register('User Impostor', dupEmail, 'AnotherPass123')).toThrowError(/đã được đăng ký/);
+  });
+
+  it('11. Newly registered users receive pristine empty finance data with zero fake transactions', () => {
+    const freshEmail = `fresh_user_${Date.now()}@finora.vn`;
+    const reg = db.register('Fresh User', freshEmail);
+    const data = db.getFinanceData(reg.user.id);
+
+    expect(data.transactions).toEqual([]);
+    expect(data.budgets).toEqual([]);
+    expect(data.goals).toEqual([]);
+    expect(data.debts).toEqual([]);
+    expect(data.investments).toEqual([]);
+    expect(data.recurring).toEqual([]);
+    expect(data.accounts.length).toBe(1);
+    expect(data.accounts[0].openingBalance).toBe(0);
+  });
+
+  it('12. Login strictly rejects unregistered email without auto-provisioning demo accounts', () => {
+    const unregEmail = `unregistered_${Date.now()}@finora.vn`;
+    expect(() => db.login(unregEmail, 'AnyPassword123')).toThrowError(/chưa được đăng ký/);
+  });
+
+  it('13. OAuth login seamlessly logs in or registers without separate registration or email check', () => {
+    const oauthEmail = `oauth_user_${Date.now()}@gmail.com`;
+    // First time OAuth: should register and sign in in one shot
+    const oauthResult = db.oauthLogin('Nguyễn Google', oauthEmail, 'google');
+    expect(oauthResult.isNewUser).toBe(true);
+    expect(oauthResult.user.email).toBe(oauthEmail);
+    expect(oauthResult.user.emailVerified).toBe(true);
+    expect(oauthResult.user.type_method_login).toBe('google');
+    expect(oauthResult.accessToken).toBeDefined();
+
+    // Verify clean data for OAuth user
+    const data = db.getFinanceData(oauthResult.user.id);
+    expect(data.accounts[0].openingBalance).toBe(0);
+    expect(data.transactions).toEqual([]);
+    expect(data.investments).toEqual([]);
+    expect(data.debts).toEqual([]);
+
+    // Subsequent OAuth login: should log in existing user seamlessly
+    const loginAgain = db.oauthLogin('Nguyễn Google', oauthEmail, 'google');
+    expect(loginAgain.isNewUser).toBe(false);
+    expect(loginAgain.user.id).toBe(oauthResult.user.id);
+    expect(loginAgain.user.emailVerified).toBe(true);
   });
 });

@@ -173,7 +173,7 @@ export class AIActionPlanner {
                 entityType: 'budget',
                 entityId: existingBudget.id,
                 title: `Điều chỉnh ngân sách: ${existingBudget.name}`,
-                description: `Từ ${new Intl.NumberFormat('vi-VN').format(existingBudget.limit)} ₫ ➔ ${new Intl.NumberFormat('vi-VN').format(amount)} ₫`,
+                description: `Từ ${new Intl.NumberFormat('vi-VN').format(existingBudget.limit)} ₫ sang ${new Intl.NumberFormat('vi-VN').format(amount)} ₫`,
                 originalValues: {
                   limit: existingBudget.limit,
                   name: existingBudget.name
@@ -190,6 +190,88 @@ export class AIActionPlanner {
                 idempotencyKey: `act-bg-upd-${existingBudget.id}-${Date.now()}`
               }
             ],
+            createdAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 3600000).toISOString()
+          };
+        }
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Pattern 4: Compound Nhận lương & Gửi tiết kiệm
+    // e.g.: "tôi nhận lương 5 gửi tiết kiệm 2m", "nhận lương 20tr gửi tiết kiệm 5tr"
+    // -------------------------------------------------------------------------
+    const hasSalary = text.includes('lương') || text.includes('thu nhập');
+    const hasSaving = text.includes('tiết kiệm') || text.includes('gửi tk') || text.includes('sổ');
+
+    if (hasSalary && hasSaving) {
+      const allNumbers = [...text.matchAll(/(\d+(?:[.,]\d+)?)\s*(k|nghìn|ngàn|tr|triệu|củ|m|tỷ|vnd|đ|₫)?/gi)];
+      if (allNumbers.length >= 2) {
+        const parseNum = (match: RegExpMatchArray) => {
+          const val = parseFloat(match[1].replace(',', '.'));
+          const unit = (match[2] || '').toLowerCase();
+          if (unit === 'm' || unit === 'tr' || unit === 'triệu' || unit === 'củ') return Math.round(val * 1000000);
+          if (val < 1000) return Math.round(val * 1000000);
+          return Math.round(val);
+        };
+
+        const salaryAmount = parseNum(allNumbers[0]);
+        const savingAmount = parseNum(allNumbers[1]);
+
+        if (salaryAmount > 0 && savingAmount > 0) {
+          const existingGoal = data.goals && data.goals.length > 0 ? data.goals[0] : null;
+          const goalName = existingGoal ? existingGoal.name : 'Quỹ tiết kiệm tích lũy';
+
+          const actions: ActionItem[] = [
+            {
+              id: uid(),
+              actionType: 'CREATE',
+              entityType: 'transaction',
+              title: `Ghi nhận thu nhập: Lương tháng ${currentMonth.slice(5)}/${currentMonth.slice(0, 4)}`,
+              description: `Số tiền: ${new Intl.NumberFormat('vi-VN').format(salaryAmount)} ₫ · Phân bổ vào ${data.accounts[0]?.name || 'Tài khoản'}`,
+              proposedValues: {
+                name: `Lương tháng ${currentMonth.slice(5)}/${currentMonth.slice(0, 4)}`,
+                amount: salaryAmount,
+                type: 'income',
+                categoryId: 'salary',
+                accountId: defaultAccount,
+                date: currentDate,
+                method: 'Chuyển khoản',
+                note: 'Ghi nhận nhận lương qua Trợ lý AI'
+              },
+              validationStatus: 'valid',
+              isSelected: true,
+              idempotencyKey: `act-sal-${Date.now()}`
+            },
+            {
+              id: uid(),
+              actionType: existingGoal ? 'UPDATE' : 'CREATE',
+              entityType: 'savings_goal',
+              entityId: existingGoal?.id,
+              title: `Gửi tiết kiệm vào: ${goalName}`,
+              description: `Trích ${new Intl.NumberFormat('vi-VN').format(savingAmount)} ₫ từ thu nhập chuyển vào sổ tiết kiệm`,
+              proposedValues: {
+                goalId: existingGoal?.id,
+                name: goalName,
+                amount: savingAmount,
+                target: existingGoal ? existingGoal.target : savingAmount * 5,
+                accountId: defaultAccount,
+                date: currentDate
+              },
+              validationStatus: 'valid',
+              isSelected: true,
+              idempotencyKey: `act-sav-${Date.now()}`
+            }
+          ];
+
+          return {
+            id: uid(),
+            userId: data.user.id,
+            conversationId,
+            title: `Kế hoạch Phân bổ Lương & Tiết kiệm`,
+            summary: `Nhận lương ${new Intl.NumberFormat('vi-VN').format(salaryAmount)} ₫, đồng thời trích ${new Intl.NumberFormat('vi-VN').format(savingAmount)} ₫ chuyển vào sổ "${goalName}". Số dư khả dụng ròng tăng +${new Intl.NumberFormat('vi-VN').format(salaryAmount - savingAmount)} ₫.`,
+            status: 'draft',
+            actions,
             createdAt: new Date().toISOString(),
             expiresAt: new Date(Date.now() + 3600000).toISOString()
           };

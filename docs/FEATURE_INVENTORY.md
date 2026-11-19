@@ -15,7 +15,7 @@ Tài liệu này tổng hợp toàn bộ các phân hệ, trạng thái triển 
 | **4. Gói cước & Trial** | Danh sách gói & Tặng 30 ngày | Hoàn thành | Tự động tặng 30 ngày VIP Gold khi đăng ký mới. Hết 30 ngày tự về Free, bảo toàn 100% dữ liệu. |
 | **5. Xác thực (Auth)** | Đăng ký, Đăng nhập, Scrypt Hash | Hoàn thành | Băm mật khẩu bằng Scrypt timing-safe; Cookie HttpOnly. |
 | **5.1. Phiên Đăng nhập** | Session 120 Ngày & Rotation | Hoàn thành | Access token 15 phút + Refresh token 120 ngày luân chuyển, băm SHA-256 trong DB, chống token reuse. |
-| **6. Quản trị Server CLI** | Lệnh Bootstrap `Tichsan2953@` | Hoàn thành | Chạy qua SSH/Shell, sinh mật khẩu ngẫu nhiên mạnh, khóa chu kỳ reset 7 ngày, không lưu plaintext. |
+| **6. Quản trị Server CLI** | Lệnh Bootstrap `admin:reset` | Hoàn thành | Chạy qua SSH/Shell, xác thực Master Key trong .env, sinh mật khẩu ngẫu nhiên mạnh, khóa chu kỳ reset 7 ngày, không lưu plaintext. |
 | **6.1. Phân quyền Admin** | Bảo mật RBAC & Ẩn Menu | Hoàn thành | Không hiển thị nút Admin trên User UI/Demo; Route Admin kiểm tra xác thực quyền từ backend. |
 | **7. Quản trị Doanh nghiệp** | Admin Portal | Hoàn thành | Quản lý người dùng, cấp gói thủ công, theo dõi chi phí bên thứ ba (VPS, Domain, Email, AI) & System Health. |
 | **8. Thanh toán PayOS** | Cổng Pháp lý & Đối soát 2 chiều | Hoàn thành | Mặc định chặn thu tiền thật (`PAYMENTS_ENABLED=false`) hiển thị QR mẫu; Sẵn sàng SDK & Webhook khi bật cờ. |

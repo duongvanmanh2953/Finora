@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import readline from 'readline';
+import '../envLoader';
 import { db } from '../db/database';
 import { generateSecurePassword } from '../auth/security';
 
-const REQUIRED_SECURITY_KEY = 'Tichsan@2953';
-const DEFAULT_ADMIN_EMAIL = 'admin@tichsan.ai';
+const DEFAULT_ADMIN_EMAIL = process.env.ADMIN_BOOTSTRAP_EMAIL || 'admin@tichsan.vn';
 
 function askHiddenQuestion(query: string): Promise<string> {
   const rl = readline.createInterface({
@@ -71,35 +71,41 @@ async function runAdminReset() {
 
   const args = process.argv.slice(2);
   let providedKey = '';
+  let providedEmail = '';
 
-  // 1. Check if key provided via CLI argument: e.g. yarn admin:reset Tichsan@2953 or --key=Tichsan@2953
+  // 1. Check if key provided via CLI argument: e.g. pnpm admin:reset --key=<key> --email=<email>
   for (const arg of args) {
     if (arg.startsWith('--key=')) {
       providedKey = arg.replace('--key=', '').trim();
+    } else if (arg.startsWith('--email=')) {
+      providedEmail = arg.replace('--email=', '').trim();
     } else if (!arg.startsWith('-') && !providedKey) {
       providedKey = arg.trim();
     }
   }
 
-  // 2. Check if key provided via environment variable
-  if (!providedKey && process.env.ADMIN_SECURITY_KEY) {
-    providedKey = process.env.ADMIN_SECURITY_KEY.trim();
+  const expectedKey = process.env.ADMIN_SECURITY_KEY?.trim() || '';
+  if (!expectedKey) {
+    console.error('\n❌ [LỖI BẢO MẬT] Chưa thiết lập biến môi trường ADMIN_SECURITY_KEY!');
+    console.error('   Vui lòng cấu hình ADMIN_SECURITY_KEY trong tệp .env trước khi thực thi công cụ này.');
+    console.error('======================================================================\n');
+    process.exit(1);
   }
 
-  // 3. If still not provided, ask interactively
+  // 2. If not provided via CLI, ask interactively
   if (!providedKey) {
     providedKey = await askHiddenQuestion('🔑 Nhập mã xác nhận bảo mật quyền Quản trị (Master Key): ');
   }
 
   // Verify Master Key
-  if (providedKey !== REQUIRED_SECURITY_KEY) {
+  if (providedKey !== expectedKey) {
     console.error('\n❌ [LỖI XÁC THỰC] Mã bảo mật không chính xác!');
-    console.error(`   Yêu cầu nhập đúng mã bảo mật được ủy quyền.`);
+    console.error(`   Yêu cầu nhập đúng mã bảo mật được cấu hình trong ADMIN_SECURITY_KEY.`);
     console.error('======================================================================\n');
     process.exit(1);
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL;
+  const adminEmail = providedEmail || process.env.ADMIN_EMAIL || process.env.ADMIN_BOOTSTRAP_EMAIL || DEFAULT_ADMIN_EMAIL;
 
   try {
     // Generate high-entropy secure new password

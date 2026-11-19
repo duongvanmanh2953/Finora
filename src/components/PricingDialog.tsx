@@ -48,7 +48,7 @@ export function PricingDialog({
   const [step, setStep] = useState<'compare' | 'checkout'>('compare');
   const [processing, setProcessing] = useState(false);
 
-  const userId = data?.user.id || 'demo';
+  const userId = data?.user.id || 'user';
   const qrTransferContent = `TICHLOC PRO ${userId.toUpperCase()}`;
   const qrUrl = `https://api.vietqr.io/image/970422-99998888TICHLOC-compact2.jpg?amount=${selectedPlan.price}&addInfo=${encodeURIComponent(
     qrTransferContent

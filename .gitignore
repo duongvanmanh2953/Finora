@@ -9,8 +9,10 @@ dist-ssr
 
 # Environment & Secrets (NEVER COMMIT)
 .env
+.env.production
 .env.local
 .env.*.local
+.env.*.production
 *.pem
 *.key
 

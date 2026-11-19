@@ -1,6 +1,6 @@
 import { differenceInCalendarDays, format, parseISO, subDays, addDays } from 'date-fns';
 import type { FinanceData, InvestmentAsset, Budget } from '../types';
-import { balance, budgetSpent, debtRemaining, monthKey, todayKey } from './finance';
+import { balance, budgetSpent, debtRemaining, monthKey, todayKey, formatVnDate } from './finance';
 
 export interface TrueSpendableResult {
   liquidity: number;
@@ -168,7 +168,7 @@ export function analyzeFinancialRisks(data: FinanceData): RiskAlert[] {
             id: `debt-due-${d.id}`,
             level: 'critical',
             title: `Khoản nợ "${d.name}" còn ${daysLeft === 0 ? 'hôm nay' : `${daysLeft} ngày`} là đến hạn!`,
-            description: `Dư nợ cần thanh toán: ${new Intl.NumberFormat('vi-VN').format(rem)} ₫. Vui lòng thanh toán trước ngày ${d.dueDate} để tránh phát sinh phạt trễ hạn.`,
+            description: `Dư nợ cần thanh toán: ${new Intl.NumberFormat('vi-VN').format(rem)} ₫. Vui lòng thanh toán trước ngày ${formatVnDate(d.dueDate)} để tránh phát sinh phạt trễ hạn.`,
             actionLabel: 'Xem khoản nợ',
             actionType: 'pay_debt'
           });

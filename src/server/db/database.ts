@@ -14,6 +14,7 @@ export interface DbUser extends User {
   mustChangePassword?: boolean;
   lastAdminResetTimestamp?: number;
   emailVerified?: boolean;
+  type_method_login?: string;
 }
 
 export interface RefreshTokenSession {
@@ -110,15 +111,18 @@ export interface DatabaseSchema {
   idempotency: Record<string, IdempotencyRecord>;
   thirdPartyCosts: ThirdPartyCost[];
   auditLogs: AuditLogEntry[];
+  planPermissions?: Record<string, string[]>;
 }
 
+const isTestEnv = process.env.NODE_ENV === 'test' || Boolean(process.env.VITEST);
 const DATA_DIR = path.resolve(process.cwd(), '.data');
-const DB_FILE = path.join(DATA_DIR, 'finora_db.json');
+const DB_FILE = isTestEnv ? path.join(DATA_DIR, 'finora_test_db.json') : path.join(DATA_DIR, 'finora_db.json');
 const MAX_SESSION_DAYS = 120;
 
 class TichSanDatabase {
   private schema: DatabaseSchema;
   private initialized = false;
+  private lastMtime = 0;
 
   constructor() {
     this.schema = {
@@ -135,6 +139,33 @@ class TichSanDatabase {
     this.init();
   }
 
+  public reloadFromDiskIfNeeded(): void {
+    try {
+      if (!fs.existsSync(DB_FILE)) return;
+      const stats = fs.statSync(DB_FILE);
+      if (stats.mtimeMs > this.lastMtime) {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const loaded = JSON.parse(raw);
+        this.schema = {
+          ...this.schema,
+          ...loaded,
+          users: loaded.users || {},
+          financeData: loaded.financeData || {},
+          sessions: loaded.sessions || {},
+          refreshTokens: loaded.refreshTokens || {},
+          plans: loaded.plans || {},
+          orders: loaded.orders || {},
+          idempotency: loaded.idempotency || {},
+          thirdPartyCosts: loaded.thirdPartyCosts || [],
+          auditLogs: loaded.auditLogs || []
+        };
+        this.lastMtime = stats.mtimeMs;
+      }
+    } catch (err) {
+      // Ignore reading error during active concurrent write
+    }
+  }
+
   private init() {
     if (this.initialized) return;
     try {
@@ -143,6 +174,8 @@ class TichSanDatabase {
       }
 
       if (fs.existsSync(DB_FILE)) {
+        const stats = fs.statSync(DB_FILE);
+        this.lastMtime = stats.mtimeMs;
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         const loaded = JSON.parse(raw);
         this.schema = {
@@ -155,6 +188,24 @@ class TichSanDatabase {
           thirdPartyCosts: loaded.thirdPartyCosts || [],
           auditLogs: loaded.auditLogs || []
         };
+        // Purge legacy demo accounts and old demo state
+        delete this.schema.users['usr_demo_vip'];
+        delete this.schema.users['usr_free_user'];
+        delete this.schema.financeData['usr_demo_vip'];
+        delete this.schema.financeData['usr_free_user'];
+        for (const [uidKey, u] of Object.entries(this.schema.users)) {
+          if (
+            u.email === 'minhanh@tichsan.site' ||
+            u.email === 'minhanh@tichsan.vn' ||
+            u.email === 'demo@finora.app' ||
+            u.email === 'demo@tichsan.site' ||
+            u.email === 'demo@tichsan.vn'
+          ) {
+            delete this.schema.users[uidKey];
+            delete this.schema.financeData[uidKey];
+          }
+        }
+        this.persist();
       } else {
         this.seedInitialData();
         this.persist();
@@ -183,6 +234,10 @@ class TichSanDatabase {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
       fs.writeFileSync(DB_FILE, JSON.stringify(this.schema, null, 2), 'utf-8');
+      try {
+        const stats = fs.statSync(DB_FILE);
+        this.lastMtime = stats.mtimeMs;
+      } catch {}
     } catch (err) {
       console.error('[TichSanDatabase] Error persisting database:', err);
     }
@@ -299,7 +354,7 @@ class TichSanDatabase {
         approvedBy: 'Admin',
         createdAt: '2026-05-15',
         paidAt: '2026-05-15',
-        notes: 'Tên miền tichsan.vn & SSL wildcard'
+        notes: 'Tên miền tichsan.site & SSL wildcard'
       },
       {
         id: 'cost-resend',
@@ -330,67 +385,23 @@ class TichSanDatabase {
   }
 
   private seedInitialData() {
-    const now = new Date();
-    // 1. Initial Demo User
-    const demoUser: DbUser = {
-      id: 'usr_demo_vip',
-      name: 'Nguyễn Minh Anh',
-      email: 'minhanh@tichsan.vn',
-      role: 'user',
-      currency: 'VND',
-      financialMonthStart: 1,
-      plan: 'gold',
-      subscription_status: 'trialing',
-      trial_started_at: now.toISOString(),
-      trial_ends_at: new Date(now.getTime() + 30 * 86400 * 1000).toISOString(),
-      current_plan_id: 'plan-trial',
-      streakCount: 7,
-      lastCheckInDate: todayKey(),
-      defaultAccountId: 'acc_wallet',
-      isSuspended: false,
-      createdAt: '2026-10-15',
-      lastActive: todayKey(),
-      nlpUsageToday: { date: todayKey(), count: 0 },
-      emailVerified: true
-    };
-
-    const regularUser: DbUser = {
-      id: 'usr_free_user',
-      name: 'Trần Hoàng Long',
-      email: 'hoanglong.tran@gmail.com',
-      role: 'user',
-      currency: 'VND',
-      financialMonthStart: 1,
-      plan: 'free',
-      subscription_status: 'free',
-      current_plan_id: 'plan-free',
-      streakCount: 2,
-      lastCheckInDate: todayKey(),
-      defaultAccountId: 'acc_wallet',
-      isSuspended: false,
-      createdAt: '2026-10-10',
-      lastActive: todayKey(),
-      nlpUsageToday: { date: todayKey(), count: 0 },
-      emailVerified: true
-    };
-
-    this.schema.users[demoUser.id] = demoUser;
-    this.schema.users[regularUser.id] = regularUser;
-
-    this.schema.financeData[demoUser.id] = {
-      ...structuredClone(seed),
-      user: demoUser
-    };
+    // Production database: starts clean with zero demo accounts!
+    this.schema.users = {};
+    this.schema.financeData = {};
+    this.schema.sessions = {};
+    this.schema.refreshTokens = {};
+    this.schema.orders = {};
+    this.schema.idempotency = {};
 
     this.schema.auditLogs = [
       {
-        id: 'aud-891',
+        id: 'aud-init-prod',
         admin: 'system',
-        action: 'BOOTSTRAP_DATABASE_INITIALIZED',
+        action: 'BOOTSTRAP_PRODUCTION_DATABASE',
         resource: '/system/db',
         status: 'SUCCESS',
         ip: '127.0.0.1',
-        time: 'Vừa xong',
+        time: 'Khởi tạo hệ thống chính thức',
         timestamp: Date.now()
       }
     ];
@@ -401,11 +412,17 @@ class TichSanDatabase {
 
   // --- USER AUTHENTICATION & TRIAL MANAGEMENT ---
 
+  public isEmailRegistered(email: string): boolean {
+    this.reloadFromDiskIfNeeded();
+    const trimmedEmail = email.trim().toLowerCase();
+    return Object.values(this.schema.users).some(u => u.email.toLowerCase() === trimmedEmail);
+  }
+
   public register(name: string, email: string, password?: string, ip = '127.0.0.1', userAgent = 'Browser'): { user: DbUser; accessToken: string; refreshToken: string } {
     const trimmedEmail = email.trim().toLowerCase();
-    const existing = Object.values(this.schema.users).find(u => u.email === trimmedEmail);
+    const existing = Object.values(this.schema.users).find(u => u.email.toLowerCase() === trimmedEmail);
     if (existing) {
-      throw new Error('Email đã được đăng ký trên hệ thống');
+      throw new Error('Email này đã được đăng ký tài khoản. Vui lòng chuyển sang Đăng nhập.');
     }
 
     const now = new Date();
@@ -432,51 +449,14 @@ class TichSanDatabase {
       lastActive: todayKey(),
       nlpUsageToday: { date: todayKey(), count: 0 },
       emailVerified: false,
-      passwordHash: password ? hashPassword(password) : undefined
+      passwordHash: password ? hashPassword(password) : undefined,
+      type_method_login: 'password'
     };
 
     this.schema.users[newUser.id] = newUser;
 
-    // Create fresh initial finance data for new user
-    const freshData: FinanceData = {
-      ...structuredClone(seed),
-      user: newUser,
-      accounts: [
-        {
-          id: 'acc_wallet',
-          name: 'Ví tiền mặt',
-          type: 'cash',
-          openingBalance: 2000000,
-          color: '#10B981',
-          createdAt: todayKey(),
-          active: true
-        },
-        {
-          id: 'acc_bank_vcb',
-          name: 'Vietcombank Digibank',
-          type: 'bank',
-          openingBalance: 15000000,
-          color: '#059669',
-          createdAt: todayKey(),
-          active: true
-        }
-      ],
-      transactions: [
-        {
-          id: `tx_${uid()}`,
-          name: 'Số dư đầu kỳ chào mừng Tích Sản',
-          amount: 17000000,
-          type: 'income',
-          categoryId: 'salary',
-          accountId: 'acc_bank_vcb',
-          date: todayKey(),
-          method: 'Chuyển khoản',
-          note: 'Khởi tạo tài khoản với 30 ngày trải nghiệm VIP Gold miễn phí',
-          status: 'completed'
-        }
-      ]
-    };
-
+    // Create fresh initial finance data for new user - completely clean data
+    const freshData = this.createCleanFinanceData(newUser);
     this.schema.financeData[newUser.id] = freshData;
 
     // Issue tokens: Access token (15 mins) & Refresh token (120 days)
@@ -487,13 +467,118 @@ class TichSanDatabase {
     return { user: newUser, accessToken, refreshToken };
   }
 
-  public login(email: string, password?: string, ip = '127.0.0.1', userAgent = 'Browser'): { user: DbUser; accessToken: string; refreshToken: string } {
+  public createCleanFinanceData(user: DbUser): FinanceData {
+    return {
+      user,
+      accounts: [
+        {
+          id: 'acc_wallet',
+          name: 'Ví tiền mặt',
+          type: 'cash',
+          openingBalance: 0,
+          color: '#10B981',
+          createdAt: todayKey(),
+          active: true
+        }
+      ],
+      transactions: [],
+      categories: structuredClone(seed.categories),
+      budgets: [],
+      goals: [],
+      debts: [],
+      investments: [],
+      smartInvestmentNotes: [],
+      recurring: [],
+      notifications: [
+        {
+          id: `noti_${uid()}`,
+          title: 'Chào mừng bạn đến với Finora - Tích Sản! Sổ tài chính của bạn đã sẵn sàng.',
+          date: todayKey(),
+          read: false
+        }
+      ],
+      quickTemplates: structuredClone(seed.quickTemplates)
+    };
+  }
+
+  public oauthLogin(
+    name: string,
+    email: string,
+    provider = 'google',
+    ip = '127.0.0.1',
+    userAgent = 'Browser'
+  ): { user: DbUser; accessToken: string; refreshToken: string; isNewUser: boolean } {
     const trimmedEmail = email.trim().toLowerCase();
-    const user = Object.values(this.schema.users).find(u => u.email === trimmedEmail);
+    let user = Object.values(this.schema.users).find(u => u.email.toLowerCase() === trimmedEmail);
+    let isNewUser = false;
 
     if (!user) {
-      // Auto-provision demo account if unseeded
-      return this.register(trimmedEmail.split('@')[0] || 'Khách hàng', trimmedEmail, password, ip, userAgent);
+      isNewUser = true;
+      const now = new Date();
+      const trialEnds = new Date(now.getTime() + 30 * 86400 * 1000);
+
+      user = {
+        id: `usr_${uid()}`,
+        name: (name || trimmedEmail.split('@')[0]).trim(),
+        email: trimmedEmail,
+        role: 'user',
+        currency: 'VND',
+        financialMonthStart: 1,
+        plan: 'gold',
+        subscription_status: 'trialing',
+        trial_started_at: now.toISOString(),
+        trial_ends_at: trialEnds.toISOString(),
+        current_plan_id: 'plan-trial',
+        streakCount: 1,
+        lastCheckInDate: todayKey(),
+        defaultAccountId: 'acc_wallet',
+        isSuspended: false,
+        createdAt: todayKey(),
+        lastActive: todayKey(),
+        nlpUsageToday: { date: todayKey(), count: 0 },
+        emailVerified: true,
+        type_method_login: provider
+      };
+
+      this.schema.users[user.id] = user;
+      this.schema.financeData[user.id] = this.createCleanFinanceData(user);
+      this.addAuditLog('system', `USER_REGISTERED_OAUTH_${provider.toUpperCase()}`, `/api/auth/oauth`, 'SUCCESS', ip);
+    } else {
+      if (user.isSuspended) {
+        this.addAuditLog(user.email, 'OAUTH_LOGIN_BLOCKED_SUSPENDED', '/api/auth/oauth', 'BLOCKED', ip);
+        throw new Error('Tài khoản đã bị tạm khóa do vi phạm chính sách bảo mật');
+      }
+
+      user.lastActive = todayKey();
+      user.emailVerified = true;
+      if (!user.type_method_login) {
+        user.type_method_login = provider;
+      }
+      this.checkTrialExpiry(user);
+
+      // If user had no financeData or corrupted data, ensure clean data
+      if (!this.schema.financeData[user.id]) {
+        this.schema.financeData[user.id] = this.createCleanFinanceData(user);
+      } else {
+        this.schema.financeData[user.id].user = user;
+      }
+
+      this.addAuditLog(user.email, `USER_LOGIN_OAUTH_${provider.toUpperCase()}`, '/api/auth/oauth', 'SUCCESS', ip);
+    }
+
+    const { accessToken, refreshToken } = this.createSession(user.id, ip, userAgent);
+    this.persist();
+    return { user, accessToken, refreshToken, isNewUser };
+  }
+
+  public login(email: string, password?: string, ip = '127.0.0.1', userAgent = 'Browser'): { user: DbUser; accessToken: string; refreshToken: string } {
+    this.reloadFromDiskIfNeeded();
+    const trimmedEmail = email.trim().toLowerCase();
+    let user = Object.values(this.schema.users).find(u => u.email.toLowerCase() === trimmedEmail);
+
+    if (!user) {
+      this.addAuditLog(trimmedEmail, 'LOGIN_FAILED_USER_NOT_FOUND', '/api/auth/login', 'BLOCKED', ip);
+      throw new Error('Email này chưa được đăng ký tài khoản. Vui lòng đăng ký tài khoản mới.');
     }
 
     if (user.isSuspended) {
@@ -616,13 +701,41 @@ class TichSanDatabase {
     return user || null;
   }
 
-  public logout(accessToken: string, refreshToken?: string) {
-    delete this.schema.sessions[accessToken];
+  public logout(accessToken?: string, refreshToken?: string, userId?: string) {
+    let targetUserId = userId;
+    if (accessToken && !targetUserId) {
+      targetUserId = this.schema.sessions[accessToken];
+    }
+    if (refreshToken && !targetUserId) {
+      const hash = hashToken(refreshToken);
+      const session = this.schema.refreshTokens[hash];
+      if (session) {
+        targetUserId = session.userId;
+      }
+    }
+
+    if (accessToken) {
+      delete this.schema.sessions[accessToken];
+    }
     if (refreshToken) {
       const hash = hashToken(refreshToken);
       const session = this.schema.refreshTokens[hash];
       if (session) {
         session.isRevoked = true;
+      }
+    }
+
+    // Revoke all active sessions and refresh tokens for this user in DB
+    if (targetUserId) {
+      for (const [token, uidVal] of Object.entries(this.schema.sessions)) {
+        if (uidVal === targetUserId) {
+          delete this.schema.sessions[token];
+        }
+      }
+      for (const session of Object.values(this.schema.refreshTokens)) {
+        if (session.userId === targetUserId) {
+          session.isRevoked = true;
+        }
       }
     }
     this.persist();
@@ -670,6 +783,7 @@ class TichSanDatabase {
   // --- FINANCIAL DATA ACCESS ---
 
   public getFinanceData(userId: string): FinanceData {
+    this.reloadFromDiskIfNeeded();
     const user = this.schema.users[userId];
     if (!user) {
       throw new Error('User không tồn tại');
@@ -678,10 +792,7 @@ class TichSanDatabase {
 
     let data = this.schema.financeData[userId];
     if (!data) {
-      data = {
-        ...structuredClone(seed),
-        user
-      };
+      data = this.createCleanFinanceData(user);
       this.schema.financeData[userId] = data;
       this.persist();
     } else {
@@ -850,9 +961,10 @@ class TichSanDatabase {
   // --- ADMIN & BOOTSTRAP CLI OPERATIONS ---
 
   public getOrCreateBootstrapAdmin(adminEmail = 'admin@tichsan.ai'): { admin: DbUser; isNew: boolean } {
+    this.reloadFromDiskIfNeeded();
     let admin = Object.values(this.schema.users).find(u => u.email === adminEmail);
-    if (!admin && (adminEmail === 'admin@tichsan.ai' || adminEmail === 'admin@tichsan.vn')) {
-      admin = Object.values(this.schema.users).find(u => u.role === 'admin' || u.email === 'admin@tichsan.vn');
+    if (!admin && (adminEmail === 'admin@tichsan.ai' || adminEmail === 'admin@tichsan.site' || adminEmail === 'admin@tichsan.vn')) {
+      admin = Object.values(this.schema.users).find(u => u.role === 'admin' || u.email === 'admin@tichsan.site' || u.email === 'admin@tichsan.vn');
       if (admin) {
         admin.email = adminEmail;
       }
@@ -910,6 +1022,7 @@ class TichSanDatabase {
   }
 
   public getAllUsers(): DbUser[] {
+    this.reloadFromDiskIfNeeded();
     return Object.values(this.schema.users).map(u => {
       this.checkTrialExpiry(u);
       return u;
@@ -949,7 +1062,87 @@ class TichSanDatabase {
   }
 
   public getPlans(): SubscriptionPlan[] {
+    this.reloadFromDiskIfNeeded();
     return Object.values(this.schema.plans);
+  }
+
+  public updatePlan(planId: string, updates: Partial<SubscriptionPlan>): SubscriptionPlan {
+    this.reloadFromDiskIfNeeded();
+    let plan = this.schema.plans[planId];
+    if (!plan) {
+      plan = {
+        id: planId,
+        code: (updates.code || 'PRO') as any,
+        name: updates.name || 'Gói Dịch Vụ Mới',
+        price: updates.price ?? 0,
+        billingPeriod: updates.billingPeriod || '',
+        billingCycle: updates.billingCycle || 'annual',
+        features: updates.features || [],
+        isActive: updates.isActive ?? true,
+        tier: (updates.tier || 'pro') as any,
+        badge: updates.badge,
+        originalPrice: updates.originalPrice
+      };
+      this.schema.plans[planId] = plan;
+    } else {
+      Object.assign(plan, updates);
+    }
+    this.addAuditLog('admin', 'UPDATE_SUBSCRIPTION_PLAN', `/api/admin/plans/${planId}`, 'SUCCESS');
+    this.persist();
+    return plan;
+  }
+
+  public getPlanPermissions(): Record<string, string[]> {
+    this.reloadFromDiskIfNeeded();
+    if (!this.schema.planPermissions || Object.keys(this.schema.planPermissions).length === 0) {
+      this.schema.planPermissions = {
+        'plan-free': ['accounts_basic', 'budgets_basic', 'transactions_basic', 'local_first'],
+        'plan-trial': [
+          'accounts_unlimited',
+          'budgets_advanced',
+          'smart_ledger',
+          'speedometer_gauges',
+          'ai_webmcp_assistant',
+          'recurring_automation',
+          'stock_gold_realtime',
+          'export_reports',
+          'offline_cloud_sync',
+          'vip_priority_support'
+        ],
+        'plan-pro-year': [
+          'accounts_unlimited',
+          'budgets_advanced',
+          'transactions_basic',
+          'recurring_automation',
+          'stock_gold_realtime',
+          'export_reports',
+          'offline_cloud_sync',
+          'vip_priority_support'
+        ],
+        'plan-gold-year': [
+          'accounts_unlimited',
+          'budgets_advanced',
+          'smart_ledger',
+          'speedometer_gauges',
+          'ai_webmcp_assistant',
+          'recurring_automation',
+          'stock_gold_realtime',
+          'export_reports',
+          'offline_cloud_sync',
+          'vip_priority_support'
+        ]
+      };
+      this.persist();
+    }
+    return this.schema.planPermissions;
+  }
+
+  public updatePlanPermissions(permissions: Record<string, string[]>): Record<string, string[]> {
+    this.reloadFromDiskIfNeeded();
+    this.schema.planPermissions = permissions;
+    this.addAuditLog('admin', 'UPDATE_PLAN_PERMISSIONS_MATRIX', '/api/admin/plan-permissions', 'SUCCESS');
+    this.persist();
+    return this.schema.planPermissions;
   }
 
   public getThirdPartyCosts(): ThirdPartyCost[] {
@@ -1051,6 +1244,17 @@ class TichSanDatabase {
       createdAt: Date.now(),
       expiresAt: Date.now() + 24 * 3600 * 1000 // 24 hours
     };
+    this.persist();
+  }
+
+  public clearAllUserData(): void {
+    this.schema.users = {};
+    this.schema.financeData = {};
+    this.schema.sessions = {};
+    this.schema.refreshTokens = {};
+    this.schema.orders = {};
+    this.schema.idempotency = {};
+    this.addAuditLog('system', 'CLEARED_ALL_DATA_FOR_PRODUCTION', '/system/db', 'SUCCESS');
     this.persist();
   }
 

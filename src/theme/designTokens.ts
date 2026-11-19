@@ -27,18 +27,18 @@ export const FINORA_TOKENS = {
   // Neutral Surfaces (Calm Technology, Light Editorial & Dark Luxury)
   surfaces: {
     light: {
-      appBg: '#F7F8F7',
+      appBg: '#F1F5F9',
       surface: '#FFFFFF',
       cardDefault: '#FFFFFF',
-      surfaceSecondary: '#F1F4F2',
-      secondary: '#F1F4F2',
+      surfaceSecondary: '#F8FAFC',
+      secondary: '#F8FAFC',
       elevated: '#FFFFFF',
-      border: '#E4E9E5',
-      borderStrong: '#D4DDD7',
-      textPrimary: '#17211E',
-      textSecondary: '#65736C',
-      textMuted: '#89948E',
-      disabled: '#B5BDB8'
+      border: '#CBD5E1',
+      borderStrong: '#94A3B8',
+      textPrimary: '#0F172A',
+      textSecondary: '#334155',
+      textMuted: '#64748B',
+      disabled: '#94A3B8'
     },
     dark: {
       appBg: '#0D1117',
@@ -84,37 +84,37 @@ export const FINORA_TOKENS = {
   overviewCards: {
     assets: {
       // Blue / Blue tint
-      light: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF', accent: '#2563EB', iconBg: 'rgba(37, 99, 235, 0.12)' },
+      light: { bg: '#EFF6FF', border: '#93C5FD', text: '#1E3A8A', accent: '#2563EB', iconBg: 'rgba(37, 99, 235, 0.14)' },
       dark: { bg: '#0F1E36', border: 'rgba(59, 130, 246, 0.35)', text: '#93C5FD', accent: '#60A5FA', iconBg: 'rgba(59, 130, 246, 0.2)' }
     },
     income: {
       // Emerald / Green tint
-      light: { bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46', accent: '#059669', iconBg: 'rgba(16, 185, 129, 0.12)' },
+      light: { bg: '#ECFDF5', border: '#86EFAC', text: '#064E3B', accent: '#059669', iconBg: 'rgba(16, 185, 129, 0.14)' },
       dark: { bg: '#0B281E', border: 'rgba(16, 185, 129, 0.3)', text: '#6EE7B7', accent: '#34D399', iconBg: 'rgba(16, 185, 129, 0.2)' }
     },
     expense: {
       // Coral / Red tint
-      light: { bg: '#FEF2F2', border: '#FECACA', text: '#991B1B', accent: '#DC2626', iconBg: 'rgba(239, 68, 68, 0.12)' },
+      light: { bg: '#FEF2F2', border: '#FCA5A5', text: '#7F1D1D', accent: '#DC2626', iconBg: 'rgba(239, 68, 68, 0.14)' },
       dark: { bg: '#2C1113', border: 'rgba(239, 68, 68, 0.3)', text: '#FCA5A5', accent: '#F87171', iconBg: 'rgba(239, 68, 68, 0.2)' }
     },
     cashflow: {
       // Teal / Teal tint
-      light: { bg: '#F0FDFA', border: '#99F6E4', text: '#115E59', accent: '#0D9488', iconBg: 'rgba(13, 148, 136, 0.12)' },
+      light: { bg: '#F0FDFA', border: '#5EEAD4', text: '#134E4A', accent: '#0D9488', iconBg: 'rgba(13, 148, 136, 0.14)' },
       dark: { bg: '#0A2B29', border: 'rgba(20, 184, 166, 0.3)', text: '#5EEAD4', accent: '#2DD4BF', iconBg: 'rgba(20, 184, 166, 0.2)' }
     },
     savings: {
       // Purple / Purple tint
-      light: { bg: '#FAF5FF', border: '#DDD6FE', text: '#6D28D9', accent: '#7C3AED', iconBg: 'rgba(124, 58, 237, 0.14)' },
+      light: { bg: '#FAF5FF', border: '#C4B5FD', text: '#4C1D95', accent: '#7C3AED', iconBg: 'rgba(124, 58, 237, 0.14)' },
       dark: { bg: '#221338', border: 'rgba(139, 92, 246, 0.38)', text: '#E9D5FF', accent: '#A78BFA', iconBg: 'rgba(139, 92, 246, 0.25)' }
     },
     budget: {
       // Amber / Yellow tint
-      light: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E', accent: '#D97706', iconBg: 'rgba(217, 119, 6, 0.12)' },
+      light: { bg: '#FFFBEB', border: '#FCD34D', text: '#78350F', accent: '#D97706', iconBg: 'rgba(217, 119, 6, 0.14)' },
       dark: { bg: '#2B1D09', border: 'rgba(245, 158, 11, 0.3)', text: '#FCD34D', accent: '#FBBF24', iconBg: 'rgba(245, 158, 11, 0.2)' }
     },
     debt: {
       // Rose / Rose tint
-      light: { bg: '#FFF1F2', border: '#FECDD3', text: '#9F1239', accent: '#E11D48', iconBg: 'rgba(225, 29, 72, 0.12)' },
+      light: { bg: '#FFF1F2', border: '#FDA4AF', text: '#881337', accent: '#E11D48', iconBg: 'rgba(225, 29, 72, 0.14)' },
       dark: { bg: '#2B0E14', border: 'rgba(244, 63, 94, 0.3)', text: '#FDA4AF', accent: '#FB7185', iconBg: 'rgba(244, 63, 94, 0.2)' }
     }
   },
@@ -163,19 +163,19 @@ export const FINORA_TOKENS = {
     16: 64
   },
 
-  // Border Radius Standards
+  // Border Radius Standards (4-6px standard, subtle and friendly)
   radius: {
-    badge: 6,
-    input: 8,
-    button: 8,
-    cardSmall: 10,
-    cardStandard: 12,
-    cardLarge: 16,
-    modal: 16,
-    dialog: 18,
+    badge: 4,
+    input: 6,
+    button: 6,
+    cardSmall: 6,
+    cardStandard: 6,
+    cardLarge: 6,
+    modal: 6,
+    dialog: 6,
     // Backward-compat aliases
-    outer: 12,
-    inner: 8
+    outer: 6,
+    inner: 4
   },
 
   // Backward-compat aliases for older components

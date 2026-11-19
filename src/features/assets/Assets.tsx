@@ -14,15 +14,17 @@ import {
   TableRow,
   TablePagination,
   Typography,
-  useTheme
+  useTheme,
+  IconButton
 } from '@mui/material';
 import {
   RefreshCw,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 import { useFinance } from '../../store';
-import { money, todayKey } from '../../lib/finance';
+import { money, todayKey, formatVnDate } from '../../lib/finance';
 import { PageHead, Confirm } from '../../components/ui';
 import { HelpButton } from '../../components/HelpButton';
 import { marketApiClient } from '../../services/marketApiClient';
@@ -35,8 +37,7 @@ import { QuickInvestmentNoteForm } from '../../components/smartLedger/QuickInves
 import { UnrecoveredAssetsTable, getHiddenAssetIds } from '../../components/smartLedger/UnrecoveredAssetsTable';
 import { AssetProjectionSection } from '../../components/smartLedger/AssetProjectionSection';
 import {
-  calculateComprehensiveNetWorth,
-  getSampleWealthInvestmentNotes
+  calculateComprehensiveNetWorth
 } from '../../lib/investmentProjectionEngine';
 import { VIETNAMESE_ASSET_CATALOG } from '../../lib/investmentEngine';
 import type { InvestmentAsset } from '../../types';
@@ -53,13 +54,21 @@ export default function Assets() {
   const [txPage, setTxPage] = useState(0);
   const [txRowsPerPage, setTxRowsPerPage] = useState(10);
   const [deleting, setDeleting] = useState<InvestmentAsset | null>(null);
+  const [deletingTx, setDeletingTx] = useState<any | null>(null);
+
+  const handleDeleteTx = () => {
+    if (!deletingTx) return;
+    update(d => ({
+      ...d,
+      investmentTransactions: (d.investmentTransactions || []).filter(t => t.id !== deletingTx.id)
+    }), `Đã xóa giao dịch ${deletingTx.symbol}!`);
+    setDeletingTx(null);
+  };
 
   if (!data) return null;
 
   const notes = useMemo(() => {
-    const rawNotes = (data.smartInvestmentNotes && data.smartInvestmentNotes.length > 0)
-      ? data.smartInvestmentNotes
-      : getSampleWealthInvestmentNotes();
+    const rawNotes = data.smartInvestmentNotes || [];
     const hiddenSet = new Set(getHiddenAssetIds());
     return rawNotes.map(n => ({
       ...n,
@@ -328,6 +337,7 @@ export default function Assets() {
                   <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>TỔNG TIỀN</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>THUẾ & PHÍ</TableCell>
                   <TableCell sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>GHI CHÚ / LÃI LỖ</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '11px', letterSpacing: '0.03em', color: isDark ? '#E2E8F0' : '#334155', py: 1.1, px: 1.25 }}>THAO TÁC</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -336,7 +346,7 @@ export default function Assets() {
                     .slice(txPage * txRowsPerPage, txPage * txRowsPerPage + txRowsPerPage)
                     .map(tx => (
                       <TableRow key={tx.id} hover sx={{ '& td': { py: 0.85, px: 1.25, borderBottom: '1px solid var(--border-subtle)' } }}>
-                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem', fontFeatureSettings: '"tnum"' }}>{tx.date}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.78rem', fontFeatureSettings: '"tnum"' }}>{formatVnDate(tx.date)}</TableCell>
                         <TableCell>
                           <Chip
                             size="small"
@@ -361,11 +371,22 @@ export default function Assets() {
                           )}
                           {tx.note || '—'}
                         </TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeletingTx(tx)}
+                            title="Xóa giao dịch"
+                            sx={{ p: 0.5 }}
+                          >
+                            <Trash2 size={14} />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
+                    <TableCell colSpan={9} sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
                       Chưa có giao dịch kế toán đầu tư nào.
                     </TableCell>
                   </TableRow>
@@ -397,6 +418,15 @@ export default function Assets() {
         message={`Bạn có chắc muốn xóa mã ${deleting?.symbol}? Toàn bộ lịch sử vị thế sẽ bị xóa.`}
         onConfirm={handleDeleteAsset}
         onClose={() => setDeleting(null)}
+      />
+
+      {/* Delete Investment Transaction Confirmation */}
+      <Confirm
+        open={Boolean(deletingTx)}
+        title="Xóa giao dịch đầu tư?"
+        message={`Bạn có chắc muốn xóa giao dịch ${deletingTx?.symbol} ngày ${deletingTx ? formatVnDate(deletingTx.date) : ''}?`}
+        onConfirm={handleDeleteTx}
+        onClose={() => setDeletingTx(null)}
       />
 
       {/* Market Data & Finnhub Config Modal */}

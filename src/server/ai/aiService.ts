@@ -119,7 +119,7 @@ export class AIService {
     if (intent === 'FINANCIAL_OVERVIEW') {
       const overview = AIFinancialContextService.getFinancialOverview(data);
       const text =
-        `📊 **TỔNG QUAN TÀI CHÍNH HIỆN TẠI**:\n\n` +
+        `**TỔNG QUAN TÀI CHÍNH HIỆN TẠI**:\n\n` +
         `• **Tài sản ròng (Net Worth)**: ${money(overview.netWorth)}\n` +
         `• **Số dư thực có thể tiêu**: ${money(overview.trueSpendableBalance)}\n` +
         `• **Hạn mức an toàn hôm nay**: ${money(overview.dailySafeToSpend)} / ngày\n` +
@@ -140,7 +140,7 @@ export class AIService {
     // 3. Query Intents: Expense Analysis
     if (intent === 'EXPENSE_ANALYSIS') {
       const expense = AIFinancialContextService.getExpenseSummary(data);
-      let text = `💸 **PHÂN TÍCH CHI TIÊU THÁNG ${expense.month}**:\n\n` +
+      let text = `**PHÂN TÍCH CHI TIÊU THÁNG ${expense.month}**:\n\n` +
         `• **Tổng chi tiêu hoàn tất**: ${money(expense.totalSpent)} (${expense.transactionCount} giao dịch)\n`;
 
       if (expense.topExpense) {
@@ -163,16 +163,16 @@ export class AIService {
     // 4. Query Intents: Budget Analysis
     if (intent === 'BUDGET_ANALYSIS') {
       const budget = AIFinancialContextService.getBudgetSummary(data);
-      let text = `🎯 **TÌNH HÌNH NGÂN SÁCH THÁNG ${budget.month}**:\n\n` +
+      let text = `**TÌNH HÌNH NGÂN SÁCH THÁNG ${budget.month}**:\n\n` +
         `• **Tổng hạn mức**: ${money(budget.totalBudgetLimit)}\n` +
         `• **Đã sử dụng**: ${money(budget.totalBudgetSpent)} (${Math.round((budget.totalBudgetSpent / (budget.totalBudgetLimit || 1)) * 100)}%)\n`;
 
       if (budget.overspentCount > 0) {
-        text += `⚠️ **Cảnh báo**: Có ${budget.overspentCount} ngân sách đã chạm hoặc vượt trần chi tiêu!\n\n`;
+        text += `[Cảnh báo]: Có ${budget.overspentCount} ngân sách đã chạm hoặc vượt trần chi tiêu!\n\n`;
       }
 
       text += budget.budgets.map(b =>
-        `• ${b.name}: ${money(b.spent)} / ${money(b.limit)} (${b.percentUsed}%) ${b.isOver ? '🚨 Vượt trần' : '✅ Trong hạn mức'}`
+        `• ${b.name}: ${money(b.spent)} / ${money(b.limit)} (${b.percentUsed}%) ${b.isOver ? '[Vượt trần]' : '[Trong hạn mức]'}`
       ).join('\n');
 
       return {
@@ -188,7 +188,7 @@ export class AIService {
     // 5. Query Intents: Investment Portfolio
     if (intent === 'INVESTMENT_ANALYSIS') {
       const inv = AIFinancialContextService.getInvestmentSummary(data);
-      let text = `📈 **DANH MỤC ĐẦU TƯ HIỆN TẠI**:\n\n` +
+      let text = `**DANH MỤC ĐẦU TƯ HIỆN TẠI**:\n\n` +
         `• **Tổng giá trị thị trường**: ${money(inv.totalValue)}\n` +
         `• **Tổng giá vốn (Cost Basis)**: ${money(inv.totalCostBasis)}\n` +
         `• **Lãi/Lỗ chưa thực hiện**: ${inv.totalPnL >= 0 ? '+' : ''}${money(inv.totalPnL)} (${inv.pnlPercent}%)\n\n` +

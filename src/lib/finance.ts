@@ -1,8 +1,10 @@
 import {addDays,addMonths,addWeeks,addYears,format,parseISO,startOfMonth,subMonths} from 'date-fns';
 import type {Account,Budget,Debt,FinanceData,RecurringTransaction,SavingsGoal,Transaction} from '../types';
+import { formatVnDate, formatVnMonth } from './dateUtils';
+export { formatVnDate, formatVnMonth };
 export const money=(n:number)=>new Intl.NumberFormat('en-US').format(Math.round(n))+' ₫';
 export const shortMoney=(n:number)=>Math.abs(n)>=1e9?`${(n/1e9).toFixed(1)} tỷ`:Math.abs(n)>=1e6?`${(n/1e6).toFixed(1)} tr`:`${Math.round(n/1000)}k`;
-export const dateLabel=(s:string)=>format(parseISO(s),'dd/MM/yyyy');
+export const dateLabel=(s:string)=>formatVnDate(s);
 export const monthKey=(date:Date|string)=>format(typeof date==='string'?parseISO(date):date,'yyyy-MM');
 export const todayKey=()=>format(new Date(),'yyyy-MM-dd');
 export const uid=()=>globalThis.crypto?.randomUUID?.()??`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;

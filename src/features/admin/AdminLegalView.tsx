@@ -18,7 +18,9 @@ import {
   TextField
 } from '@mui/material';
 import { Scale, Edit3, Eye, FileText, CheckCircle2 } from 'lucide-react';
+import { MuiDatePicker } from '../../components/mui/MuiInputs';
 import { legalService, type LegalDocument } from '../../services/legalService';
+import { formatVnDate } from '../../lib/dateUtils';
 
 export function AdminLegalView() {
   const [docs, setDocs] = useState<LegalDocument[]>(legalService.getDocuments());
@@ -103,10 +105,10 @@ export function AdminLegalView() {
                     />
                   </TableCell>
                   <TableCell sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                    {doc.effectiveDate}
+                    {formatVnDate(doc.effectiveDate)}
                   </TableCell>
                   <TableCell sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
-                    {doc.lastUpdated}
+                    {formatVnDate(doc.lastUpdated)}
                   </TableCell>
                   <TableCell sx={{ fontSize: '0.8rem' }}>
                     {doc.author}
@@ -162,13 +164,10 @@ export function AdminLegalView() {
           </Box>
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <TextField
-              size="small"
-              type="date"
+            <MuiDatePicker
               label="Ngày hiệu lực"
               value={editingDoc?.effectiveDate || ''}
-              onChange={e => setEditingDoc(prev => prev ? { ...prev, effectiveDate: e.target.value } : null)}
-              slotProps={{ inputLabel: { shrink: true } }}
+              onChange={val => setEditingDoc(prev => prev ? { ...prev, effectiveDate: val } : null)}
             />
             <TextField
               size="small"

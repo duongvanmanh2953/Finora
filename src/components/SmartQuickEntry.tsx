@@ -591,11 +591,11 @@ export function SmartQuickEntryTriggerBar({
         }}
       >
         {/* Left Side: Icon + Modern Search Placeholder */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0, flex: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0, flex: 1 }}>
           <Box
             sx={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               borderRadius: '6px',
               bgcolor: 'action.hover',
               color: 'var(--brand-primary, #1E5A48)',
@@ -605,131 +605,76 @@ export function SmartQuickEntryTriggerBar({
               flexShrink: 0
             }}
           >
-            <Zap size={16} />
+            <Zap size={14} />
           </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography
-              variant="body2"
-              noWrap
-              sx={{
-                color: 'text.primary',
-                fontSize: { xs: '0.84rem', sm: '0.88rem' },
-                fontWeight: 650
-              }}
-            >
-              Nhập nhanh giao dịch hoặc lệnh AI...
-            </Typography>
-            <Typography
-              variant="caption"
-              noWrap
-              sx={{
-                color: 'text.secondary',
-                fontSize: { xs: '0.72rem', sm: '0.75rem' },
-                display: { xs: 'none', sm: 'block' }
-              }}
-            >
-              Ví dụ: "cà phê 30k", "lương 25tr trích 5tr", "cơm trưa 45k"
-            </Typography>
-          </Box>
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              color: 'text.primary',
+              fontSize: { xs: '0.8rem', sm: '0.82rem' },
+              fontWeight: 600
+            }}
+          >
+            Nhập nhanh...
+          </Typography>
         </Box>
 
         {/* Right Side: Smart Dropdown Menu + Shortcut + Action */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexShrink: 0 }}>
           {/* Smart Suggestions Dropdown Anchor Button */}
-          <Button
+          <IconButton
             size="small"
-            variant="text"
             onClick={handleOpenDropdown}
-            startIcon={<Lightbulb size={14} style={{ color: '#D97706' }} />}
-            endIcon={<ChevronDown size={13} />}
+            title={`Gợi ý ${timeInfo.timeLabel.toLowerCase()}`}
             sx={{
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              py: 0.5,
-              px: 1.25,
+              bgcolor: 'rgba(217, 119, 6, 0.1)',
+              color: '#D97706',
               borderRadius: '6px',
-              color: 'text.secondary',
-              bgcolor: 'action.hover',
-              border: '1px solid var(--border-subtle)',
-              textTransform: 'none',
-              '&:hover': {
-                bgcolor: 'action.selected',
-                borderColor: 'var(--border-strong)',
-                color: 'text.primary'
-              }
+              p: 0.75,
+              border: '1px solid rgba(217, 119, 6, 0.25)',
+              '&:hover': { bgcolor: 'rgba(217, 119, 6, 0.2)', borderColor: '#D97706' }
             }}
           >
-            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Gợi ý {timeInfo.timeLabel.toLowerCase()}</Box>
-            <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Gợi ý</Box>
-          </Button>
-
-          {/* Shortcut Ctrl + K */}
-          <Box
-            sx={{
-              display: { xs: 'none', md: 'flex' },
-              alignItems: 'center',
-              gap: 0.4,
-              px: 0.85,
-              py: 0.4,
-              borderRadius: '5px',
-              bgcolor: 'action.hover',
-              border: '1px solid var(--border-subtle)',
-              color: 'text.secondary',
-              fontSize: 11,
-              fontWeight: 700
-            }}
-          >
-            <KeyboardRounded sx={{ fontSize: 13 }} />
-            <span>Ctrl + K</span>
-          </Box>
+            <Lightbulb size={14} />
+          </IconButton>
 
           {/* Quick Camera VietQR Button */}
-          <Tooltip title="Quét Camera VietQR hoặc Hóa đơn">
-            <IconButton
-              size="small"
-              onClick={e => {
-                e.stopPropagation();
-                onOpenModal('camera');
-              }}
-              sx={{
-                bgcolor: 'rgba(59, 130, 246, 0.1)',
-                color: '#3B82F6',
-                borderRadius: '6px',
-                p: 0.75,
-                border: '1px solid rgba(59, 130, 246, 0.25)',
-                '&:hover': {
-                  bgcolor: 'rgba(59, 130, 246, 0.2)',
-                  borderColor: '#3B82F6'
-                }
-              }}
-            >
-              <Camera size={16} />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            size="small"
+            onClick={e => {
+              e.stopPropagation();
+              onOpenModal('camera');
+            }}
+            sx={{
+              bgcolor: 'rgba(59, 130, 246, 0.1)',
+              color: '#3B82F6',
+              borderRadius: '6px',
+              p: 0.75,
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              '&:hover': { bgcolor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3B82F6' }
+            }}
+          >
+            <Camera size={14} />
+          </IconButton>
 
           {/* Quick Add Button */}
-          <Button
+          <IconButton
             size="small"
-            variant="contained"
             onClick={e => {
               e.stopPropagation();
               onOpenModal('daily');
             }}
-            startIcon={<Sparkles size={14} />}
             sx={{
-              fontSize: { xs: 12, sm: 12.5 },
-              fontWeight: 700,
               bgcolor: 'var(--brand-primary, #1E5A48)',
-              '&:hover': { bgcolor: 'var(--brand-primary-hover, #164638)' },
+              color: 'white',
               borderRadius: '6px',
-              px: { xs: 1.5, sm: 2 },
-              py: 0.65,
-              textTransform: 'none',
-              boxShadow: 'none'
+              p: 0.75,
+              '&:hover': { bgcolor: 'var(--brand-primary-hover, #164638)' }
             }}
           >
-            Thêm nhanh
-          </Button>
+            <Plus size={14} />
+          </IconButton>
         </Box>
       </Paper>
 
@@ -2415,9 +2360,9 @@ export function SmartQuickEntryModal({
                 }}
               >
                 {[
-                  { type: 'expense' as const, label: 'Chi tiêu', color: '#DC2626', bg: isDark ? 'rgba(220, 38, 38, 0.2)' : '#FFFFFF', icon: <TrendingDownRounded sx={{ fontSize: 16 }} /> },
-                  { type: 'income' as const, label: 'Thu nhập', color: '#16A34A', bg: isDark ? 'rgba(22, 163, 74, 0.2)' : '#FFFFFF', icon: <TrendingUpRounded sx={{ fontSize: 16 }} /> },
-                  { type: 'saving' as const, label: 'Tiết kiệm', color: '#7C3AED', bg: isDark ? 'rgba(124, 58, 237, 0.2)' : '#FFFFFF', icon: <SavingsRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'expense' as const, label: 'Chi', color: '#DC2626', bg: isDark ? 'rgba(220, 38, 38, 0.2)' : '#FFFFFF', icon: <TrendingDownRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'income' as const, label: 'Thu', color: '#16A34A', bg: isDark ? 'rgba(22, 163, 74, 0.2)' : '#FFFFFF', icon: <TrendingUpRounded sx={{ fontSize: 16 }} /> },
+                  { type: 'saving' as const, label: 'T.Kiệm', color: '#7C3AED', bg: isDark ? 'rgba(124, 58, 237, 0.2)' : '#FFFFFF', icon: <SavingsRounded sx={{ fontSize: 16 }} /> },
                   { type: 'invest' as const, label: 'Đầu tư', color: '#2563EB', bg: isDark ? 'rgba(37, 99, 235, 0.2)' : '#FFFFFF', icon: <ShowChartRounded sx={{ fontSize: 16 }} /> }
                 ].map(tab => {
                   const isSelected = entryType === tab.type;
@@ -2438,31 +2383,24 @@ export function SmartQuickEntryModal({
                           setCustomCategory(null);
                         }
                       }}
-                      startIcon={tab.icon}
                       sx={{
-                        py: 0.85,
+                        flex: 1,
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        py: 0.5,
                         px: 0.5,
-                        borderRadius: '8px',
-                        fontSize: { xs: '0.76rem', sm: '0.82rem' },
-                        fontWeight: isSelected ? 800 : 600,
+                        minWidth: 'auto',
+                        textTransform: 'none',
                         color: isSelected ? tab.color : 'text.secondary',
                         bgcolor: isSelected ? tab.bg : 'transparent',
-                        border: isSelected ? `1.5px solid ${tab.color}` : '1.5px solid transparent',
-                        boxShadow: isSelected
-                          ? isDark
-                            ? '0 2px 8px rgba(0, 0, 0, 0.4)'
-                            : '0 2px 8px rgba(0, 0, 0, 0.08)'
-                          : 'none',
-                        transition: 'all 0.15s ease',
-                        minWidth: 0,
-                        textTransform: 'none',
-                        '& .MuiButton-startIcon': { mr: { xs: 0.3, sm: 0.6 } },
-                        '&:hover': {
-                          bgcolor: isSelected ? tab.bg : 'action.hover',
-                          color: isSelected ? tab.color : 'text.primary'
-                        }
+                        borderRadius: '6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 0.25,
+                        '&:hover': { bgcolor: isSelected ? tab.bg : 'action.hover' }
                       }}
                     >
+                      {tab.icon}
                       {tab.label}
                     </Button>
                   );
